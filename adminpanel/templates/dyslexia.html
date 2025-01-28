@@ -1,0 +1,296 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>E-tutor | Learning Website</title>
+    <link rel="stylesheet" href="./e-tutor/styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,200&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+  </head>
+  <body>
+    <div class="header">
+      <div class="container">
+        <div class="navbar">
+          <div class="logo">
+            <a href="index.html">
+              <img src="" alt="" width="125px"
+            /></a>
+          </div>
+          <nav>
+            <ul id="MenuItems">
+              <li><a href="front.html">Home</a></li>
+              
+              <li><a href="{% static "e-tutor/mylearning.html" % }">MyLearning</a></li>
+              <li><a href="./e-tutor/about.html">About</a></li>
+              <li><a href="account.html">Account</a></li>
+              <a href="#"><i class="fa-solid fa-bars"></i></a>
+            </ul>
+          </nav>
+          
+        </div>
+        <div class="row">
+          <div class="col-2">
+            <h1>
+              Make your Learning<br />
+              More Easy!
+            </h1>
+            <p>
+              Platform Is Especially For People With Dyslexia.<br />
+              To Improve Their Skills.
+            </p>
+            <a href="./e-tutor/explore.html" class="btn">Explore Now &#8594;</a>
+          </div>
+          <div class="col-2">
+            <img src="" alt="" />
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="categories">
+      <div class="small-container">
+        <div class="row">
+          <div class="col-3">
+            
+            <img src="./assets/images/category-1.jpg" alt="" />
+          </div>
+          <div class="col-3">
+            <img src="./assets/images/category-2.jpg" alt="" />
+          </div>
+          <div class="col-3">
+            <img src="./assets/images/category-3.jpg" alt="" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="small-container">
+      <h2 class="title">Explore Courses</h2>
+      <div class="row">
+        <div class="col-4">
+          <a href="./text converter/texttobig and music.html">
+            <img src="{% static 'e-tutor/img1.avif' %}" alt="Category Image" />
+            </a>
+          <h4>Writing Practice</h4>
+          <div class="rating">
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star-o"></i>
+          </div>
+          <p></p>
+        </div>
+
+        <div class="col-4">
+          <a href="./e-tutor/speak.html">
+            <img src="{% static 'e-tutor/img3.webp' %}" alt="Category Image" />
+        </a>
+        <a
+        <img src="{% static 'e-tutor/img3.webp' %}" alt="Category Image" />
+         
+        </a>
+       
+
+          <h4>Spelling Practice</h4>
+          <div class="rating">
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star-half-o"></i>
+            <i class="fa fa-star-o"></i>
+          </div>
+          <p></p>
+        </div>
+
+        <div class="col-4">
+            <a href="texttosound.html">
+                <img src="{% static 'e-tutor/speak.webp' %}" alt="Category Image" />
+         
+        </a>
+          <h4>Speaking Practice</h4>
+          <div class="rating">
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star-half-o"></i>
+          </div>
+          <p></p>
+        </div>
+        <div class="col-4">
+          <a href="./e-tutor/pdf.html">
+            <img src="{% static 'e-tutor/img4.webp' %}" alt="Category Image" />
+         
+          </a>
+          <h4>Reading Practice</h4>
+          <div class="rating">
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star-o"></i>
+          </div>
+          <p></p>
+        </div>
+      </div>
+      <h2 class="title">More Courses</h2>
+      <div class="row">
+        <div class="col-4">
+            <img src="{% static 'e-tutor/ig1.webp' %}" alt="Category Image" />
+          
+          <h4></h4>
+          <div class="rating">
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star-o"></i>
+          </div>
+          <p></p>
+        </div>
+
+        <div class="col-4">
+            <img src="{% static 'e-tutor/ig2.webp' %}" alt="Category Image" />
+         
+          <h4></h4>
+          <div class="rating">
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star-half-o"></i>
+            <i class="fa fa-star-o"></i>
+          </div>
+          <p></p>
+        </div>
+
+        <div class="col-4">
+            <img src="{% static 'e-tutor/ig3.webp' %}" alt="Category Image" /> 
+         
+          <h4></h4>
+          <div class="rating">
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star-half-o"></i>
+          </div>
+          <p></p>
+        </div>
+        <div class="col-4">
+            <img src="{% static 'e-tutor/ig4.webp' %}" alt="Category Image" /> 
+         
+          <h4></h4>
+          <div class="rating">
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star-o"></i>
+          </div>
+          <p></p>
+        </div>
+      
+    <div class="footer">
+      <div class="container">
+        <div class="row">
+          <div class="footer-col-1">
+            <h3>Contact Details</h3>
+            <p>
+              Email:<br />
+              E-tutor@gmail.com
+            </p>
+            <div class="app-logo">
+              <img src="./assets/images/play-store.png" alt="" />
+              <img src="./assets/images/app-store.png" alt="" />
+            </div>
+          </div>
+          <div class="footer-col-2">
+            <img src="./assets/images/logo-white.png" alt="" />
+            <p>
+              
+            </p>
+          </div>
+          <div class="footer-col-3">
+            <h3>Useful Links</h3>
+            <ul>
+              <li></li>
+              <li>Blog Post</li>
+              <li>Return Policy</li>
+              <li>Join Affiliate</li>
+            </ul>
+          </div>
+
+          <div class="footer-col-4">
+            <h3>Follow us</h3>
+            <ul>
+              <li>Facebook</li>
+              <li>Twitter</li>
+              <li>Instagram</li>
+              <li>YouTube</li>
+            </ul>
+          </div>
+        </div>
+        <hr />
+        <p class="copyright" id="copyright-text">Copyright 2024 </p>
+      </div>
+    </div>
+    <script src="./e-tutor/toogle.js"></script>
+    <div class="col-12 my-3">
+      {% if pageobject.has_other_pages %}
+      <nav aria-label="Page navigation">
+          <ul class="pagination">
+              {% if pageobject.has_previous%}
+              <li class="page-item">
+                  <a class="page-link" href="?page=1" aria-label="First">
+                      <span aria-hidden="true">&laquo; first</span>
+                  </a>
+              </li>
+              <li class="page-item">
+                  <a class="page-link" href="?page={{pageobject.previous_page_number}}" aria-label="Previous">
+                      <span aria-hidden="true">previous</span>
+                  </a>
+              </li>
+              {% endif %}
+              <li class="page-item"><span class="page-link">Page {{pageobject.number}} of {{pageobject.paginator.num_pages}}</span></li>
+        {% if pageobject.has_next %}
+              <li class="page-item">
+                  <a class="page-link" href="?page={{pageobject.next_page_number}}" aria-label="Next">
+                      <span aria-hidden="true">next</span>
+                  </a>
+              </li>
+              <li class="page-item">
+                  <a class="page-link" href="?page={{pageobject.paginator.num_pages}}" aria-label="Last">
+                      <span aria-hidden="true">last &raquo;</span>
+                  </a>
+              </li>
+              {% endif %}
+          </ul>
+      </nav>
+      
+{% endif%}  </div>
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}
