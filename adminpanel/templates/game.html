@@ -1,94 +1,82 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+    .game-container {
+        margin: 50px auto;
+        max-width: 800px;
+        padding: 30px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        animation: fadeIn 1s ease-in-out;
+    }
 
+    .word-container {
+        font-size: 2em;
+        margin: 20px 0;
+        font-weight: bold;
+        color: #3e64e7;
+    }
 
+    .hint {
+        font-size: 1.2em;
+        margin-top: 10px;
+        color: #ff9800;
+    }
 
+    .input-container {
+        margin: 20px;
+    }
 
-       <style>
+    .input-container input {
+        font-size: 1.5em;
+        padding: 10px;
+        width: 200px;
+        text-align: center;
+        margin: 10px 0;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+    }
 
-        .game-container {
-            margin: 50px auto;
-            max-width: 800px;
-            padding: 30px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            animation: fadeIn 1s ease-in-out;
-        }
+    .input-container button {
+        font-size: 1.2em;
+        padding: 10px 20px;
+        border: none;
+        background-color: #4caf50;
+        color: white;
+        cursor: pointer;
+        border-radius: 5px;
+    }
 
-        .word-container {
-            font-size: 2em;
-            margin: 20px 0;
-            font-weight: bold;
-            color: #3e64e7;
-        }
+    .input-container button:hover {
+        background-color: #388e3c;
+    }
 
-        .hint {
-            font-size: 1.2em;
-            margin-top: 10px;
-            color: #ff9800;
-        }
+    .feedback {
+        font-size: 1.5em;
+        margin-top: 20px;
+    }
 
-        .input-container {
-            margin: 20px;
-        }
+    .feedback.correct {
+        color: #4caf50;
+    }
 
-        .input-container input {
-            font-size: 1.5em;
-            padding: 10px;
-            width: 200px;
-            text-align: center;
-            margin: 10px 0;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-        }
+    .feedback.incorrect {
+        color: #f44336;
+    }
 
-        .input-container button {
-            font-size: 1.2em;
-            padding: 10px 20px;
-            border: none;
-            background-color: #4caf50;
-            color: white;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        .input-container button:hover {
-            background-color: #388e3c;
-
-
-
-        }
-
-
-        .feedback {
-            font-size: 1.5em;
-            margin-top: 20px;
-        }
-
-        .feedback.correct {
-            color: #4caf50;
-        }
-
-        .feedback.incorrect {
-            color: #f44336;
-        }
-
-        /* Fade-in animation */
-        @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
-    </style>
+    /* Fade-in animation */
+    @keyframes fadeIn {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+    }
+</style>
 
 <body>
     <div class="game-container">
         <h1>Word Scramble Game</h1>
         <p>Unscramble the letters to form a word. You can use the hint if you need help!</p>
-       
-
 
         <div class="word-container" id="scrambledWord"></div>
         <div class="hint" id="wordHint"></div>
@@ -97,82 +85,124 @@
             <input type="text" id="userInput" placeholder="Enter your guess" />
             <button onclick="checkAnswer()">Submit</button>
         </div>
+        <form method="POST" action="/graph/">
+            {% csrf_token %}
+            
+        </form>
 
         <div class="feedback" id="feedbackText"></div>   
-       
     </div>
 
-   
-
-<script>
-    // Pass the `posts` data from Django to JavaScript
-    const wordsData = {{ posts | safe }};  // Directly use the passed posts as JSON
-
-    const words = [];
-
-    // Populate the words array using the data from Django
-    for (let i = 0; i < wordsData.length; i++) {
-        words.push({
-            word: wordsData[i].name,   // Word name from the 'name' field of each post
-            image: wordsData[i].image   // Image URL from the 'image' field of each post
-        });
-    }
-
-    // Select a random word from the list
-    let currentWord;
-
-    function getRandomWord() {
-        const randomIndex = Math.floor(Math.random() * words.length);
-        currentWord = words[randomIndex];
-        return currentWord;
-    }
-
-    function shuffleWord(word) {
-        const shuffled = word.split('').sort(() => 0.5 - Math.random()).join('');
-        return shuffled;
-    }
-
-    // Update the game with a new scrambled word
-    function loadNewWord() {
-        const wordObj = getRandomWord();
-        const scrambled = shuffleWord(wordObj.word);
-        
-        document.getElementById('scrambledWord').textContent = scrambled;
-        document.getElementById('wordHint').innerHTML = `Hint: <img src="${wordObj.image}" alt="Hint Image" style="max-width: 100px; height: auto;"/>`;
-        
-        document.getElementById('feedbackText').textContent = '';
-        document.getElementById('userInput').value = '';
-    }
-
-    // Check the user's answer
-    function checkAnswer() {
-        const userInput = document.getElementById('userInput').value.toLowerCase();
-        if (userInput === currentWord.word) {
-            document.getElementById('feedbackText').textContent = 'Correct! Great job!';
-            document.getElementById('feedbackText').className = 'feedback correct';
-            speak("Congratulations!");
-        } else {
-            document.getElementById('feedbackText').textContent = 'Oops! Try again!';
-            document.getElementById('feedbackText').className = 'feedback incorrect';
-            speak("Try again!");
+    <script>
+        // Pass the `posts` data from Django to JavaScript (ensure it’s serialized properly)
+        const wordsData = JSON.parse('{{ posts|safe|escapejs }}');  // Escape and parse the posts data into JSON
+    
+        const words = [];
+    
+        // Populate the words array using the data from Django
+        for (let i = 0; i < wordsData.length; i++) {
+            words.push({
+                word: wordsData[i].name,   // Word name from the 'name' field of each post
+                image: wordsData[i].image   // Image URL from the 'image' field of each post
+            });
         }
-
-        // Load a new word after a short delay
-        setTimeout(loadNewWord, 1500);
-    }
-
-    // Speech feedback function
-    function speak(text) {
-        const speech = new SpeechSynthesisUtterance(text);
-        speech.rate = 1;
-        window.speechSynthesis.speak(speech);
-    }
-
-    // Initialize the game
-    loadNewWord();
-</script>
-
-
-
-
-{%endblock%}
+    
+        let currentWord;
+    
+        // Function to get a random word
+        function getRandomWord() {
+            const randomIndex = Math.floor(Math.random() * words.length);
+            currentWord = words[randomIndex];  // Update the current word
+            console.log("New random word:", currentWord);  // Debug: check if currentWord is being set correctly
+            return currentWord;
+        }
+    
+        // Shuffle the word to make it scrambled
+        function shuffleWord(word) {
+            const shuffled = word.split('').sort(() => 0.5 - Math.random()).join('');
+            console.log("Shuffled word:", shuffled);  // Debug: check shuffled word
+            return shuffled;
+        }
+    
+        // Load a new word and scramble it
+        function loadNewWord() {
+            console.log("Loading a new word...");  // Debug: confirm this function is called
+            const wordObj = getRandomWord();
+            const scrambled = shuffleWord(wordObj.word);
+    
+            // Update the word and hint
+            document.getElementById('scrambledWord').textContent = scrambled;
+            document.getElementById('wordHint').innerHTML = `Hint: <img src="${wordObj.image}" alt="Hint Image" style="max-width: 100px; height: auto;"/>`;
+    
+            // Reset feedback and input field
+            document.getElementById('feedbackText').textContent = '';
+            document.getElementById('userInput').value = '';
+        }
+    
+        // Check the user's answer
+        function checkAnswer() {
+            console.log("Checking answer...");  // Debug: confirm that checkAnswer is triggered
+            const userInput = document.getElementById('userInput').value.toLowerCase();
+            const isCorrect = userInput === currentWord.word;
+    
+            if (isCorrect) {
+                document.getElementById('feedbackText').textContent = 'Correct! Great job!';
+                document.getElementById('feedbackText').className = 'feedback correct';
+                speak("Congratulations!");
+            } else {
+                document.getElementById('feedbackText').textContent = 'Oops! Try again!';
+                document.getElementById('feedbackText').className = 'feedback incorrect';
+                speak("Try again!");
+            }
+    
+            // Send the result to the backend (via AJAX)
+            sendGameResult(currentWord.word, currentWord.word, userInput, isCorrect);
+    
+            // Load a new word after 1 second
+            setTimeout(function() {
+                console.log("Calling loadNewWord()...");
+                loadNewWord();  // This should trigger the word change
+            }, 1000);
+        }
+    
+        // Send the game result to the backend
+        function sendGameResult(word, correctAnswer, userAnswer, isCorrect) {
+            fetch('/graph/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCSRFToken()  // Make sure the CSRF token is included here
+                },
+                body: `word=${encodeURIComponent(word)}&correct_answer=${encodeURIComponent(correctAnswer)}&user_answer=${encodeURIComponent(userAnswer)}&is_correct=${encodeURIComponent(isCorrect)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log('Game result saved successfully.');
+                } else {
+                    console.log('Error saving result:', data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+        
+        // Get the CSRF token from the page
+        function getCSRFToken() {
+            let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            return csrfToken;
+        }
+    
+        // Speech feedback function
+        function speak(text) {
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.rate = 1;
+            window.speechSynthesis.speak(speech);
+        }
+    
+        // Initialize the game by loading a new word
+        loadNewWord();
+    </script>
+    
+    
+    
+{% endblock %}

@@ -56,3 +56,17 @@ class words(models.Model):
      def formattedimgurl(self):
         url=self.image if self.image.__str__().startswith(('http','https://')) else self.image.url
         return url
+# models.py
+
+
+class gameresult(models.Model):
+    word = models.CharField(max_length=100)
+    correctanswer = models.CharField(max_length=100)
+    useranswer = models.CharField(max_length=100)
+    iscorrect = models.BooleanField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+
+        return f"Word: {self.word}, Correct: {self.iscorrect}"
+     

@@ -16,6 +16,10 @@ from django.core.paginator import Paginator
 from adminpanel.models import post,profile, words
 import pdb
 import logging
+from django.http import JsonResponse
+from .models import gameresult
+import json
+from django.views.decorators.csrf import csrf_exempt
 def index(request):
     logger=logging.getLogger("testing")
     blogtitle="bjarath"
@@ -146,9 +150,11 @@ def profiles(request):
 def game(request):
     # Fetch all the word posts
     posts = words.objects.all().values('name', 'image')  # Get 'name' and 'image' fields
+    # Serialize the data to JSON format
+    posts_json = json.dumps(list(posts))
     
     # Pass the serialized data to the template
-    return render(request, "game.html", {'posts': list(posts), 'blogtitle': 'bjarath'})
+    return render(request, "game.html", {'posts': posts_json, 'blogtitle': 'bjarath'})
 
 def createprofile(request):
     form=profileform()
@@ -182,7 +188,46 @@ def contact(request):
         send_mail(name,message,'noreply@hellojiohellojio.com',[email])
         messages.success(request,"your email is sent")
      return render(request,'contact.html',{'form':form})  
-def deepak(request):
-    return render(request,'deepak.html')
+
+""" def graph(request):
+    # Hardcoded data for weeks and scores
+    weeks = [1, 2, 3, 4,5]
+    scores = [85, 90, 80, 95,80]
+    
+    # Pass the data to the template
+    return render(request, 'graph.html', {'weeks': weeks, 'scores': scores}) """
 
 
+
+  # Ensure this is the correct model
+
+  # Assuming the model is named GameResult
+
+
+
+def graph(request):
+    if request.method == 'POST':
+        # Correctly reference the keys in the POST request
+        word = request.POST.get('word')
+        correctanswer = request.POST.get('correct_answer')  # Match the frontend key
+        useranswer = request.POST.get('user_answer')  # Match the frontend key
+
+        # Check if any answer is missing
+        if not useranswer or not correctanswer:
+            return JsonResponse({'status': 'error', 'message': 'Missing answer(s).'}, status=400)
+
+        # Compare the answers (safely)
+        iscorrect = useranswer.lower() == correctanswer.lower()
+
+        # Save the result to the database
+        game_result = gameresult(
+            word=word,
+            correctanswer=correctanswer,
+            useranswer=useranswer,
+            iscorrect=iscorrect
+        )
+        game_result.save()
+
+        return JsonResponse({'status': 'success', 'iscorrect': iscorrect})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})

@@ -37,5 +37,5 @@ urlpatterns = [
     path('profiles/',views.profiles,name='profile'),
     path('createprofile/',views.createprofile,name='createprofile'),
     path('contact/',views.contact,name='contact'),
-    path('deepak/',views.deepak,name='deepak')
+    path('graph/',views.graph,name='graph'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

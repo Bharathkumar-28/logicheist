@@ -1,1 +1,120 @@
-bharath
+
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f3f3f3;
+            margin: 0;
+        }
+
+        .game-container {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #ddd;
+        }
+
+        #word-display {
+            font-size: 24px;
+            letter-spacing: 5px;
+            font-weight: bold;
+        }
+
+        #message {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+    </style>
+
+<body>
+
+    <div class="game-container">
+        <h1>Word Guess Game</h1>
+        <p>Guess the word!</p>
+        <div id="word-display"></div>
+        <input type="text" id="guess-input" placeholder="Enter your guess">
+        <button onclick="checkGuess()">Guess</button>
+        <p id="message"></p>
+        <button onclick="startNewGame()">Start New Game</button>
+    </div>
+
+    <script>
+        const words = ["apple", "banana", "grape", "orange", "kiwi"];
+        let selectedWord;
+        let guessedWord;
+        let attempts;
+
+        // Start a new game
+        function startNewGame() {
+            selectedWord = words[Math.floor(Math.random() * words.length)];
+            guessedWord = Array(selectedWord.length).fill("_");
+            attempts = 0;
+            document.getElementById("word-display").textContent = guessedWord.join(" ");
+            document.getElementById("message").textContent = "";
+            document.getElementById("guess-input").value = "";
+        }
+
+        // Check the guess
+        function checkGuess() {
+            const guess = document.getElementById("guess-input").value.toLowerCase();
+            if (guess.length !== 1) {
+                document.getElementById("message").textContent = "Please guess one letter at a time.";
+                return;
+            }
+
+            if (attempts > 6) {
+                document.getElementById("message").textContent = `Game over! The word was: ${selectedWord}`;
+                return;
+            }
+
+            let correctGuess = false;
+            for (let i = 0; i < selectedWord.length; i++) {
+                if (selectedWord[i] === guess) {
+                    guessedWord[i] = guess;
+                    correctGuess = true;
+                }
+            }
+
+            if (!correctGuess) {
+                attempts++;
+                document.getElementById("message").textContent = `Incorrect guess! You have ${7 - attempts} attempts left.`;
+            } else {
+                document.getElementById("message").textContent = "Good guess!";
+            }
+
+            document.getElementById("word-display").textContent = guessedWord.join(" ");
+
+            if (guessedWord.join("") === selectedWord) {
+                document.getElementById("message").textContent = `Congratulations! You guessed the word: ${selectedWord}`;
+            }
+        }
+
+        // Initialize the game on page load
+        window.onload = startNewGame;
+    </script>
+
+</body>
+</html>
