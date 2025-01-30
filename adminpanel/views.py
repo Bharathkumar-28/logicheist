@@ -188,14 +188,29 @@ def contact(request):
         send_mail(name,message,'noreply@hellojiohellojio.com',[email])
         messages.success(request,"your email is sent")
      return render(request,'contact.html',{'form':form})  
-
-""" def graph(request):
-    # Hardcoded data for weeks and scores
-    weeks = [1, 2, 3, 4,5]
-    scores = [85, 90, 80, 95,80]
+ 
+def result(request):
+    # Retrieve all game results
+    oii = gameresult.objects.all()
     
-    # Pass the data to the template
-    return render(request, 'graph.html', {'weeks': weeks, 'scores': scores}) """
+    scores = []
+    words = []
+    
+    # Collect words and their corresponding scores (1 for correct, 0 for incorrect)
+    for result in oii:
+        words.append(result.word)  # Add the word to the words list
+        scores.append(1 if result.iscorrect else 0)  # Add 1 for correct answer, 0 for incorrect answer
+    
+        # Limit to the first 5 results
+        if len(scores) > 4:
+            break
+    
+    # Prepare for template rendering
+    words = words  # List of words
+    scores = scores  # List of scores (1 or 0)
+    
+    return render(request, 'result.html', {'words': words, 'scores': scores})
+
 
 
 
@@ -205,29 +220,51 @@ def contact(request):
 
 
 
+
+
+""" def graph(request):
+    # Example data: words and corresponding scores (1 for correct, 0 for incorrect)
+    words = ['Word1', 'Word2', 'Word3', 'Word4', 'Word5']
+    scores = [1, 0, 0, 1, 1]  # 1 = correct, 0 = incorrect
+    
+    # Pass the data to the template
+    return render(request, 'graph.html', {'words': words, 'scores': scores}) """
+
+
+
+
+import logging
+
+logger = logging.getLogger(__name__)
+
 def graph(request):
     if request.method == 'POST':
-        # Correctly reference the keys in the POST request
         word = request.POST.get('word')
-        correctanswer = request.POST.get('correct_answer')  # Match the frontend key
-        useranswer = request.POST.get('user_answer')  # Match the frontend key
+        correctanswer = request.POST.get('correct_answer')
+        useranswer = request.POST.get('user_answer')
 
-        # Check if any answer is missing
         if not useranswer or not correctanswer:
             return JsonResponse({'status': 'error', 'message': 'Missing answer(s).'}, status=400)
 
-        # Compare the answers (safely)
-        iscorrect = useranswer.lower() == correctanswer.lower()
+        is_correct = useranswer.lower() == correctanswer.lower()
 
-        # Save the result to the database
         game_result = gameresult(
             word=word,
             correctanswer=correctanswer,
             useranswer=useranswer,
-            iscorrect=iscorrect
+            iscorrect=is_correct
         )
-        game_result.save()
+        
+        try:
+            game_result.save()
+            logger.info(f"Game result saved: {game_result}")
+        except Exception as e:
+            logger.error(f"Error saving game result: {e}")
+            return JsonResponse({'status': 'error', 'message': 'Error saving result.'}, status=500)
 
-        return JsonResponse({'status': 'success', 'iscorrect': iscorrect})
+       
+
+        return JsonResponse({'status': 'success', 'message': 'Game result saved successfully.'})
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
+

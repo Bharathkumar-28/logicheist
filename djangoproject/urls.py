@@ -38,4 +38,7 @@ urlpatterns = [
     path('createprofile/',views.createprofile,name='createprofile'),
     path('contact/',views.contact,name='contact'),
     path('graph/',views.graph,name='graph'),
+     path('result/',views.result,name='result'),
+    
+    
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
