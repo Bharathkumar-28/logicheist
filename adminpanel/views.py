@@ -142,6 +142,9 @@ def resetpassword(request,uidb64,token):
 
 def game(request):
     return render (request,"game.html")
+def spell(request):
+    return render(request,"spell.html")
+
 def index(request):
     return render(request,"index.html")
 def profiles(request):
