@@ -35,4 +35,4 @@ class Command(BaseCommand):
    
        
        
-        self.stdout.write(self.style.SUCCESS("completed inserting data"))
+        

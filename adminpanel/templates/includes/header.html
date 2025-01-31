@@ -22,7 +22,7 @@
                 <a class="text-light text-decoration-none " href="/about">about</a>
                 <a class="text-light text-decoration-none " href="/contact">Contact</a>
                 {% if user.is_authenticated %}
-                <a class="text-light text-decoration-none " href="/dashboard">Dashboard</a>
+                
                 <a class="text-light text-decoration-none " href="/logout">Logout</a>
                 {% else %}
                 <a class="text-light text-decoration-none " href="/register">Register</a>
@@ -37,7 +37,7 @@
       <a href="/" ></a>
       <a href={% url "profile" %} >Profile</a>
       <a href= "/contact" >Contact</a>
-      <a href="#" onclick="menuItemClick('Services')">Services</a>
+ 
       <a href="/logout">Logout</a>
   </div>
   <div class="cursor-dotda" id="cursor-dot"></div>
@@ -112,8 +112,10 @@
   // Optional: Persist the user's mode preference in local storage
   window.onload = function () {
       if (localStorage.getItem('dark-mode') === 'true') {
+
           document.body.classList.add('dark-mode');
           document.querySelector('.mode-toggle').textContent = '🌙';
+          
       }
   };
 

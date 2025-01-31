@@ -36,9 +36,20 @@ urlpatterns = [
     path('game/',views.game,name='game'),
     path('profiles/',views.profiles,name='profile'),
     path('createprofile/',views.createprofile,name='createprofile'),
+
     path('contact/',views.contact,name='contact'),
     path('graph/',views.graph,name='graph'),
-     path('result/',views.result,name='result'),
+    path('result/',views.result,name='result'),
+        path('spell/',views.spell,name='spell'),
+
+
+
+
+
+
+
+
+
     
     
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
