@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* Body styling */
+ 
+
+    /* Spell check container styling */
+    .spell-check-container {
+        
+        text-align: center;
+        padding: 40px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 500px;
+        transition: transform 0.3s ease;
+    }
+
+    /* Hover effect for the container */
+    .spell-check-container:hover {
+        transform: translateY(-10px); /* Subtle lift effect on hover */
+    }
+
+    .spell-check-container h2 {
+        color: #3e64e7;
+        font-size: 2em;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    .spell-check-container p {
+        font-size: 1.2em;
+        color: #777;
+        margin-bottom: 20px;
+        line-height: 1.5;
+    }
+
+    /* Input field styling */
+    .spell-check-input {
+        width: 100%;
+        padding: 15px;
+        font-size: 18px;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        outline: none;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        background-color: #f7f7f7;
+        color: #333;
+    }
+
+    /* Focused input field */
+    .spell-check-input:focus {
+        border-color: #4caf50;
+        box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+        background-color: #ffffff;
+    }
+
+    /* Hover effect for the input field */
+    .spell-check-input:hover {
+        border-color: #388e3c; /* Darker green on hover */
+        box-shadow: 0 0 8px rgba(56, 142, 108, 0.2);
+    }
+
+    /* Add a pulse effect to the button (optional) */
+    .spell-check-input:active {
+        animation: pulse 0.6s ease-out;
+    }
+
+    /* Keyframe for pulse animation */
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    /* Error highlighting for misspelled words */
+    .misspelled {
+        border-color: #f44336;
+        box-shadow: 0 0 10px rgba(244, 67, 54, 0.3);
+        color: #f44336;
+    }
+
+    /* Feedback text */
+    .feedback {
+        margin-top: 20px;
+        font-size: 1.2em;
+        color: #ff5722;
+    }
+
+</style>
+
+<body>
+
+    <div class="spell-check-container">
+        <h2>Spell Checker</h2>
+        <p>Type a word and see the spell checker in action. Misspelled words will be underlined!</p>
+
+        <input type="text" id="spellCheckInput" placeholder="Type a word..." class="spell-check-input">
+        <div class="feedback" id="feedback"></div>
+    </div>
+
+    <script>
+        // List of valid words for checking spelling
+        const dictionary = ['apple', 'banana', 'orange', 'grape', 'pear', 'melon', 'watermelon', 'kiwi', 'pineapple', 'strawberry'];
+
+        const inputField = document.getElementById('spellCheckInput');
+        const feedbackElement = document.getElementById('feedback');
+
+        // Listen for input events
+        inputField.addEventListener('input', function() {
+            let userInput = inputField.value.trim().toLowerCase();  // Get user input
+
+            // Check if the word is in the dictionary
+            if (dictionary.includes(userInput)) {
+                inputField.classList.remove('misspelled');  // Remove misspelled class
+                feedbackElement.textContent = 'The word is correct!';  // Correct feedback
+                feedbackElement.style.color = '#4caf50';  // Green color for correct
+            } else {
+                inputField.classList.add('misspelled');  // Add misspelled class
+                feedbackElement.textContent = 'Misspelled word!';  // Misspelled feedback
+                feedbackElement.style.color = '#f44336';  // Red color for incorrect
+            }
+        });
+    </script>
+
+</body>
+
+{% endblock %}

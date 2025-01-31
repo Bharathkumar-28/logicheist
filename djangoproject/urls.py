@@ -36,11 +36,17 @@ urlpatterns = [
     path('game/',views.game,name='game'),
     path('profiles/',views.profiles,name='profile'),
     path('createprofile/',views.createprofile,name='createprofile'),
+
     path('contact/',views.contact,name='contact'),
     path('graph/',views.graph,name='graph'),
     path('result/',views.result,name='result'),
+<<<<<<< HEAD
     path('speechtotext/',views.speechtotext,name='speechtotext'),
     
+=======
+        path('spell/',views.spell,name='spell'),
+
+>>>>>>> e43226a6a67272a7329437e2e8e62bf131a2f6c7
 
 
 
