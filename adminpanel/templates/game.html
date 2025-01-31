@@ -66,6 +66,29 @@
         color: #f44336;
     }
 
+    /* Styling the anchor tag */
+    .result {
+        position: relative;
+        margin: auto;
+        left: 700px;
+        bottom:-100px;
+        text-decoration: none; /* Removes underline */
+        font-size: 1.5em; /* Increases the font size */
+        color: #ffffff; /* White text */
+        background-color: #3e64e7; /* Blue background */
+        padding: 12px 24px; /* Padding to make it look like a button */
+        border-radius: 5px; /* Rounded corners */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow */
+        transition: all 0.3s ease; /* Smooth transition for hover effect */
+    }
+
+    /* Hover effect for the anchor tag */
+    a:hover {
+        background-color: #ff9800; /* Change to orange on hover */
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* More pronounced shadow on hover */
+        transform: translateY(-2px); /* Slight lift on hover */
+    }
+
     /* Fade-in animation */
     @keyframes fadeIn {
         0% { opacity: 0; }
@@ -74,6 +97,7 @@
 </style>
 
 <body>
+    <a class="result" href='/result'>VIEW THE RESULT</a>
     <div class="game-container">
         <h1>Word Scramble Game</h1>
         <p>Unscramble the letters to form a word. You can use the hint if you need help!</p>
@@ -87,7 +111,6 @@
         </div>
         <form method="POST" action="/graph/">
             {% csrf_token %}
-            
         </form>
 
         <div class="feedback" id="feedbackText"></div>   
@@ -146,13 +169,11 @@
             const isCorrect = userInput === currentWord.word;
     
             if (isCorrect) {
-                document.getElementById('feedbackText').textContent = 'Correct! Great job!';
-                document.getElementById('feedbackText').className = 'feedback correct';
-                speak("Congratulations!");
+                document.getElementById('feedbackText').textContent = '';  // No message for correct answer
+                document.getElementById('feedbackText').className = 'feedback correct';  // You can add styling if needed
             } else {
-                document.getElementById('feedbackText').textContent = 'Oops! Try again!';
+                document.getElementById('feedbackText').textContent = 'Oops! Try again!';  // Show incorrect feedback
                 document.getElementById('feedbackText').className = 'feedback incorrect';
-                speak("Try again!");
             }
     
             // Send the result to the backend (via AJAX)
@@ -192,17 +213,7 @@
             return csrfToken;
         }
     
-        // Speech feedback function
-        function speak(text) {
-            const speech = new SpeechSynthesisUtterance(text);
-            speech.rate = 1;
-            window.speechSynthesis.speak(speech);
-        }
-    
         // Initialize the game by loading a new word
         loadNewWord();
     </script>
-    
-    
-    
 {% endblock %}

@@ -30,7 +30,7 @@ def index(request):
     
     
 
-   
+
     
     return render(request,"index.html",{ 'blogtitle':blogtitle})
 def index1(request):
