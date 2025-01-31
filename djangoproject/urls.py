@@ -39,6 +39,7 @@ urlpatterns = [
     path('contact/',views.contact,name='contact'),
     path('graph/',views.graph,name='graph'),
     path('result/',views.result,name='result'),
+    path('speechtotext/',views.speechtotext,name='speechtotext'),
     
 
 

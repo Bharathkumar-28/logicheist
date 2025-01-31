@@ -267,4 +267,6 @@ def graph(request):
         return JsonResponse({'status': 'success', 'message': 'Game result saved successfully.'})
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
+    def speechtotext(request):
+        return render(request,'speechtotext.html')
 
