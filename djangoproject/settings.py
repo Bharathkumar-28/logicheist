@@ -81,14 +81,16 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'newdatatable',
+
         'USER':'stem',
         "PASSWORD":'deepak@123',
         'HOST':'localhost',
         "PORT":'3306',
         'OPTIONS': {
             'charset': 'utf8',
-            
+
         }
+
     }
 }
 
