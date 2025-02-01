@@ -41,6 +41,7 @@ urlpatterns = [
     path('graph/',views.graph,name='graph'),
     path('result/',views.result,name='result'),
         path('spell/',views.spell,name='spell'),
+     path('logindemo/',views.logindemo,name='logindemo'),
 
 
 

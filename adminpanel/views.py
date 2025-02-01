@@ -271,3 +271,10 @@ def graph(request):
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
 
+
+
+def logindemo(request):
+    # Your view logic here (e.g., handling form submission, authentication, etc.)
+
+    # Ensure that you return an HttpResponse object
+    return render(request, 'logindemo.html')
