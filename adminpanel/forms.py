@@ -94,4 +94,27 @@ class profileform(forms.ModelForm):
             post_instance.save()  # Save the post to the database
 
         return post_instance
+from django import forms
+from .models import quiz
+
+class quizform(forms.ModelForm):
+    name = forms.CharField(max_length=100, required=False)
+    title = forms.CharField(max_length=100, required=False)
+    content = forms.CharField(max_length=100, required=False)
+    image = forms.ImageField(required=False)
+   
+    week = forms.CharField(required=False, max_length=100)
+    
+    # These fields will represent the word-image pairs.
+    # They will be added dynamically in the template.
+    word_0 = forms.CharField(max_length=100, required=True, label="Word 1")
+    image_0 = forms.ImageField(required=True, label="Image 1")
+    word_1 = forms.CharField(max_length=100, required=False, label="Word 2")
+    image_1 = forms.ImageField(required=False, label="Image 2")
+    
+    class Meta:
+        model = quiz
+        fields = ['name', 'title', 'content', 'image', 'week', 'word_0', 'image_0', 'word_1', 'image_1']
+
+
         

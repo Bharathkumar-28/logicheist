@@ -6,6 +6,7 @@
 
   
 textarea {
+    
     width: 100%;
     min-height: 200px;
     padding: 1rem;
@@ -278,32 +279,9 @@ button:active {
     
         populateVoiceList();
     </script>
-    <div id="moonCursor" class="moon-cursor"></div>
+
     
-    <script>
-        // Get references to the moon cursor and button
-        const moonCursor = document.getElementById('moonCursor');
-        const toggleBtn = document.getElementById('toggleCursorBtn');
-        let isMoonCursorActive = true;
-
-        // Function to update cursor position based on mouse movements
-        document.addEventListener('mousemove', (event) => {
-            if (isMoonCursorActive) {
-                moonCursor.style.left = `${event.pageX - moonCursor.offsetWidth / 2}px`;
-                moonCursor.style.top = `${event.pageY - moonCursor.offsetHeight / 2}px`;
-            }
-        });
-
-        // Toggle the cursor on button click
-        toggleBtn.addEventListener('click', () => {
-            isMoonCursorActive = !isMoonCursorActive;
-            if (!isMoonCursorActive) {
-                moonCursor.style.display = 'none'; // Hide the custom cursor
-            } else {
-                moonCursor.style.display = 'block'; // Show the custom cursor
-            }
-        });
-    </script>
+    
 
     
 

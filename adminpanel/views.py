@@ -17,13 +17,15 @@ from adminpanel.models import post,profile, words
 import pdb
 import logging
 from django.http import JsonResponse
-from .models import gameresult
+from .models import gameresult, quiz
 import json
 from django.views.decorators.csrf import csrf_exempt
-def index(request):
+from django.core import serializers
+def main(request):
+    gameresult2.objects.all().delete() 
     logger=logging.getLogger("testing")
-    blogtitle="bjarath"
-    posts=post.objects.all()
+    blogtitle="bharath"
+   
     logger.debug("Blog title: %s", blogtitle)
     print(blogtitle)
    
@@ -32,11 +34,37 @@ def index(request):
 
 
     
-    return render(request,"index.html",{ 'blogtitle':blogtitle})
+    return render(request,"main.html",{ 'blogtitle':blogtitle})
 def index1(request):
     blogtitle="bjarath"
-    posts=post.objects.all()
+    posts=quiz.objects.all()
     return render(request,"index1.html",{ 'blogtitle':blogtitle,'posts':posts})
+from django.shortcuts import render
+
+from django.shortcuts import render
+from .models import quiz
+import json
+
+def attempt(request,postid):
+    quiz_instance = quiz.objects.get(id=postid)
+
+    # Get the data (assuming it's a dictionary)
+    data = quiz_instance.data
+    print("Data:", data)
+
+    # Convert the dictionary into a list of words and images
+    list_data = [{"word": key, "image": value} for key, value in data.items()]
+
+    print("Serialized list_data:", list_data)  # Check the structure here
+
+    # Pass the serialized data as JSON to the template
+    serialized_data = json.dumps(list_data)
+
+    return render(request, "attempt.html", {"list_data": serialized_data})
+
+
+
+
     
 
 # Create your views here.
@@ -59,10 +87,12 @@ def register(request):
     return render (request,"register.html",{'form':form,'blogtitle':blogtitle})
 
 def about(request):
+    gameresult2.objects.all().delete() 
     return render(request,'about.html')
 
 def dyslexia(request):
      return render (request,"dyslexia.html")
+@login_required
 def texttospeech(request):
     return render(request,'texttospeech.html')
 def example(request):
@@ -86,6 +116,7 @@ def login(request):
             
     return render (request,"login.html",{'form':form})
 def logout(request):
+    gameresult2.objects.all().delete() 
     print("Logging out user")
     auth_logout(request)
     return redirect('login')
@@ -139,17 +170,20 @@ def resetpassword(request,uidb64,token):
 
 
     return render(request,'resetpassword2.html',{'form':form})
-
+@login_required
 def game(request):
     return render (request,"game.html")
+@login_required
 def spell(request):
     return render(request,"spell.html")
 
 def index(request):
     return render(request,"index.html")
+@login_required
 def profiles(request):
     posts=profile.objects.first()
     return render(request,"profile.html",{'posts':posts})
+@login_required
 def game(request):
     # Fetch all the word posts
     posts = words.objects.all().values('name', 'image')  # Get 'name' and 'image' fields
@@ -158,7 +192,7 @@ def game(request):
     
     # Pass the serialized data to the template
     return render(request, "game.html", {'posts': posts_json, 'blogtitle': 'bjarath'})
-
+@login_required
 def createprofile(request):
     form=profileform()
     if request.method=="POST":
@@ -181,7 +215,9 @@ def createprofile(request):
             post.save()
             return redirect('adminpanel:dashboard')
     return render(request,'newpost.html',{'form':form}) """
+@login_required
 def contact(request):
+     gameresult2.objects.all().delete() 
      form=contactform()
      if request.method=='POST':
         form=contactform( request.POST)
@@ -191,7 +227,7 @@ def contact(request):
         send_mail(name,message,'noreply@hellojiohellojio.com',[email])
         messages.success(request,"your email is sent")
      return render(request,'contact.html',{'form':form})  
- 
+@login_required
 def result(request):
     # Retrieve all game results
     oii = gameresult.objects.all()
@@ -205,8 +241,7 @@ def result(request):
         scores.append(1 if result.iscorrect else 0)  # Add 1 for correct answer, 0 for incorrect answer
     
         # Limit to the first 5 results
-        if len(scores) > 4:
-            break
+      
     
     # Prepare for template rendering
     words = words  # List of words
@@ -214,6 +249,26 @@ def result(request):
     
     return render(request, 'result.html', {'words': words, 'scores': scores})
 
+
+from django.shortcuts import render
+from .models import gameresult2  # Ensure you're importing your model
+
+def finalresult(request):
+    # Retrieve all game results, limit to the first 5 results
+    oii = gameresult2.objects.all() # Limit to the first 5 results
+
+    words = []
+    scores = []
+    
+    # Collect words and their corresponding scores (1 for correct, 0 for incorrect)
+    for result in oii:
+        # Assuming result.iscorrect is a JSONField with a list of dictionaries
+        for entry in result.iscorrect:
+            words.append(entry['word'])  # Add the word to the words list
+            scores.append(entry['is_correct'])  # Add 1 or 0 based on correctness
+    
+    # Prepare for template rendering
+    return render(request, 'finalresult.html', {'words': words, 'scores': scores})
 
 
 
@@ -239,7 +294,7 @@ def result(request):
 import logging
 
 logger = logging.getLogger(__name__)
-
+@login_required
 def graph(request):
     if request.method == 'POST':
         word = request.POST.get('word')
@@ -270,4 +325,123 @@ def graph(request):
         return JsonResponse({'status': 'success', 'message': 'Game result saved successfully.'})
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
+from django.shortcuts import render
+from django.http import JsonResponse
+from .models import gameresult2
 
+
+
+
+
+
+
+
+def graph2(request):
+    if request.method == "POST":
+        word = request.POST.get("word")
+        correct_answer = request.POST.get("correct_answer")
+        user_answer = request.POST.get("user_answer")
+        is_correct = request.POST.get("is_correct") == "true"  # Convert string to boolean
+
+        # Prepare the result as a dictionary with word and correctness
+        result_dict = {
+            'word': word,
+            'is_correct': 1 if is_correct else 0
+        }
+
+        try:
+            # Check if any previous game result exists
+            game_result = gameresult2.objects.last()
+
+            if game_result:
+                # If previous result exists, append to the existing list of dictionaries
+                existing_results = game_result.iscorrect
+                existing_results.append(result_dict)  # Append the new dictionary to the list
+            else:
+                # If no previous results exist, create a new list with the current result
+                existing_results = [result_dict]
+
+            # Save or update the game result in the database
+            # If no previous result was found, we create a new instance; if one exists, we update it
+            if game_result:
+                game_result.iscorrect = existing_results
+                game_result.save()
+            else:
+                # Create a new game result object and save it
+                game_result = gameresult2(iscorrect=existing_results)
+                game_result.save()
+
+            # Return success response
+            return JsonResponse({'status': 'success', 'message': 'Game result saved successfully.'})
+
+        except Exception as e:
+            # Handle any errors while saving
+            return JsonResponse({'status': 'failure', 'message': f'Error saving result: {str(e)}'})
+
+    # Return failure response for invalid request method
+    return JsonResponse({'status': 'failure', 'message': 'Invalid request method.'})
+
+
+def backtohome(request):
+    # Delete all game result entries
+    gameresult2.objects.all().delete()  # Delete all records from gameresult2 table
+    
+    # Redirect to a URL named 'index1'
+    return redirect(reverse('index1'))
+
+
+
+
+@login_required
+def speechtotext(request):
+        return render(request,'speechtotext.html')
+@login_required
+def game2(request):
+    return render(request,'game2.html')
+def texttospeechtamil(request):
+    return render (request,'texttospeechtamil.html')
+from django.shortcuts import render, redirect
+from .forms import quizform
+from .models import quiz
+import json
+
+from django.shortcuts import render, redirect
+from .forms import quizform
+from .models import quiz
+
+def addquiz(request):
+    if request.method == 'POST':
+        form = quizform(request.POST, request.FILES)
+        if form.is_valid():
+            # Process word-image pairs
+            quiz_data = {}
+            word_image_pairs = [key for key in request.POST if key.startswith('word_')]
+            
+            for word_key in word_image_pairs:
+                word_index = word_key.split('_')[1]
+                word = request.POST.get(f'word_{word_index}')
+                image = request.FILES.get(f'image_{word_index}')
+                
+                if word and image:
+                    # Save the image temporarily to generate a URL
+                    temp_quiz = quiz(image=image)
+                    temp_quiz.save()  # Save the image to the database to generate a URL
+                    
+                    # Now get the image URL after saving the image
+                    quiz_data[word] = temp_quiz.image.url  # Save the image URL associated with the word
+                    
+                    # Delete the temporary quiz object after saving its image URL
+                    temp_quiz.delete()
+
+            # Save the other fields and the word-image pairs as JSON
+            quiz_object = form.save(commit=False)
+            quiz_object.data = quiz_data  # Save the word-image pairs as JSON
+            quiz_object.save()  # This will auto-fill the 'createdate' field
+
+            # Redirect after saving
+            return render(request,"index1.html")  # Redirect to the quiz list page
+
+    else:
+        form = quizform()
+
+    return render(request, 'addquiz.html', {'form': form})

@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .game-container {
+        margin: 50px auto;
+        max-width: 800px;
+        padding: 30px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    .word-container {
+        font-size: 2em;
+        margin: 20px 0;
+        font-weight: bold;
+        color: #3e64e7;
+    }
+
+    .hint {
+        font-size: 1.2em;
+        margin-top: 10px;
+        color: #ff9800;
+    }
+
+    .input-container {
+        margin: 20px;
+    }
+
+    .input-container input {
+        font-size: 1.5em;
+        padding: 10px;
+        width: 200px;
+        text-align: center;
+        margin: 10px 0;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+    }
+
+    .input-container button {
+        font-size: 1.2em;
+        padding: 10px 20px;
+        border: none;
+        background-color: #4caf50;
+        color: white;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .input-container button:hover {
+        background-color: #388e3c;
+    }
+
+    .feedback {
+        font-size: 1.5em;
+        margin-top: 20px;
+    }
+
+    .feedback.correct {
+        color: #4caf50;
+    }
+
+    .feedback.incorrect {
+        color: #f44336;
+    }
+
+    .result {
+        position: relative;
+        margin: auto;
+        left: 700px;
+        bottom: -100px;
+        text-decoration: none;
+        font-size: 1.5em;
+        color: #ffffff;
+        background-color: #3e64e7;
+        padding: 12px 24px;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    a:hover {
+        background-color: #ff9800;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        transform: translateY(-2px);
+    }
+
+    @keyframes fadeIn {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+    }
+</style>
+
+<a class="result" href='/finalresult'>VIEW THE RESULT</a>
+<div class="game-container">
+    <h1>Word Scramble Game</h1>
+    <p>Unscramble the letters to form a word.</p>
+    <div class="word-container" id="scrambledWord"></div>
+    <div class="input-container">
+        <input type="text" id="userInput" placeholder="Enter your guess" />
+        <button onclick="checkAnswer()">Submit</button>
+    </div>
+    <form method="POST" action="/graph/">
+        {% csrf_token %}
+    </form>
+    <div class="feedback" id="feedbackText"></div>
+</div>
+
+<script>
+    // JavaScript code
+    const wordsData = JSON.parse('{{ list_data|safe|escapejs }}');
+
+    console.log("list_data:", '{{ list_data|safe|escapejs }}');
+    console.log("wordsData:", wordsData);
+    console.log("Type of wordsData:", typeof wordsData);
+    
+    const words = [];
+    wordsData.forEach(post => {
+        words.push({
+            word: post.word,      // Word is passed here
+            image: post.image     // Image URL is passed here
+        });
+    });
+    console.log("Words array:", words);
+
+    let currentWord;
+    
+    function getRandomWord() {
+        const randomIndex = Math.floor(Math.random() * words.length);
+        currentWord = words[randomIndex];
+        console.log("New random word:", currentWord);
+        console.log("Current Word Image:", currentWord.image); // Debug image
+        return currentWord;
+    }
+    
+    function shuffleWord(word) {
+        const shuffled = word.split('').sort(() => 0.3- Math.random()).join('');
+        console.log("Shuffled word:", shuffled);
+        return shuffled;
+    }
+    
+    function loadNewWord() {
+        console.log("Loading a new word...");
+        const wordObj = getRandomWord();
+        console.log("wordObj:", wordObj);
+    
+        const scrambled = shuffleWord(wordObj.word);
+    
+        // Display the scrambled word
+        document.getElementById('scrambledWord').textContent = scrambled;
+    
+        // Clear previous feedback text first
+        document.getElementById('feedbackText').innerHTML = ''; 
+
+        // Display the associated image if available
+        if (wordObj.image) {
+            console.log("Image URL:", wordObj.image); // Check if the URL is correct
+            document.getElementById('feedbackText').innerHTML = `<img src="${wordObj.image}" alt="${wordObj.word}" style="width: 200px; height: 200px;">`;
+        } else {
+            document.getElementById('feedbackText').textContent = "No image available.";
+        }
+    
+        // Clear input field
+        document.getElementById('userInput').value = ''; 
+    }
+    
+    function checkAnswer() {
+        console.log("Checking answer...");
+        const userInput = document.getElementById('userInput').value.toLowerCase();
+        const isCorrect = userInput === currentWord.word.toLowerCase();
+    
+        if (isCorrect) {
+            document.getElementById('feedbackText').textContent = 'Correct!';
+            document.getElementById('feedbackText').className = 'feedback correct';
+        } else {
+            document.getElementById('feedbackText').textContent = 'Oops! Try again!';
+            document.getElementById('feedbackText').className = 'feedback incorrect';
+        }
+    
+        sendGameResult(currentWord.word, currentWord.word, userInput, isCorrect);
+    
+        setTimeout(function() {
+            console.log("Calling loadNewWord()...");
+            loadNewWord();
+        }, 1000);
+    }
+    
+    function sendGameResult(word, correctAnswer, userAnswer, isCorrect) {
+        fetch('/graph2/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: `word=${encodeURIComponent(word)}&correct_answer=${encodeURIComponent(correctAnswer)}&user_answer=${encodeURIComponent(userAnswer)}&is_correct=${encodeURIComponent(isCorrect)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                console.log('Game result saved successfully.');
+            } else {
+                console.log('Error saving result:', data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+    
+    function getCSRFToken() {
+        let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        return csrfToken;
+    }
+    
+    // Initial call to load the first word
+    loadNewWord();
+</script>
+
+{% endblock %}

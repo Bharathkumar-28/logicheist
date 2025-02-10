@@ -69,4 +69,21 @@ class gameresult(models.Model):
     def __str__(self):
 
         return f"Word: {self.word}, Correct: {self.iscorrect}"
+class gameresult2(models.Model):
+    iscorrect = models.JSONField(default=list)  
+    word=models.CharField(max_length=100,null=True)
+
+
+class quiz(models.Model):
+    name=models.CharField(max_length=100,null=True)
+    title = models.CharField(max_length=100,null=True)
+    content = models.TextField(null=True)
+    image = models.ImageField( null=True,upload_to='posts/images',blank=True)
+    createdate = models.DateTimeField(auto_now_add=True,null=True)
+    week=models.CharField(null=True,max_length=100)
+    data = models.JSONField(null=True, blank=True) 
+    @property        
+    def formattedimgurl(self):
+        url=self.image if self.image.__str__().startswith(('http','https://')) else self.image.url
+        return url
      

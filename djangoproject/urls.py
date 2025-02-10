@@ -22,7 +22,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',views.index,name='index'),
+    path('',views.main),
     path('index1/',views.index1,name='index1'),
     path('register/',views.register,name='register'),
     path('login/',views.login,name='login'),
@@ -40,7 +40,19 @@ urlpatterns = [
     path('contact/',views.contact,name='contact'),
     path('graph/',views.graph,name='graph'),
     path('result/',views.result,name='result'),
+     path('finalresult/',views.finalresult,name='finalresult'),
         path('spell/',views.spell,name='spell'),
+        path("speechtotext/",views.speechtotext,name='speechtotext') ,
+        path('game2/',views.game2,name='game2'),
+         path('texttospeechtamil',views.texttospeechtamil,name='texttospeechtamil'),
+         path('attempt/<int:postid>',views.attempt,name='attempt'),
+          path('graph2/', views.graph2, name='graph2'),
+          path('backtohome/',views.backtohome,name="backtohome"),
+          path('addquiz/',views.addquiz,name="addquiz"),
+
+
+
+
 
 
 

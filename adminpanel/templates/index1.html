@@ -10,16 +10,10 @@
           <h2 >{{blogtitle|default:"no any posts"}}</h2>
          
           <!-- This will print the posts directly in the template -->
+          
 
         </div>
-        <div class="col-3">
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search..." aria-label="Search">
-                <button class="btn btn-outline-light btn-primary " type="button" id="button-search">
-                  <i class="bi bi-search"></i> <!-- Bootstrap Icons -->
-                </button>
-              </div>
-        </div>
+       
     </div>
     <div class="row m-3">
         {% if posts %}
@@ -30,14 +24,15 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <!-- Check if the post has an image, if not, show a placeholder image -->
-                                    <img style="height :300,width:300"
-                               
-                                    src="{{post.formattedimgurl}}" class="img-fluid" alt="...">
+                                    <img style="height :300,width:300" src="{{post.formattedimgurl}}" class="img-fluid" alt="...">
                                 </div>
                                 <div class="col-md-8">
                                     <!-- Truncate title after 5 words and content after 100 characters -->
                                     <h5 class="card-title">{{ post.title|truncatewords:5 }}</h5>
                                     <p class="card-text">{{ post.content|truncatechars:100 }}</p>
+                      {% comment %}       <p>oiii{{postid}}</p> {% endcomment %}
+                             <a type="button" class="btn btn-info" href="{% url 'attempt' postid=post.id %}">Go to quiz:{{post.week}}</a>  
+
                                 </div>
                             </div>
                         </div>
@@ -45,7 +40,7 @@
                 </div>
             {% endfor %}
         {% else %}
-        <p>{{post.title}}.</p>
+        <p>no anything.</p>
         {% endif %}
     </div>
     

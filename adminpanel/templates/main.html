@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    /* Overall layout and container */
+    .image-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* Two images per row */
+        gap: 30px; /* Space between images */
+        padding: 30px;
+        justify-items: center; /* Center images */
+       
+    }
+    h3{
+        color:black;
+    }
+
+    /* Styling for each link */
+    .image-link {
+        display: inline-block;
+        text-decoration: none; /* Remove underline */
+        position: relative;
+        overflow: hidden;
+        border-radius: 16px; /* Rounded corners */
+        width: 220px; /* Increased width for larger images */
+        height: 220px; /* Maintain square aspect ratio */
+        transition: transform 0.3s ease;
+    }
+
+    /* Styling for each image */
+    .image-effect {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Ensures images fill container without distortion */
+        border-radius: 16px; /* Rounded corners */
+        transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+    }
+
+    /* Hover effect for images */
+    .image-link:hover .image-effect {
+        transform: scale(1.05); /* Slightly enlarge image */
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Deeper shadow */
+        opacity: 0.95; /* Subtle transparency */
+    }
+
+    /* Active effect for clicked image */
+    .image-link:active .image-effect {
+        transform: scale(0.98); /* Slightly shrink when clicked */
+    }
+
+    /* Titles under each image */
+    .image-link h3 {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); /* Shadow for better readability */
+        margin: 0;
+    }
+
+    /* Responsiveness */
+    @media (max-width: 768px) {
+        .image-link {
+            width: 100%;
+            height: 180px;
+        }
+
+        .image-container {
+            grid-template-columns: repeat(1, 1fr); /* One image per row on mobile */
+        }
+    }
+
+</style>
+
+<div class="image-container">
+    <a href="/texttospeech" class="image-link">
+        <img src="https://img.freepik.com/free-vector/speech-text-concept-illustration_114360-4235.jpg?semt=ais_hybrid" alt="Text to Speech" class="image-effect">
+        
+    </a>
+
+    <a href="/game" class="image-link">
+        <img src="https://img.freepik.com/free-vector/background-people-television-contest_23-2147595530.jpg?semt=ais_hybrid" alt="Word Game" class="image-effect">
+        <h3>Word Game</h3>
+    </a>
+
+    <a href="/game2" class="image-link">
+        <img src="https://img.freepik.com/free-vector/people-connecting-puzzle-pieces_23-2148071463.jpg?semt=ais_hybrid" alt="Advanced Word Game" class="image-effect">
+        <h3>quiz2</h3>
+    </a>
+
+    <a href="/speechtotext" class="image-link">
+        <img src="https://img.freepik.com/free-vector/speech-text-abstract-concept-illustration_335657-1879.jpg?semt=ais_hybrid" alt="Speech to Text" class="image-effect">
+        <h3 >Speech to Text</h3>
+    </a>
+
+    <a href="/spell" class="image-link">
+        <img src="https://img.freepik.com/premium-vector/businessman-found-success-word-search-puzzle_47328-500.jpg?semt=ais_hybrid" alt="Spell Checker" class="image-effect">
+        <h3>Spell Checker</h3>
+    </a>
+
+    
+</div>
+
+{% endblock %}

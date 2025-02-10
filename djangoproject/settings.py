@@ -86,6 +86,7 @@ DATABASES = {
         "PASSWORD":'Bh@rathkumar12',
         'HOST':'localhost',
         "PORT":'3306',
+        
         'OPTIONS': {
             'charset': 'utf8',
 
@@ -168,4 +169,5 @@ LOGGING = {
         "level": "DEBUG",
     },
 }
+LOGIN_URL = '/login/'
 

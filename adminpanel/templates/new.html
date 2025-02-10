@@ -96,15 +96,12 @@
     }
 </style>
 
-<body>
+
     <a class="result" href='/result'>VIEW THE RESULT</a>
     <div class="game-container">
         <h1>Word Scramble Game</h1>
-        <p>Unscramble the letters to form a word. You can use the hint if you need help!</p>
-
+        <p>Unscramble the letters to form a word.</p>
         <div class="word-container" id="scrambledWord"></div>
-        <div class="hint" id="wordHint"></div>
-
         <div class="input-container">
             <input type="text" id="userInput" placeholder="Enter your guess" />
             <button onclick="checkAnswer()">Submit</button>
@@ -112,87 +109,76 @@
         <form method="POST" action="/graph/">
             {% csrf_token %}
         </form>
-
-        <div class="feedback" id="feedbackText"></div>   
+        <div class="feedback" id="feedbackText"></div>
     </div>
 
     <script>
-        // Pass the `posts` data from Django to JavaScript (ensure it’s serialized properly)
-        const wordsData = JSON.parse('{{ posts|safe|escapejs }}');  // Escape and parse the posts data into JSON
-    
+        const wordsData = JSON.parse('{{ list|json_script:"list" }}');
+        console.log("wordsData:", wordsData);
+
         const words = [];
-    
-        // Populate the words array using the data from Django
-        for (let i = 0; i < wordsData.length; i++) {
+        wordsData.forEach(post => {
             words.push({
-                word: wordsData[i].name,   // Word name from the 'name' field of each post
-                image: wordsData[i].image   // Image URL from the 'image' field of each post
+                word: post[0]
             });
-        }
-    
+        });
+        console.log("Words array:", words);
+
         let currentWord;
-    
-        // Function to get a random word
+
         function getRandomWord() {
             const randomIndex = Math.floor(Math.random() * words.length);
-            currentWord = words[randomIndex];  // Update the current word
-            console.log("New random word:", currentWord);  // Debug: check if currentWord is being set correctly
+            currentWord = words[randomIndex];
+            console.log("New random word:", currentWord);
             return currentWord;
         }
-    
-        // Shuffle the word to make it scrambled
+
         function shuffleWord(word) {
-            const shuffled = word.split('').sort(() => 0.8 - Math.random()).join('');
-            console.log("Shuffled word:", shuffled);  // Debug: check shuffled word
+            const shuffled = word.split('').sort(() => 0.7 - Math.random()).join('');
+            console.log("Shuffled word:", shuffled);
             return shuffled;
         }
-    
-        // Load a new word and scramble it
+
         function loadNewWord() {
-            console.log("Loading a new word...");  // Debug: confirm this function is called
+            console.log("Loading a new word...");
             const wordObj = getRandomWord();
+            console.log("wordObj:", wordObj);
+
             const scrambled = shuffleWord(wordObj.word);
-    
-            // Update the word and hint
+
             document.getElementById('scrambledWord').textContent = scrambled;
-            document.getElementById('wordHint').innerHTML = `Hint: <img src="${wordObj.image}" alt="Hint Image" style="max-width: 100px; height: auto;"/>`;
-    
-            // Reset feedback and input field
+
             document.getElementById('feedbackText').textContent = '';
             document.getElementById('userInput').value = '';
         }
-    
-        // Check the user's answer
+
         function checkAnswer() {
-            console.log("Checking answer...");  // Debug: confirm that checkAnswer is triggered
+            console.log("Checking answer...");
             const userInput = document.getElementById('userInput').value.toLowerCase();
             const isCorrect = userInput === currentWord.word;
-    
+
             if (isCorrect) {
-                document.getElementById('feedbackText').textContent = '';  // No message for correct answer
-                document.getElementById('feedbackText').className = 'feedback correct';  // You can add styling if needed
+                document.getElementById('feedbackText').textContent = 'Correct!';
+                document.getElementById('feedbackText').className = 'feedback correct';
             } else {
-                document.getElementById('feedbackText').textContent = 'Oops! Try again!';  // Show incorrect feedback
+                document.getElementById('feedbackText').textContent = 'Oops! Try again!';
                 document.getElementById('feedbackText').className = 'feedback incorrect';
             }
-    
-            // Send the result to the backend (via AJAX)
+
             sendGameResult(currentWord.word, currentWord.word, userInput, isCorrect);
-    
-            // Load a new word after 1 second
+
             setTimeout(function() {
                 console.log("Calling loadNewWord()...");
-                loadNewWord();  // This should trigger the word change
+                loadNewWord();
             }, 1000);
         }
-    
-        // Send the game result to the backend
+
         function sendGameResult(word, correctAnswer, userAnswer, isCorrect) {
             fetch('/graph/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRFToken': getCSRFToken()  // Make sure the CSRF token is included here
+                    'X-CSRFToken': getCSRFToken()
                 },
                 body: `word=${encodeURIComponent(word)}&correct_answer=${encodeURIComponent(correctAnswer)}&user_answer=${encodeURIComponent(userAnswer)}&is_correct=${encodeURIComponent(isCorrect)}`
             })
@@ -206,14 +192,14 @@
             })
             .catch(error => console.error('Error:', error));
         }
-        
-        // Get the CSRF token from the page
+
         function getCSRFToken() {
             let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
             return csrfToken;
         }
-    
-        // Initialize the game by loading a new word
+
         loadNewWord();
     </script>
+
+
 {% endblock %}
