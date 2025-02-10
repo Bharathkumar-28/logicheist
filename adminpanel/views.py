@@ -331,6 +331,7 @@ from .models import gameresult2
 
 
 
+<<<<<<< HEAD
 
 
 
@@ -445,3 +446,10 @@ def addquiz(request):
         form = quizform()
 
     return render(request, 'addquiz.html', {'form': form})
+=======
+def logindemo(request):
+    # Your view logic here (e.g., handling form submission, authentication, etc.)
+
+    # Ensure that you return an HttpResponse object
+    return render(request, 'logindemo.html')
+>>>>>>> ab2fe0eaf5b618df6a8e77aa68fff2fb9ac4b417

@@ -42,6 +42,7 @@ urlpatterns = [
     path('result/',views.result,name='result'),
      path('finalresult/',views.finalresult,name='finalresult'),
         path('spell/',views.spell,name='spell'),
+<<<<<<< HEAD
         path("speechtotext/",views.speechtotext,name='speechtotext') ,
         path('game2/',views.game2,name='game2'),
          path('texttospeechtamil',views.texttospeechtamil,name='texttospeechtamil'),
@@ -53,6 +54,9 @@ urlpatterns = [
 
 
 
+=======
+     path('logindemo/',views.logindemo,name='logindemo'),
+>>>>>>> ab2fe0eaf5b618df6a8e77aa68fff2fb9ac4b417
 
 
 

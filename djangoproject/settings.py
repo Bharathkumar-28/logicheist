@@ -83,7 +83,7 @@ DATABASES = {
         'NAME': 'newdatatable',
 
         'USER':'stem',
-        "PASSWORD":'Bh@rathkumar12',
+        "PASSWORD":'deepak@123',
         'HOST':'localhost',
         "PORT":'3306',
         
