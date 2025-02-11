@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enhanced Listen and Type Game</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .game-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #2d3748;
+      margin-bottom: 1.5rem;
+      font-size: 2rem;
+    }
+
+    .button {
+      background-color: #4299e1;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s ease;
+      width: 100%;
+      margin: 8px 0;
+    }
+
+    .button:hover {
+      background-color: #3182ce;
+    }
+
+    .button.secondary {
+      background-color: #edf2f7;
+      color: #2d3748;
+      border: 1px solid #e2e8f0;
+    }
+
+    .button.secondary:hover {
+      background-color: #e2e8f0;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: #4299e1;
+    }
+
+    .feedback {
+      margin: 1rem 0;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .feedback.success {
+      background-color: #c6f6d5;
+      color: #276749;
+    }
+
+    .feedback.error {
+      background-color: #fed7d7;
+      color: #9b2c2c;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1rem;
+      color: #4a5568;
+      font-size: 0.875rem;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .button-group .button {
+      flex: 1;
+    }
+
+    select {
+      margin: 8px 0;
+      padding: 10px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+      width: 100%;
+    }
+
+    .progress-bar {
+      background-color: #e2e8f0;
+      height: 8px;
+      width: 100%;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .progress-bar-inner {
+      background-color: #4299e1;
+      height: 100%;
+      width: 100%;
+      transition: width 1s linear;
+    }
+
+    .game-summary {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>Listen and Type Game</h1>
+    <select id="levelSelect">
+      <option value="easy">Easy</option>
+      <option value="medium">Medium</option>
+      <option value="hard">Hard</option>
+    </select>
+    <button id="playButton" class="button">Play Word</button>
+    <p id="hint" class="hint"></p>
+    <input type="text" id="userInput" class="input-field" placeholder="Type what you hear..." autocomplete="off">
+    <div class="button-group">
+      <button id="checkButton" class="button secondary">Check Answer</button>
+      <button id="resetButton" class="button secondary">Reset Game</button>
+    </div>
+    <div id="feedback" class="feedback"></div>
+    <div class="stats">
+      <span id="score">Score: 0</span>
+      <span id="timer">Time: 10s</span>
+    </div>
+    <div class="progress-bar">
+      <div id="progressBarInner" class="progress-bar-inner"></div>
+    </div>
+    <div class="game-summary" id="gameSummary"></div>
+  </div>
+
+  <script>
+    class ListenTypeGame {
+      constructor() {
+        this.words = {
+          easy: ["apple", "ball", "cat", "dog", "egg", "fish", "goat", "hat", "ice", "jam"],
+          medium: ["adventure", "balance", "capture", "decorate", "element", "fantasy"],
+          hard: ["communication", "determination", "extraordinary", "administration", "significance"]
+        };
+        this.currentWord = '';
+        this.score = 0;
+        this.timeLeft = 10;
+        this.timer = null;
+        this.initializeElements();
+        this.attachEventListeners();
+      }
+
+      initializeElements() {
+        this.levelSelect = document.getElementById('levelSelect');
+        this.playButton = document.getElementById('playButton');
+        this.checkButton = document.getElementById('checkButton');
+        this.resetButton = document.getElementById('resetButton');
+        this.userInput = document.getElementById('userInput');
+        this.hintElement = document.getElementById('hint');
+        this.feedbackElement = document.getElementById('feedback');
+        this.scoreElement = document.getElementById('score');
+        this.timerElement = document.getElementById('timer');
+        this.progressBarInner = document.getElementById('progressBarInner');
+        this.gameSummary = document.getElementById('gameSummary');
+      }
+
+      attachEventListeners() {
+        this.playButton.addEventListener('click', () => this.playWord());
+        this.checkButton.addEventListener('click', () => this.checkAnswer());
+        this.resetButton.addEventListener('click', () => this.resetGame());
+        this.userInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') this.checkAnswer();
+        });
+      }
+
+      getRandomWord() {
+        const level = this.levelSelect.value;
+        const wordsArray = this.words[level];
+        return wordsArray[Math.floor(Math.random() * wordsArray.length)];
+      }
+
+      playWord() {
+        this.currentWord = this.getRandomWord();
+        const speech = new SpeechSynthesisUtterance(this.currentWord);
+        speech.lang = 'en-US';
+        window.speechSynthesis.speak(speech);
+        this.showHint();
+        this.startTimer();
+        this.userInput.value = '';
+        this.feedbackElement.className = 'feedback';
+        this.feedbackElement.textContent = '';
+        this.userInput.focus();
+      }
+
+      showHint() {
+        this.hintElement.textContent = `Hint: Starts with "${this.currentWord[0]}" and ends with "${this.currentWord[this.currentWord.length - 1]}"`;
+      }
+
+      checkAnswer() {
+        if (!this.currentWord) {
+          this.showFeedback('Please play a word first!', 'error');
+          return;
+        }
+
+        const userInput = this.userInput.value.toLowerCase().trim();
+        if (userInput === this.currentWord) {
+          this.score++;
+          this.scoreElement.textContent = `Score: ${this.score}`;
+          this.showFeedback('Correct! 🎉', 'success');
+          clearInterval(this.timer);
+          setTimeout(() => this.playWord(), 1500);
+        } else {
+          this.score--;
+          this.scoreElement.textContent = `Score: ${this.score}`;
+          this.showFeedback('Try again! 🤔', 'error');
+        }
+      }
+
+      showFeedback(message, type) {
+        this.feedbackElement.textContent = message;
+        this.feedbackElement.className = `feedback ${type}`;
+      }
+
+      startTimer() {
+        clearInterval(this.timer);
+        this.timeLeft = 10;
+        this.updateTimerDisplay();
+        this.updateProgressBar();
+
+        this.timer = setInterval(() => {
+          this.timeLeft--;
+          this.updateTimerDisplay();
+          this.updateProgressBar();
+
+          if (this.timeLeft <= 0) {
+            clearInterval(this.timer);
+            this.showFeedback(`Time's up! The word was "${this.currentWord}"`, 'error');
+            setTimeout(() => this.playWord(), 2000);
+          }
+        }, 1000);
+      }
+
+      updateTimerDisplay() {
+        this.timerElement.textContent = `Time: ${this.timeLeft}s`;
+      }
+
+      updateProgressBar() {
+        const percentage = (this.timeLeft / 10) * 100;
+        this.progressBarInner.style.width = `${percentage}%`;
+      }
+
+      resetGame() {
+        this.score = 0;
+        this.scoreElement.textContent = 'Score: 0';
+        this.currentWord = '';
+        this.userInput.value = '';
+        this.hintElement.textContent = '';
+        this.feedbackElement.className = 'feedback';
+        this.feedbackElement.textContent = '';
+        clearInterval(this.timer);
+        this.timeLeft = 10;
+        this.updateTimerDisplay();
+        this.updateProgressBar();
+        this.gameSummary.textContent = '';
+      }
+    }
+
+    // Initialize the game when the page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      new ListenTypeGame();
+    });
+  </script>
+</body>
+</html>

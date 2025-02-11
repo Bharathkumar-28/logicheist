@@ -1,148 +1,145 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
 <style>
-
-  
-textarea {
-    
-    width: 100%;
-    min-height: 200px;
-    padding: 1rem;
-    border: 2px solid rgba(52, 152, 219, 0.3);
-    border-radius: 15px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    resize: vertical;
-    background: rgba(255, 255, 255, 0.9);
-}
-
-textarea:focus {
-    outline: none;
-    border-color: #3498db;
-    box-shadow: 0 0 15px rgba(52, 152, 219, 0.2);
-}
-
-.controls {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.control-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-label {
-    font-weight: 600;
-    color: #2c3e50;
-    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
-}
-
-select, input[type="range"] {
-    padding: 0.5rem;
-    border: 2px solid rgba(52, 152, 219, 0.3);
-    border-radius: 10px;
-    font-size: 1rem;
-    background: rgba(255, 255, 255, 0.9);
-    transition: all 0.3s ease;
-}
-
-select:focus, input[type="range"]:focus {
-    border-color: #3498db;
-    box-shadow: 0 0 10px rgba(52, 152, 219, 0.2);
-}
-
-.button-group {
-    display: flex;
-    gap: 1.5rem;
-    justify-content: center;
-}
-
-button {
-    padding: 1rem 2rem;
-    border: none;
-    border-radius: 50px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-#speak-button {
-    background: linear-gradient(135deg, #3498db, #2980b9);
-    color: white;
-}
-
-#pause-button {
-    background: linear-gradient(135deg, #f39c12, #e67e22);
-    color: white;
-}
-
-#stop-button {
-    background: linear-gradient(135deg, #e74c3c, #c0392b);
-    color: white;
-}
-
-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-}
-
-button:active {
-    transform: translateY(-1px);
-}
-
-.status {
-    text-align: center;
-    margin-top: 1rem;
-    padding: 0.8rem;
-    border-radius: 10px;
-    font-weight: 600;
-    display: none;
-}
-
-.status.speaking {
-    display: block;
-    background: rgba(52, 152, 219, 0.2);
-    color: #2980b9;
-    border: 1px solid rgba(52, 152, 219, 0.3);
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.4); }
-    70% { box-shadow: 0 0 0 10px rgba(52, 152, 219, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0); }
-}
-
-@media (max-width: 600px) {
-    .container {
+    /* Existing styles */
+    textarea {
+        width: 100%;
+        min-height: 200px;
         padding: 1rem;
+        border: 2px solid rgba(52, 152, 219, 0.3);
+        border-radius: 15px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        resize: vertical;
+        background: rgba(255, 255, 255, 0.9);
+    }
+
+    textarea:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 15px rgba(52, 152, 219, 0.2);
     }
 
     .controls {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .control-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    label {
+        font-weight: 600;
+        color: #2c3e50;
+        text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+    }
+
+    select, input[type="range"] {
+        padding: 0.5rem;
+        border: 2px solid rgba(52, 152, 219, 0.3);
+        border-radius: 10px;
+        font-size: 1rem;
+        background: rgba(255, 255, 255, 0.9);
+        transition: all 0.3s ease;
+    }
+
+    select:focus, input[type="range"]:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 10px rgba(52, 152, 219, 0.2);
     }
 
     .button-group {
-        flex-direction: column;
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
     }
 
     button {
-        width: 100%;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 50px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
-}
-    </style>
+
+    #speak-button {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+    }
+
+    #pause-button {
+        background: linear-gradient(135deg, #f39c12, #e67e22);
+        color: white;
+    }
+
+    #stop-button {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+    }
+
+    button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    button:active {
+        transform: translateY(-1px);
+    }
+
+    .status {
+        text-align: center;
+        margin-top: 1rem;
+        padding: 0.8rem;
+        border-radius: 10px;
+        font-weight: 600;
+        display: none;
+    }
+
+    .status.speaking {
+        display: block;
+        background: rgba(52, 152, 219, 0.2);
+        color: #2980b9;
+        border: 1px solid rgba(52, 152, 219, 0.3);
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.4); }
+        70% { box-shadow: 0 0 0 10px rgba(52, 152, 219, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0); }
+    }
+
+    @media (max-width: 600px) {
+        .container {
+            padding: 1rem;
+        }
+
+        .controls {
+            grid-template-columns: 1fr;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        button {
+            width: 100%;
+        }
+    }
+</style>
 
 <body>
     <div class="container">
@@ -167,6 +164,11 @@ button:active {
                 <label for="pitch">Pitch: <span id="pitch-value">1</span></label>
                 <input type="range" id="pitch" min="0.5" max="2" value="1" step="0.1">
             </div>
+
+            <div class="control-group">
+                <label for="file-input">Upload Text File:</label>
+                <input type="file" id="file-input" accept=".txt">
+            </div>
         </div>
 
         <div class="button-group">
@@ -179,6 +181,9 @@ button:active {
             <button id="stop-button">
                 <span>Stop</span>
             </button>
+            <button id="erase-button">
+                <span>Erase</span>
+            </button>
         </div>
 
         <div id="status" class="status">Speaking...</div>
@@ -189,7 +194,7 @@ button:active {
         let currentUtterance = null;
         let isPaused = false;
 
-        
+        // Function to populate available voices
         function populateVoiceList() {
             voices = speechSynthesis.getVoices();
             const voiceSelect = document.getElementById('voice-select');
@@ -203,14 +208,12 @@ button:active {
             });
         }
 
-        
         if (speechSynthesis.onvoiceschanged !== undefined) {
             speechSynthesis.onvoiceschanged = populateVoiceList;
         } else {
             setTimeout(populateVoiceList, 500);
         }
 
-        
         document.getElementById('rate').addEventListener('input', (e) => {
             document.getElementById('rate-value').textContent = e.target.value;
         });
@@ -219,7 +222,7 @@ button:active {
             document.getElementById('pitch-value').textContent = e.target.value;
         });
 
-        
+        // Button to start speaking the text
         document.getElementById('speak-button').addEventListener('click', () => {
             const text = document.getElementById('text-input').value.trim();
             if (!text) {
@@ -227,22 +230,16 @@ button:active {
                 return;
             }
 
-            
             speechSynthesis.cancel();
             isPaused = false;
 
-            
             currentUtterance = new SpeechSynthesisUtterance(text);
-            
-    
             const voiceIndex = document.getElementById('voice-select').value;
             currentUtterance.voice = voices[voiceIndex];
 
-        
             currentUtterance.rate = parseFloat(document.getElementById('rate').value);
             currentUtterance.pitch = parseFloat(document.getElementById('pitch').value);
 
-            
             currentUtterance.onstart = () => {
                 document.getElementById('status').classList.add('speaking');
             };
@@ -252,11 +249,10 @@ button:active {
                 isPaused = false;
             };
 
-
             speechSynthesis.speak(currentUtterance);
         });
 
-        
+        // Button to pause or resume speaking
         document.getElementById('pause-button').addEventListener('click', () => {
             if (!currentUtterance) return;
 
@@ -269,30 +265,33 @@ button:active {
             }
         });
 
-        
+        // Button to stop speaking
         document.getElementById('stop-button').addEventListener('click', () => {
             speechSynthesis.cancel();
             document.getElementById('status').classList.remove('speaking');
             isPaused = false;
         });
 
-    
+        // Button to clear the text in the textarea
+        document.getElementById('erase-button').addEventListener('click', () => {
+            document.getElementById('text-input').value = '';
+        });
+
+        // Function to read the text file and load it into the textarea
+        document.getElementById('file-input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file && file.type === 'text/plain') {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    document.getElementById('text-input').value = event.target.result;
+                };
+                reader.readAsText(file);
+            } else {
+                alert('Please select a valid text file.');
+            }
+        });
+
+        // Initial population of voice list
         populateVoiceList();
     </script>
-
-    
-    
-
-    
-
-
-
-   
-
-
-
-    {% endblock %}
-  
-
-
-
+{% endblock %}

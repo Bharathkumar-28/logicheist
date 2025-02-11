@@ -1,5 +1,5 @@
 
- 
+
 <header class="p-3 bg-success text-white  sticky-top">
     <div class="row">
         <div class="col">
@@ -10,7 +10,7 @@
         </button>
       
         </div>
-       
+        
         
         
         <div class="col">
@@ -21,6 +21,8 @@
                 <a class="text-light text-decoration-none" href="/">Home</a>
                 <a class="text-light text-decoration-none " href="/about">about</a>
                 <a class="text-light text-decoration-none " href="/contact">Contact</a>
+                <a class="text-light text-decoration-none " href="/index1">Practice</a>
+                
                 {% if user.is_authenticated %}
                 
                 <a class="text-light text-decoration-none " href="/logout">Logout</a>
@@ -42,6 +44,7 @@
   </div>
   <div class="cursor-dotda" id="cursor-dot"></div>
     <div class="cursor-outlineda" id="cursor-outline"></div>
+    
     <script>
         // Get references to the custom cursor elements
         const cursorDot = document.getElementById('cursor-dot');

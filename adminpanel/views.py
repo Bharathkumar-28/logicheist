@@ -331,7 +331,7 @@ from .models import gameresult2
 
 
 
-<<<<<<< HEAD
+
 
 
 
@@ -446,10 +446,63 @@ def addquiz(request):
         form = quizform()
 
     return render(request, 'addquiz.html', {'form': form})
-=======
-def logindemo(request):
-    # Your view logic here (e.g., handling form submission, authentication, etc.)
+from django.shortcuts import render
+from django.http import JsonResponse
+import google.generativeai as genai
 
-    # Ensure that you return an HttpResponse object
-    return render(request, 'logindemo.html')
->>>>>>> ab2fe0eaf5b618df6a8e77aa68fff2fb9ac4b417
+# Configure Gemini
+api_key = "AIzaSyBNBgchXs6MmOx-lBQSnovzCoyOuC18MY0"  # Replace with your actual API key
+genai.configure(api_key=api_key)
+
+# Set the generation configuration
+generation_config = {
+    "temperature": 1,
+    "top_p": 0.95,
+    "top_k": 40,
+    "max_output_tokens": 8192,
+    "response_mime_type": "text/plain",
+}
+
+# Initialize the Generative Model
+model = genai.GenerativeModel(
+    model_name="gemini-1.5-pro",
+    generation_config=generation_config,
+    system_instruction="Your dyslexia support instructions here...",
+)
+
+# Initial chat history
+history = [
+    {"role": "user", "parts": ["hi"]},
+    {"role": "model", "parts": ["Hello! How can I assist you today? today you will some words and spell the words"]},
+]
+
+def home(request):
+    """Renders the homepage with the chatbot interface."""
+    return render(request, 'chatbot.html')
+
+def chat(request):
+    """Handles chat messages sent from the frontend."""
+    if request.method == 'POST':
+        user_message = request.POST.get('message', '').strip()
+        
+        if not user_message:
+            return JsonResponse({"reply": "Please enter a valid message."}, status=400)
+        
+        # Create a new chat session with the provided message
+        chat_session = model.start_chat(history=history)
+        response = chat_session.send_message(user_message)
+        
+        # Capture the response text
+        model_response = response.text
+        
+        # Append the user and model messages to the history
+        history.append({"role": "user", "parts": [user_message]})
+        history.append({"role": "model", "parts": [model_response]})
+        
+        # Return the model's response as JSON
+        return JsonResponse({"reply": model_response})
+
+    return JsonResponse({"reply": "Invalid request."}, status=400)
+
+def avinash(request):
+    return render(request,'avinash.html')
