@@ -12,8 +12,6 @@
     </script>
     <style>
         /* WhatsApp-like chat interface */
-   
-
         body {
             font-family: Arial, sans-serif;
             background-color: #ece5dd;
@@ -150,6 +148,19 @@
             background-color: #45a049;
         }
 
+        .stop-btn {
+            background: #FF6347;
+            color: white;
+            font-size: 16px;
+            padding: 8px;
+            border-radius: 50%;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        .stop-btn:active {
+            background-color: #e55347;
+        }
     </style>
 </head>
 
@@ -171,6 +182,9 @@
                 <button id="send-btn">Send</button>
                 <button id="voice-btn" class="voice-btn">🎤</button>
             </div>
+            <div>
+                <button id="stop-btn" class="stop-btn">Stop Speech</button>
+            </div>
         </div>
     </div>
 
@@ -179,18 +193,25 @@
         const userInput = document.getElementById('user-input');
         const sendBtn = document.getElementById('send-btn');
         const voiceBtn = document.getElementById('voice-btn');
+        const stopBtn = document.getElementById('stop-btn');
 
         let isListening = false;
+        let currentSpeech = null;
 
         async function sendMessage() {
             const text = userInput.value.trim();
             if (!text) return;
-
+        
+            // Stop any ongoing speech before sending the message
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+            }
+        
             appendMessage('outgoing', text);
             userInput.value = '';
-
+        
             const csrfToken = getCSRFToken();  // Get the CSRF token from the cookie
-
+        
             try {
                 const response = await fetch('/chat/', {
                     method: 'POST',
@@ -200,7 +221,7 @@
                     },
                     body: `message=${text}`
                 });
-
+        
                 if (response.ok) {
                     const data = await response.json();
                     appendMessage('incoming', data.reply);
@@ -212,6 +233,7 @@
                 console.error('Error:', error);
             }
         }
+        
 
         function appendMessage(role, text) {
             const messageDiv = document.createElement('div');
@@ -223,10 +245,28 @@
             textDiv.className = 'text';
             textDiv.textContent = text;
 
+            // Add the read button for incoming messages
+            if (role === 'incoming') {
+                const readBtn = document.createElement('button');
+                readBtn.className = 'read-btn';
+                readBtn.textContent = 'Read';
+                readBtn.onclick = () => readMessageAloud(text);
+                textDiv.appendChild(readBtn);
+            }
+
             messageDiv.appendChild(avatarDiv);
             messageDiv.appendChild(textDiv);
             messagesContainer.appendChild(messageDiv);
             messagesContainer.scrollTo({ top: messagesContainer.scrollHeight, behavior: 'smooth' });
+        }
+
+        function readMessageAloud(text) {
+            if (currentSpeech && window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+            }
+
+            currentSpeech = new SpeechSynthesisUtterance(text);
+            window.speechSynthesis.speak(currentSpeech);
         }
 
         function startVoiceRecognition() {
@@ -265,6 +305,24 @@
                 isListening = false;
             } else {
                 startVoiceRecognition();
+            }
+        });
+
+        stopBtn.addEventListener('click', () => {
+            if (currentSpeech && window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+            }
+        });
+
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden && currentSpeech && window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+            }
+        });
+
+        window.addEventListener('beforeunload', function () {
+            if (currentSpeech && window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
             }
         });
     </script>

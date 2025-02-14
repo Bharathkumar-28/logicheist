@@ -48,12 +48,16 @@ urlpatterns = [
          path('texttospeechtamil',views.texttospeechtamil,name='texttospeechtamil'),
          path('attempt/<int:postid>',views.attempt,name='attempt'),
           path('graph2/', views.graph2, name='graph2'),
-          path('backtohome/',views.backtohome,name="backtohome"),
+          
           path('addquiz/',views.addquiz,name="addquiz"),
         
           path('home/',views.home,name='home'),
            path('chat/', views.chat, name='chat'),
            path('avinash',views.avinash,name="avinash"),
+           path('courses/',views.coursesda,name="courses"),
+           path('attemptcourses/<int:postid>',views.attemptcourses,name="attemptcourses"),
+           path('leaderboarda/',views.leaderboarda,name='leaderboard'),
+           path('leaderboardview/',views.leaderboardview,name='leaderboardview')
 
 
 

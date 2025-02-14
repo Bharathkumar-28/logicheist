@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* Global Styles */
+ 
+
+    /* Game Container */
+    .game-container {
+        margin: 50px auto;
+        max-width: 500px; /* Adjust width of the container */
+        padding: 30px;
+        background-color: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        animation: fadeIn 1s ease-in-out;
+        text-align: center;
+    }
+
+    h1 {
+        font-size: 2.5em;
+        color: #3e64e7;
+        margin-bottom: 10px;
+    }
+
+    p {
+        font-size: 1.2em;
+        color: #777;
+    }
+
+    /* Word Container */
+    .word-container {
+        font-size: 2.5em;
+        font-weight: bold;
+        color: #3e64e7;
+        margin: 30px 0;
+    }
+
+    /* Word Card */
+    .word-card {
+        margin-top: 20px;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        padding: 10px; /* Reduced padding */
+        width: 100px; /* Reduced width */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .word-card img {
+        width: 150px; /* Reduced image size */
+        height: 150px;
+        border-radius: 10px;
+        object-fit: cover;
+        margin-top: 10px;
+    }
+
+    /* Input and Button Styles */
+    .input-container {
+        margin: 20px 0;
+    }
+
+    .input-container input {
+        font-size: 1.5em;
+        padding: 10px;
+        width: 250px;
+        text-align: center;
+        margin: 10px 0;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        transition: border-color 0.3s ease;
+    }
+
+    .input-container input:focus {
+        border-color: #3e64e7;
+    }
+
+    .input-container button {
+        font-size: 1.2em;
+        padding: 12px 24px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .input-container button:hover {
+        background-color: #388e3c;
+        transform: translateY(-3px);
+    }
+
+    /* Feedback Text */
+    .feedback {
+        font-size: 1.5em;
+        margin-top: 20px;
+    }
+
+    .feedback.correct {
+        color: #4caf50;
+    }
+
+    .feedback.incorrect {
+        color: #f44336;
+    }
+
+    /* Result Link */
+    .result {
+        position: relative;
+        margin-top: 30px;
+        padding: 12px 24px;
+        font-size: 1.2em;
+        text-decoration: none;
+        color: white;
+        background-color: #3e64e7;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .result:hover {
+        background-color: #ff9800;
+        transform: translateY(-3px);
+    }
+
+    /* Slider Styles */
+    .input-container label {
+        font-size: 1.1em;
+        margin-right: 10px;
+    }
+
+    .input-container input[type="range"] {
+        width: 150px;
+    }
+
+    /* Pagination Styles */
+    .pagination {
+        margin-top: 20px;
+    }
+
+    .pagination button {
+        font-size: 1.2em;
+        padding: 10px 20px;
+        background-color: #3e64e7;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        margin: 0 5px;
+        transition: background-color 0.3s ease;
+    }
+
+    .pagination button:hover {
+        background-color: #ff9800;
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+    }
+</style>
+
+
+
+
+
+<div class="game-container">
+    <h1>Word Scramble Game</h1>
+    <p>Unscramble the letters to form a word.</p>
+
+    <div class="word-container" id="scrambledWord"></div>
+
+    <div class="word-card" id="wordCard"></div>
+
+    <div class="input-container">
+        <input type="text" id="userInput" placeholder="Enter your guess" />
+        <button onclick="checkAnswer()">Submit</button>
+    </div>
+
+    <div class="feedback" id="feedbackText"></div>
+
+    <div class="input-container">
+        <label for="pitch">Pitch:</label>
+        <input type="range" id="pitch" min="0" max="2" step="0.1" value="1">
+        <label for="speed">Speed:</label>
+        <input type="range" id="speed" min="0.5" max="2" step="0.1" value="1">
+        <button onclick="adjustSpeechSettings()">Set Speech Settings</button>
+    </div>
+
+    <div class="input-container">
+        <button onclick="startSpeech()">Read Word</button>
+    </div>
+
+    <div class="pagination">
+        <button id="prevPage" onclick="changePage(-1)">Previous</button>
+        <button id="nextPage" onclick="changePage(1)">Next</button>
+    </div>
+</div>
+
+<script>
+    // Global variables
+    const wordsData = JSON.parse('{{ list_data|safe|escapejs }}');
+    const wordsPerPage = 5;
+    let currentPage = 0;
+    let currentWord = {}; // Initialize currentWord globally
+    let pitch = 1; // Default pitch
+    let speed = 1; // Default speed
+
+    let words = [];
+    wordsData.forEach(post => {
+        words.push({
+            word: post.word,
+            image: post.image
+        });
+    });
+
+    function getWordsForPage(page) {
+        const start = page * wordsPerPage;
+        const end = start + wordsPerPage;
+        return words.slice(start, end);
+    }
+
+    function getRandomWord() {
+        const wordSubset = getWordsForPage(currentPage);
+        const randomIndex = Math.floor(Math.random() * wordSubset.length);
+        return wordSubset[randomIndex];
+    }
+
+    function shuffleWord(word) {
+        return word.split('').sort(() => 0.3 - Math.random()).join('');
+    }
+
+    function loadNewWord() {
+        const wordObj = getRandomWord();
+        currentWord = wordObj;  // Store current word globally
+        const scrambled = shuffleWord(wordObj.word);
+        
+        // Display scrambled word
+        document.getElementById('scrambledWord').textContent = scrambled;
+        
+        // Display word card with image
+        const wordCard = `
+            <div class="card">
+                <h3>${wordObj.word}</h3>
+                <img src="${wordObj.image}" alt="${wordObj.word}">
+            </div>
+        `;
+        document.getElementById('wordCard').innerHTML = wordCard;
+        
+        // Clear previous feedback
+        document.getElementById('feedbackText').innerHTML = '';
+        
+        // Clear input field
+        document.getElementById('userInput').value = '';
+    }
+
+    function checkAnswer() {
+        const userInput = document.getElementById('userInput').value.toLowerCase();
+        const isCorrect = userInput === currentWord.word.toLowerCase();
+        
+        if (isCorrect) {
+            document.getElementById('feedbackText').textContent = 'Correct!';
+            document.getElementById('feedbackText').className = 'feedback correct';
+            stopSpeech(); // Stop any ongoing speech synthesis
+            setTimeout(function() {
+                loadNewWord(); // Load new word after correct answer
+            }, 1000);
+        } else {
+            document.getElementById('feedbackText').textContent = 'Oops! Try again!';
+            document.getElementById('feedbackText').className = 'feedback incorrect';
+        }
+    }
+
+    function speakWord(word) {
+        if (!word) {
+            alert("No word loaded yet!");
+            return;
+        }
+        
+        const wordUtterance = new SpeechSynthesisUtterance(word);
+        wordUtterance.pitch = pitch;
+        wordUtterance.rate = speed;
+        window.speechSynthesis.speak(wordUtterance);
+    }
+
+    function stopSpeech() {
+        window.speechSynthesis.cancel();
+    }
+
+    function adjustSpeechSettings() {
+        pitch = document.getElementById('pitch').value;
+        speed = document.getElementById('speed').value;
+    }
+
+    function startSpeech() {
+        if (currentWord && currentWord.word) {
+            speakWord(currentWord.word);
+        } else {
+            alert("No word loaded yet!");
+        }
+    }
+
+    function changePage(direction) {
+        const totalPages = Math.ceil(words.length / wordsPerPage);
+        currentPage += direction;
+
+        if (currentPage < 0) {
+            currentPage = 0;
+        } else if (currentPage >= totalPages) {
+            currentPage = totalPages - 1;
+        }
+
+        loadNewWord();
+    }
+
+    // Initial load
+    loadNewWord();
+</script>
+
+
+
+
+
+{% endblock %}

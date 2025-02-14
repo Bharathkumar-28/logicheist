@@ -180,6 +180,7 @@
         }
     
         sendGameResult(currentWord.word, currentWord.word, userInput, isCorrect);
+        sendGameResult2(currentWord.word, currentWord.word, userInput, isCorrect);
     
         setTimeout(function() {
             console.log("Calling loadNewWord()...");
@@ -189,6 +190,25 @@
     
     function sendGameResult(word, correctAnswer, userAnswer, isCorrect) {
         fetch('/graph2/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: `word=${encodeURIComponent(word)}&correct_answer=${encodeURIComponent(correctAnswer)}&user_answer=${encodeURIComponent(userAnswer)}&is_correct=${encodeURIComponent(isCorrect)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                console.log('Game result saved successfully.');
+            } else {
+                console.log('Error saving result:', data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+    function sendGameResult2(word, correctAnswer, userAnswer, isCorrect) {
+        fetch('/leaderboarda/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',

@@ -17,7 +17,7 @@ from adminpanel.models import post,profile, words
 import pdb
 import logging
 from django.http import JsonResponse
-from .models import gameresult, quiz
+from .models import courses, gameresult, quiz,leaderboard
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
@@ -47,6 +47,7 @@ import json
 
 def attempt(request,postid):
     quiz_instance = quiz.objects.get(id=postid)
+    gameresult2.objects.all().delete() 
 
     # Get the data (assuming it's a dictionary)
     data = quiz_instance.data
@@ -110,7 +111,7 @@ def login(request):
            if user is not None:
             auth_login(request,user)
             messages.success(request,'you are successfully logged in')
-            return redirect("index")
+            return render(request,'main.html')
             
                 
             
@@ -173,9 +174,30 @@ def resetpassword(request,uidb64,token):
 @login_required
 def game(request):
     return render (request,"game.html")
-@login_required
+
+
+from spellchecker import SpellChecker
+from django.http import JsonResponse
+
 def spell(request):
+    if request.method == 'POST':
+        word = request.POST.get('word', '').strip()
+        
+        # Initialize the spell checker
+        spell = SpellChecker()
+
+        # Get the suggestions for the word
+        misspelled = spell.unknown([word])
+        suggestions = []
+
+        for word in misspelled:
+            suggestions = spell.candidates(word)  # Get all suggestions
+
+        # Return the suggestions as JSON
+        return JsonResponse({'suggestions': list(suggestions)})
     return render(request,"spell.html")
+
+
 
 def index(request):
     return render(request,"index.html")
@@ -383,12 +405,8 @@ def graph2(request):
     return JsonResponse({'status': 'failure', 'message': 'Invalid request method.'})
 
 
-def backtohome(request):
-    # Delete all game result entries
-    gameresult2.objects.all().delete()  # Delete all records from gameresult2 table
-    
-    # Redirect to a URL named 'index1'
-    return redirect(reverse('index1'))
+
+   
 
 
 
@@ -398,6 +416,7 @@ def speechtotext(request):
         return render(request,'speechtotext.html')
 @login_required
 def game2(request):
+    gameresult2.objects.all().delete() 
     return render(request,'game2.html')
 def texttospeechtamil(request):
     return render (request,'texttospeechtamil.html')
@@ -506,3 +525,103 @@ def chat(request):
 
 def avinash(request):
     return render(request,'avinash.html')
+def coursesda(request):
+    posts=courses.objects.all()
+    return render(request,"coursesda.html",{"posts":posts})
+def attemptcourses(request,postid):
+    quiz_instance = courses.objects.get(id=postid)
+   
+
+    # Get the data (assuming it's a dictionary)
+    data = quiz_instance.data
+    print("Data:", data)
+
+    # Convert the dictionary into a list of words and images
+    list_data = [{"word": key, "image": value} for key, value in data.items()]
+
+    print("Serialized list_data:", list_data)  # Check the structure here
+
+    # Pass the serialized data as JSON to the template
+    serialized_data = json.dumps(list_data)
+
+    return render(request, "attemptcourses.html", {"list_data": serialized_data})
+from django.http import JsonResponse
+
+
+from django.contrib.auth.models import User
+
+
+import logging
+from django.http import JsonResponse
+from .models import leaderboard
+from django.contrib.auth.models import User
+
+# Set up logging
+logger = logging.getLogger(__name__)
+
+def leaderboarda(request):
+    if request.method == "POST":
+        word = request.POST.get("word")
+        correct_answer = request.POST.get("correct_answer")
+        user_answer = request.POST.get("user_answer")
+        is_correct = request.POST.get("is_correct") == "true"  # Convert string to boolean
+
+        logger.debug(f"Received word: {word}, correct_answer: {correct_answer}, user_answer: {user_answer}, is_correct: {is_correct}")
+
+        result_dict = {
+            'word': word,
+            'is_correct': 1 if is_correct else 0
+        }
+
+        try:
+            # Ensure user is authenticated
+            user = request.user
+            if not user.is_authenticated:
+                logger.error("User is not authenticated")
+                return JsonResponse({'status': 'failure', 'message': 'User is not authenticated.'})
+
+            # Check if previous result exists for the user
+            game_result = leaderboard.objects.filter(user=user).last()
+
+            if game_result:
+                existing_results = game_result.data if game_result.data else []
+                existing_results.append(result_dict)
+                logger.debug(f"Existing results: {existing_results}")
+            else:
+                existing_results = [result_dict]
+                logger.debug(f"No previous results, creating new one: {existing_results}")
+
+            if game_result:
+                game_result.data = existing_results
+                game_result.save()
+                logger.debug(f"Updated result: {game_result.data}")
+            else:
+                game_result = leaderboard(user=user, data=existing_results)
+                game_result.save()
+                logger.debug(f"Created new result: {game_result.data}")
+
+            return JsonResponse({'status': 'success', 'message': 'Game result saved successfully.'})
+
+        except Exception as e:
+            logger.error(f"Error saving result: {str(e)}")
+            return JsonResponse({'status': 'failure', 'message': f'Error saving result: {str(e)}'})
+
+    return JsonResponse({'status': 'failure', 'message': 'Invalid request method.'})
+from django.shortcuts import render
+
+
+def leaderboardview(request):
+    # Retrieve the top 10 leaderboard entries (or as many as you need)
+    leaderboard_entries =leaderboard.objects.all().order_by('-data__is_correct')[:10]
+    
+    # Prepare the data to pass to the template
+    leaderboard_data = []
+    for entry in leaderboard_entries:
+        # Assuming your `data` field is a list of results
+        latest_result = entry.data[-1] if entry.data else {'word': 'N/A', 'is_correct': 0}
+        leaderboard_data.append({
+            'user': entry.user.username if entry.user else 'Anonymous',
+            'score': sum(result['is_correct'] for result in entry.data)  # Calculate total score
+        })
+    
+    return render(request, 'leaderboard.html', {'leaderboard_data': leaderboard_data})

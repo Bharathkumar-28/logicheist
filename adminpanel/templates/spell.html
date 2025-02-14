@@ -70,7 +70,14 @@
     <div id="result" class="result"></div>
   </div>
 
+  <!-- CSRF Token passed to JavaScript -->
   <script>
+    const csrfToken = '{{ csrf_token }}';  // Django will inject the CSRF token here
+  </script>
+
+  <script>
+    let speechSynthesisInstance = null; // To keep track of the speech instance
+
     async function checkSpelling() {
       const text = document.getElementById("textInput").value.trim();
       const resultElement = document.getElementById("result");
@@ -81,50 +88,73 @@
         return;
       }
 
-      const words = text.split(/\s+/);
+      const words = text.split(/\s+/);  // Split the text into words
       let resultContent = '';
 
+      // Send words individually for spell-checking
       for (const word of words) {
-        if (await isWordCorrect(word)) {
-          resultContent += `<div><strong>${word}</strong>: <span class="suggestion">Correct</span></div>`;
-          speakWord("Correct");
-        } else {
-          const suggestions = await getSuggestions(word);
+        const response = await fetch("{% url 'spell' %}", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': csrfToken  // Include CSRF token here
+          },
+          body: `word=${encodeURIComponent(word)}`
+        });
+
+        const data = await response.json();
+        if (data.suggestions && data.suggestions.length > 0) {
           resultContent += `
             <div>
-              <span class="incorrect">Incorrect: "${word}"</span> 
-              <br> 
-              Corrected: <span class="suggestion">${suggestions.join(', ') || 'No suggestions available'}</span>
+              <span class="incorrect">Incorrect: "${word}"</span>
+              <br>
+              Corrected: <span class="suggestion">${data.suggestions.join(', ') || 'No suggestions available'}</span>
             </div><br>`;
-          speakWord("Incorrect");
+
+          // Speak the result: word is incorrect
+          speakWord(`Incorrect. Your word is "${word}". Suggestions: ${data.suggestions.join(', ')}`);
+        } else {
+          resultContent += `
+            <div>
+              <strong>${word}</strong>: <span class="suggestion">Correct</span>
+            </div><br>`;
+
+          // Speak the result: word is correct
+          speakWord(`Your word is correct: "${word}"`);
         }
       }
 
       resultElement.innerHTML = resultContent;
     }
 
-    // Check if a word exists by querying Datamuse API
-    async function isWordCorrect(word) {
-      const response = await fetch(`https://api.datamuse.com/words?sp=${word}&max=1`);
-      const data = await response.json();
-      return data.length > 0 && data[0].word.toLowerCase() === word.toLowerCase();
-    }
-
-    // Get suggestions for a misspelled word
-    async function getSuggestions(word) {
-      const response = await fetch(`https://api.datamuse.com/sug?s=${word}`);
-      const data = await response.json();
-      return data.slice(0, 5).map(item => item.word);
-    }
-
     // Function to speak the word
     function speakWord(text) {
+      if (speechSynthesis.speaking) {
+        // Stop any ongoing speech synthesis before starting a new one
+        speechSynthesis.cancel();
+      }
+
       const speech = new SpeechSynthesisUtterance(text);
       speech.lang = 'en-US';  // Set language for speech
+      speechSynthesisInstance = speech;
       window.speechSynthesis.speak(speech);
     }
-  </script>
 
+    // Listen for the page unload and stop any ongoing speech synthesis
+    window.onbeforeunload = function() {
+      if (speechSynthesis.speaking) {
+        speechSynthesis.cancel();  // Stop any speech before unloading
+      }
+    };
+
+    // Stop speech synthesis if the user navigates away from the page
+    window.addEventListener('unload', function () {
+      if (speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+      }
+    });
+
+  </script>
 </body>
 </html>
 {% endblock %}

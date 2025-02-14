@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+
+<style>
+
+.leaderboard-container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 600px;
+    text-align: center;
+}
+
+.leaderboard-title {
+    font-size: 2.5rem;
+    color: #4CAF50;
+    margin-bottom: 20px;
+}
+
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.leaderboard-table th, .leaderboard-table td {
+    padding: 10px;
+    text-align: center;
+    font-size: 1.1rem;
+    border: 1px solid #ddd;
+}
+
+.leaderboard-table th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.leaderboard-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.leaderboard-table tr:hover {
+    background-color: #ddd;
+}
+
+.leaderboard-table td {
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+.leaderboard-table td:nth-child(1) {
+    font-size: 1.3rem;
+    color: #ff9800; /* Gold color for rank */
+}
+
+.leaderboard-table td:nth-child(2) {
+    color: #2196F3; /* Blue for user name */
+}
+
+.leaderboard-table td:nth-child(3) {
+    color: #8BC34A; /* Green for score */
+}
+</style>
+
+<body>
+    <div class="leaderboard-container">
+        <h1 class="leaderboard-title">Game Leaderboard</h1>
+        <table class="leaderboard-table">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Name</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in leaderboard_data %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ entry.user }}</td>
+                        <td>{{ entry.score }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3">No leaderboard entries yet!</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+<script>
+    function fetchLeaderboard() {
+        fetch('/leaderboardview/')  // Adjust the URL to your view
+            .then(response => response.json())
+            .then(data => {
+                const leaderboardTable = document.querySelector('.leaderboard-table tbody');
+                leaderboardTable.innerHTML = '';  // Clear existing rows
+
+                // Add new leaderboard data
+                data.leaderboard_data.forEach((entry, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${entry.user}</td>
+                        <td>${entry.score}</td>
+                    `;
+                    leaderboardTable.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error fetching leaderboard:', error));
+    }
+
+    // Call fetchLeaderboard when the page loads
+    document.addEventListener('DOMContentLoaded', fetchLeaderboard);
+</script>
+
+</html>
+{%endblock%}
