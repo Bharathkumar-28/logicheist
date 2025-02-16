@@ -612,7 +612,7 @@ from django.shortcuts import render
 
 def leaderboardview(request):
     # Retrieve the top 10 leaderboard entries (or as many as you need)
-    leaderboard_entries =leaderboard.objects.all().order_by('-data__is_correct')[:10]
+    leaderboard_entries =leaderboard.objects.all().order_by('data')
     
     # Prepare the data to pass to the template
     leaderboard_data = []
