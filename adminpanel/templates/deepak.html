@@ -1,1072 +1,256 @@
-{% extends 'base.html' %}
-
-{% block content %}
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EmpowerLearn - Advanced Accessible Learning Platform</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: hsl(230, 85%, 60%);
-            --primary-dark: hsl(230, 85%, 50%);
-            --primary-light: hsl(230, 85%, 75%);
-            --accent: hsl(280, 85%, 60%);
-            --background: hsl(220, 20%, 97%);
-            --foreground: hsl(220, 20%, 10%);
-            --card: hsl(220, 20%, 100%);
-            --card-foreground: hsl(220, 20%, 10%);
-            --border: hsl(220, 20%, 90%);
-            --ring: hsla(230, 85%, 60%, 0.5);
-            --success: hsl(142, 76%, 36%);
-            --warning: hsl(48, 96%, 53%);
-            --error: hsl(0, 84%, 60%);
-            --radius: 0.75rem;
-            --shadow-sm: 0 1px 2px rgba(0,0,0,0.1);
-            --shadow: 0 4px 6px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
-            --font-spacing: normal;
-            --word-spacing: normal;
-            --line-height: 1.6;
-        }
-
-        .dark {
-            --background: hsl(220, 20%, 10%);
-            --foreground: hsl(220, 20%, 97%);
-            --card: hsl(220, 20%, 15%);
-            --card-foreground: hsl(220, 20%, 97%);
-            --border: hsl(220, 20%, 20%);
-            --ring: hsla(230, 85%, 60%, 0.3);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Lexend', sans-serif;
-            background-color: var(--background);
-            color: var(--foreground);
-            line-height: var(--line-height);
-            letter-spacing: var(--font-spacing);
-            word-spacing: var(--word-spacing);
-            transition: background-color 0.3s ease, color 0.3s ease,
-                      letter-spacing 0.3s ease, word-spacing 0.3s ease,
-                      line-height 0.3s ease;
-            overflow-x: hidden;
-        }
-
-        h1, h2, h3, h4, h5, h6 {
-            line-height: 1.2;
-            margin-bottom: 1rem;
-        }
-
-        p {
-            margin-bottom: 1rem;
-        }
-
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4rem;
-            background: rgba(var(--card), 0.8);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border);
-            z-index: 50;
-            transition: all 0.3s ease;
-        }
-
-        .navbar-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 1.5rem;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--foreground);
-            text-decoration: none;
-            transition: transform 0.2s ease;
-        }
-
-        .logo:hover {
-            transform: scale(1.05);
-        }
-
-        .logo-icon {
-            width: 2.5rem;
-            height: 2.5rem;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            border-radius: 0.5rem;
-            display: grid;
-            place-items: center;
-            color: white;
-            font-size: 1.25rem;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .nav-item {
-            position: relative;
-            padding: 0.5rem 1rem;
-            color: var(--foreground);
-            text-decoration: none;
-            border-radius: var(--radius);
-            transition: all 0.2s ease;
-            font-weight: 500;
-        }
-
-        .nav-item:hover {
-            background: var(--primary-light);
-            color: var(--primary-dark);
-        }
-
-        .nav-item.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .dropdown {
-            position: relative;
-        }
-
-        .dropdown-content {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            min-width: 260px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-lg);
-            opacity: 0;
-            transform: translateY(10px);
-            pointer-events: none;
-            transition: all 0.2s ease;
-            z-index: 100;
-        }
-
-        .dropdown:hover .dropdown-content,
-        .dropdown:focus-within .dropdown-content {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
-
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
-            color: var(--foreground);
-            text-decoration: none;
-            transition: all 0.2s ease;
-        }
-
-        .dropdown-item:hover {
-            background: var(--primary-light);
-            color: var(--primary-dark);
-        }
-
-        .dropdown-item:focus {
-            outline: 2px solid var(--primary);
-            outline-offset: -2px;
-        }
-
-        .hero {
-            min-height: 100vh;
-            padding: 7rem 1.5rem 4rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background:
-                radial-gradient(circle at top left, var(--primary-light), transparent 70%),
-                radial-gradient(circle at bottom right, var(--accent), transparent 70%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='currentColor' fill-opacity='0.05'/%3E%3C/svg%3E");
-            mask-image: radial-gradient(circle at center, transparent 30%, black);
-            pointer-events: none;
-        }
-
-        .hero-content {
-            max-width: 1200px;
-            width: 100%;
-            text-align: center;
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero h1 {
-            font-size: clamp(2.5rem, 5vw, 4.5rem);
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            animation: slideUp 0.5s ease forwards;
-        }
-
-        .hero p {
-            font-size: clamp(1.1rem, 2vw, 1.25rem);
-            max-width: 700px;
-            margin: 0 auto 2.5rem;
-            opacity: 0;
-            animation: fadeIn 0.5s ease 0.3s forwards;
-        }
-
-        .button {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            border-radius: var(--radius);
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
-            border: none;
-            cursor: pointer;
-            font-family: 'Lexend', sans-serif;
-        }
-
-        .button-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .button-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow);
-        }
-
-        .button-outline {
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-        }
-
-        .button-outline:hover {
-            background: var(--primary-light);
-            color: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow);
-        }
-
-        .button-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            justify-content: center;
-        }
-
-        .section {
-            padding: 6rem 1.5rem;
-            position: relative;
-        }
-
-        .section-title {
-            font-size: 2.5rem;
-            text-align: center;
-            margin-bottom: 3rem;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .features {
-            background: var(--card);
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .feature-card {
-            background: var(--background);
-            border-radius: var(--radius);
-            padding: 2rem;
-            text-align: center;
-            transition: all 0.3s ease;
-            border: 1px solid var(--border);
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .feature-icon {
-            width: 4rem;
-            height: 4rem;
-            margin: 0 auto 1.5rem;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            border-radius: 1rem;
-            display: grid;
-            place-items: center;
-            color: white;
-            font-size: 1.5rem;
-        }
-
-        .tools {
-            background: var(--background);
-        }
-
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .tool-card {
-            background: var(--card);
-            border-radius: var(--radius);
-            padding: 2rem;
-            border: 1px solid var(--border);
-            transition: all 0.3s ease;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .tool-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .tool-card h3 {
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
-
-        .game-section {
-            background: var(--card);
-            text-align: center;
-        }
-
-        .game-container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: var(--background);
-            border-radius: var(--radius);
-            padding: 2rem;
-            box-shadow: var(--shadow);
-        }
-
-        .word-builder {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        .game-area {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .letter-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            justify-content: center;
-        }
-
-        .hint-container {
-            background: var(--primary-light);
-            padding: 1rem;
-            border-radius: var(--radius);
-            margin-bottom: 1.5rem;
-        }
-
-        .letter {
-            width: 3rem;
-            height: 3rem;
-            display: grid;
-            place-items: center;
-            background: var(--card);
-            border: 2px solid var(--primary);
-            border-radius: var(--radius);
-            font-size: 1.25rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .letter:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow);
-            background: var(--primary-light);
-        }
-
-        #gameResult {
-            height: 2rem;
-            font-weight: 600;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        .fab {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 3.5rem;
-            height: 3.5rem;
-            background: var(--primary);
-            border-radius: 50%;
-            display: grid;
-            place-items: center;
-            color: white;
-            box-shadow: var(--shadow-lg);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 100;
-            font-size: 1.25rem;
-        }
-
-        .fab:hover {
-            transform: scale(1.1);
-            background: var(--primary-dark);
-        }
-
-        .loading {
-            position: fixed;
-            inset: 0;
-            background: var(--background);
-            display: grid;
-            place-items: center;
-            z-index: 1000;
-        }
-
-        .loader {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .reading-ruler {
-            position: fixed;
-            pointer-events: none;
-            background: rgba(255, 255, 0, 0.2);
-            height: 32px;
-            width: 100%;
-            max-width: 800px;
-            border-radius: 16px;
-            box-shadow: 0 0 20px rgba(255,255,0,0.2);
-            display: none;
-            z-index: 1000;
-            transition: opacity 0.2s ease;
-        }
-
-        .color-overlay {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 50;
-            mix-blend-mode: multiply;
-            display: none;
-        }
-
-        .text-customizer {
-            background: var(--card);
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        .customizer-controls {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-        }
-
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .control-group label {
-            font-weight: 500;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            accent-color: var(--primary);
-        }
-
-        .footer {
-            background: var(--card);
-            padding: 4rem 1.5rem;
-            text-align: center;
-            border-top: 1px solid var(--border);
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin: 2rem 0;
-            flex-wrap: wrap;
-        }
-
-        .footer-link {
-            color: var(--foreground);
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
-
-        .footer-link:hover {
-            color: var(--primary);
-        }
-
-        .mobile-toggle {
-            display: none;
-            font-size: 1.5rem;
-            background: none;
-            border: none;
-            color: var(--foreground);
-            cursor: pointer;
-        }
-
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-                position: absolute;
-                top: 4rem;
-                left: 0;
-                right: 0;
-                background: var(--card);
-                flex-direction: column;
-                padding: 1rem;
-                border-bottom: 1px solid var(--border);
-            }
-
-            .nav-links.active {
-                display: flex;
-            }
-
-            .dropdown-content {
-                position: static;
-                width: 100%;
-                opacity: 1;
-                pointer-events: auto;
-                transform: none;
-                box-shadow: none;
-                border: none;
-                max-height: 0;
-                overflow: hidden;
-                transition: max-height 0.3s ease;
-            }
-
-            .dropdown.active .dropdown-content {
-                max-height: 500px;
-            }
-
-            .mobile-toggle {
-                display: block;
-            }
-
-            .hero {
-                padding: 7rem 1rem 3rem;
-            }
-
-            .features-grid,
-            .tools-grid {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-
-            .button-group {
-                flex-direction: column;
-                width: 100%;
-                max-width: 300px;
-                margin: 0 auto;
-            }
-
-            .button {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-    </style>
+    <title>Word Explorer</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="script.js"></script>
 </head>
+<style>
+    /* General Styles */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    /* Main Container */
+    .container {
+        width: 80%;
+        max-width: 1000px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Flexbox for Layout */
+    .content {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    /* Left Side: Image */
+    .image-container {
+        flex: 1;
+        text-align: center;
+    }
+
+    .word-image {
+        width: 100%;
+        max-width: 1000px;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 8px;
+        display: block;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Right Side: Word Explorer */
+    .word-explorer {
+        flex: 1;
+    }
+
+    .title {
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .subtitle {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 20px;
+    }
+
+    /* Search Bar */
+    .search-bar {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .search-bar input {
+        flex: 1;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .search-bar button {
+        padding: 10px 15px;
+        font-size: 16px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .search-bar button:hover {
+        background: #0056b3;
+    }
+
+    /* Word Details */
+    .word-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    h2 {
+        margin: 0;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .error-message {
+        color: red;
+    }
+
+    .meaning {
+        margin-bottom: 10px;
+    }
+
+    .example {
+        color: #555;
+        font-style: italic;
+    }
+</style>
 <body>
-    <!-- Loading Screen -->
-    <div class="loading" id="loading">
-        <div class="loader"></div>
+    <div class="container">
+        <div class="content">
+            <!-- Left Side: Image -->
+            <div class="image-container">
+                <img id="wordImage" class="word-image hidden" src="" alt="Related image">
+            </div>
+
+            <!-- Right Side: Word Explorer -->
+            <div class="word-explorer">
+                <h1 class="title">Word Explorer</h1>
+                <p class="subtitle">Discover meanings, pronunciations, and images</p>
+
+                <div class="search-bar">
+                    <input type="text" id="wordInput" placeholder="Enter a word...">
+                    <button id="searchButton">Search</button>
+                </div>
+
+                <div id="loading" class="loading hidden">Searching...</div>
+                <div id="errorMessage" class="error-message hidden"></div>
+
+                <div id="wordDetails" class="hidden">
+                    <div class="word-header">
+                        <h2 id="wordTitle"></h2>
+                        <p id="phonetic"></p>
+                        <button id="playAudio" class="hidden">🔊</button>
+                    </div>
+                    <div id="meanings"></div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <!-- Accessibility Tools -->
-    <div id="readingRuler" class="reading-ruler"></div>
-    <div id="colorOverlay" class="color-overlay"></div>
-
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="navbar-content">
-            <a href="#" class="logo">
-                <div class="logo-icon">EL</div>
-                <span>EmpowerLearn</span>
-            </a>
-
-            <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">☰</button>
-
-            <div class="nav-links" id="navLinks">
-                <div class="dropdown" id="learnDropdown">
-                    <a href="#" class="nav-item" id="learnToggle">Learn</a>
-                    <div class="dropdown-content">
-                        <a href="#lessons" class="dropdown-item">
-                            <span>📚</span> Lessons
-                        </a>
-                        <a href="#games" class="dropdown-item">
-                            <span>🎮</span> Games
-                        </a>
-                        <a href="#practice" class="dropdown-item">
-                            <span>✏</span> Practice
-                        </a>
-                    </div>
-                </div>
-
-                <div class="dropdown" id="toolsDropdown">
-                    <a href="#" class="nav-item" id="toolsToggle">Tools</a>
-                    <div class="dropdown-content">
-                        <a href="#" class="dropdown-item" onclick="toggleTextToSpeech()">
-                            <span>🔊</span> Text to Speech
-                        </a>
-                        <a href="#" class="dropdown-item" onclick="toggleReadingRuler()">
-                            <span>📏</span> Reading Ruler
-                        </a>
-                        <a href="#" class="dropdown-item" onclick="toggleColorOverlay()">
-                            <span>🎨</span> Color Overlay
-                        </a>
-                        <a href="#text-customizer" class="dropdown-item">
-                            <span>🔤</span> Text Customizer
-                        </a>
-                    </div>
-                </div>
-
-                <a href="#progress" class="nav-item">Progress</a>
-
-                <div class="dropdown" id="settingsDropdown">
-                    <a href="#" class="nav-item" id="settingsToggle">Settings</a>
-                    <div class="dropdown-content">
-                        <a href="#" class="dropdown-item" onclick="toggleDarkMode()">
-                            <span id="theme-icon">🌓</span> Theme
-                        </a>
-                        <a href="#" class="dropdown-item" onclick="toggleDyslexiaFont()">
-                            <span>👁</span> Dyslexia Font
-                        </a>
-                        <a href="#accessibility" class="dropdown-item">
-                            <span>♿</span> Accessibility
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1>Learning Made Accessible For Everyone</h1>
-            <p>Welcome to EmpowerLearn - an adaptive learning platform designed to support students with dyslexia and other learning differences.</p>
-            <div class="button-group">
-                <a href="#lessons" class="button button-primary">Start Learning</a>
-                <a href="#tools" class="button button-outline">Explore Tools</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section class="section features" id="features">
-        <h2 class="section-title">Why Choose EmpowerLearn?</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">🎯</div>
-                <h3>Personalized Learning</h3>
-                <p>Adaptive lessons that match your pace and learning style with AI-powered recommendations.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🛠</div>
-                <h3>Accessibility Tools</h3>
-                <p>Custom text formatting, reading rulers, color overlays, and text-to-speech to support your needs.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🏆</div>
-                <h3>Progress Tracking</h3>
-                <p>Monitor your achievements and learning journey with detailed visual reports.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🎮</div>
-                <h3>Interactive Games</h3>
-                <p>Learn through engaging educational games designed to strengthen key skills.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🧠</div>
-                <h3>Cognitive Training</h3>
-                <p>Build working memory, processing speed, and attention through specialized exercises.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">📝</div>
-                <h3>Writing Support</h3>
-                <p>Tools to help with spelling, grammar, and organization of written work.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Tools Section -->
-    <section class="section tools" id="tools">
-        <h2 class="section-title">Empowering Tools</h2>
-        <div class="tools-grid">
-            <div class="tool-card">
-                <h3>Text to Speech</h3>
-                <p>Listen to any text read aloud to improve comprehension and reduce reading fatigue.</p>
-                <textarea id="speechText" placeholder="Enter text to read aloud..." rows="4" style="width: 100%; margin: 1rem 0; padding: 0.5rem; border-radius: var(--radius);"></textarea>
-                <div style="display: flex; gap: 0.5rem;">
-                    <button class="button button-primary" onclick="speak()">Play</button>
-                    <button class="button button-outline" onclick="pauseSpeech()">Pause</button>
-                    <button class="button button-outline" onclick="stopSpeech()">Stop</button>
-                </div>
-            </div>
-
-            <div class="tool-card">
-                <h3>Reading Ruler</h3>
-                <p>Help focus on text with a reading guide that follows your cursor.</p>
-                <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
-                    <button class="button button-primary" onclick="toggleReadingRuler()">Toggle Ruler</button>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <label for="rulerOpacity">Opacity:</label>
-                        <input type="range" id="rulerOpacity" min="0.1" max="0.4" step="0.05" value="0.2" onchange="updateRulerOpacity()">
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <label for="rulerColor">Color:</label>
-                        <select id="rulerColor" onchange="updateRulerColor()">
-                            <option value="rgba(255, 255, 0, 0.2)">Yellow</option>
-                            <option value="rgba(0, 255, 255, 0.2)">Blue</option>
-                            <option value="rgba(0, 255, 0, 0.2)">Green</option>
-                            <option value="rgba(255, 192, 203, 0.2)">Pink</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tool-card">
-                <h3>Color Overlay</h3>
-                <p>Adjust screen color for better readability.</p>
-                <select id="overlayColor" onchange="updateOverlay()" style="width: 100%; margin: 1rem 0; padding: 0.5rem; border-radius: var(--radius);">
-                    <option value="none">None</option>
-                    <option value="rgba(255, 255, 0, 0.2)">Yellow</option>
-                    <option value="rgba(0, 255, 255, 0.2)">Blue</option>
-                    <option value="rgba(0, 255, 0, 0.2)">Green</option>
-                    <option value="rgba(255, 192, 203, 0.2)">Pink</option>
-                </select>
-                <div id="colorOverlay" class="color-overlay"></div>
-            </div>
-
-            <div class="tool-card">
-                <h3>Text Customizer</h3>
-                <p>Adjust text settings to suit your reading preferences.</p>
-                <div class="text-customizer">
-                    <div class="customizer-controls">
-                        <div class="control-group">
-                            <label for="fontSize">Font Size:</label>
-                            <input type="range" id="fontSize" min="14" max="24" step="1" value="16" onchange="updateFontSize()">
-                        </div>
-                        <div class="control-group">
-                            <label for="lineHeight">Line Height:</label>
-                            <input type="range" id="lineHeight" min="1.2" max="2.4" step="0.1" value="1.6" onchange="updateLineHeight()">
-                        </div>
-                        <div class="control-group">
-                            <label for="letterSpacing">Letter Spacing:</label>
-                            <input type="range" id="letterSpacing" min="0" max="2" step="0.1" value="0" onchange="updateLetterSpacing()">
-                        </div>
-                        <div class="control-group">
-                            <label for="wordSpacing">Word Spacing:</label>
-                            <input type="range" id="wordSpacing" min="0" max="2" step="0.1" value="0" onchange="updateWordSpacing()">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Floating Action Button -->
-    <div class="fab" onclick="toggleTools()">🛠</div>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-links">
-                <a href="#" class="footer-link">Privacy Policy</a>
-                <a href="#" class="footer-link">Terms of Service</a>
-                <a href="#" class="footer-link">Contact Us</a>
-            </div>
-            <p>&copy; 2024 EmpowerLearn. All rights reserved.</p>
-        </div>
-    </footer>
-
-    <script>
-        // Remove loading screen
-        window.addEventListener('load', () => {
-            document.getElementById('loading').style.display = 'none';
-        });
-
-        // Theme Management
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark');
-            const icon = document.getElementById('theme-icon');
-            icon.textContent = document.body.classList.contains('dark') ? '🌞' : '🌓';
-        }
-
-        function toggleDyslexiaFont() {
-            document.body.classList.toggle('dyslexia-font');
-        }
-
-        // Smooth Scrolling
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
-        });
-
-        // Text to Speech
-        let utterance = new SpeechSynthesisUtterance();
-        utterance.rate = 1;
-        utterance.pitch = 1;
-
-        function speak() {
-            const text = document.getElementById('speechText').value;
-            utterance.text = text;
-            window.speechSynthesis.speak(utterance);
-        }
-
-        function pauseSpeech() {
-            window.speechSynthesis.pause();
-        }
-
-        function stopSpeech() {
-            window.speechSynthesis.cancel();
-        }
-
-        // Reading Ruler
-        let rulerActive = false;
-        const ruler = document.getElementById('readingRuler');
-
-        function toggleReadingRuler() {
-            rulerActive = !rulerActive;
-            ruler.style.display = rulerActive ? 'block' : 'none';
-        }
-
-        document.addEventListener('mousemove', (e) => {
-            if (rulerActive) {
-                ruler.style.left = e.clientX - 150 + 'px';
-                ruler.style.top = e.clientY - 15 + 'px';
-            }
-        });
-
-        function updateRulerOpacity() {
-            const opacity = document.getElementById('rulerOpacity').value;
-            ruler.style.backgroundColor = rgba(255, 255, 0, ${opacity});
-        }
-
-        function updateRulerColor() {
-            const color = document.getElementById('rulerColor').value;
-            ruler.style.backgroundColor = color;
-        }
-
-        // Color Overlay
-        function updateOverlay() {
-            const overlay = document.getElementById('colorOverlay');
-            const color = document.getElementById('overlayColor').value;
-            overlay.style.display = color === 'none' ? 'none' : 'block';
-            overlay.style.backgroundColor = color;
-        }
-
-        // Text Customizer
-        function updateFontSize() {
-            const size = document.getElementById('fontSize').value;
-            document.body.style.fontSize = ${size}px;
-        }
-
-        function updateLineHeight() {
-            const height = document.getElementById('lineHeight').value;
-            document.body.style.lineHeight = height;
-        }
-
-        function updateLetterSpacing() {
-            const spacing = document.getElementById('letterSpacing').value;
-            document.body.style.letterSpacing = ${spacing}px;
-        }
-
-        function updateWordSpacing() {
-            const spacing = document.getElementById('wordSpacing').value;
-            document.body.style.wordSpacing = ${spacing}px;
-        }
-
-        // Mobile Menu Toggle
-        const mobileToggle = document.getElementById('mobileToggle');
-        const navLinks = document.getElementById('navLinks');
-
-        mobileToggle.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-        });
-
-        // Dropdown Toggle
-        const dropdowns = document.querySelectorAll('.dropdown');
-
-        dropdowns.forEach(dropdown => {
-            dropdown.addEventListener('click', () => {
-                dropdown.classList.toggle('active');
-            });
-        });
-
-        // Tools Panel
-        function toggleTools() {
-            document.getElementById('tools').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Word Builder Game
-        const words = [
-            { word: 'LEARN', hint: 'To gain knowledge' },
-            { word: 'READ', hint: 'To look at and comprehend text' },
-            { word: 'WRITE', hint: 'To form letters on a surface' },
-            { word: 'SPELL', hint: 'To name the letters that form a word' },
-            { word: 'FOCUS', hint: 'To concentrate attention' }
-        ];
-
-        let currentWord = words[0];
-        let selectedLetters = [];
-        let availableLetters = [];
-
-        function initializeGame() {
-            selectedLetters = [];
-            availableLetters = currentWord.word.split('').sort(() => Math.random() - 0.5);
-            document.getElementById('wordHint').textContent = Hint: ${currentWord.hint};
-            updateLettersDisplay();
-        }
-
-        function updateLettersDisplay() {
-            const selectedContainer = document.getElementById('selectedLetters');
-            const availableContainer = document.getElementById('availableLetters');
-
-            selectedContainer.innerHTML = selectedLetters.map(letter =>
-                <div class="letter">${letter}</div>).join('');
-
-            availableContainer.innerHTML = availableLetters.map(letter =>
-                <div class="letter" onclick="selectLetter('${letter}')">${letter}</div>).join('');
-        }
-
-        function selectLetter(letter) {
-            const index = availableLetters.indexOf(letter);
-            if (index !== -1) {
-                availableLetters.splice(index, 1);
-                selectedLetters.push(letter);
-                updateLettersDisplay();
-            }
-        }
-
-        function checkWord() {
-            const attempt = selectedLetters.join('');
-            const result = document.getElementById('gameResult');
-
-            if (attempt === currentWord.word) {
-                result.textContent = '🎉 Correct! Well done!';
-                result.style.color = '#4CAF50';
-                setTimeout(() => {
-                    const nextIndex = (words.indexOf(currentWord) + 1) % words.length;
-                    currentWord = words[nextIndex];
-                    initializeGame();
-                    result.textContent = '';
-                }, 2000);
-            } else {
-                result.textContent = 'Try again!';
-                result.style.color = '#f44336';
-                setTimeout(() => {
-                    selectedLetters = [];
-                    availableLetters = currentWord.word.split('').sort(() => Math.random() - 0.5);
-                    updateLettersDisplay();
-                    result.textContent = '';
-                }, 1500);
-            }
-        }
-
-        // Initialize the game
-        initializeGame();
-    </script>
 </body>
 </html>
-{% endblock %}
+
+<script>
+const API_URL = "https://api.dictionaryapi.dev/api/v2/entries/en/";
+const UNSPLASH_API_KEY = "kN6beJ0ZB8zSeL7npUa4r4gAM-jiHX4v13SptWH9tL0"; // Get this from https://unsplash.com/developers
+const UNSPLASH_URL = "https://api.unsplash.com/photos/random?query=";
+
+document.getElementById("searchButton").addEventListener("click", fetchWordDetails);
+document.getElementById("wordInput").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        fetchWordDetails();
+    }
+});
+
+async function fetchWordDetails() {
+    const word = document.getElementById("wordInput").value.trim();
+    if (!word) {
+        showError("Please enter a word to search.");
+        return;
+    }
+
+    document.getElementById("loading").classList.remove("hidden");
+    document.getElementById("errorMessage").classList.add("hidden");
+    document.getElementById("wordDetails").classList.add("hidden");
+    document.getElementById("meanings").innerHTML = "";
+    document.getElementById("wordImage").classList.add("hidden");
+
+    try {
+        const response = await fetch(API_URL + encodeURIComponent(word));
+        if (!response.ok) throw new Error("Word not found!");
+
+        const data = await response.json();
+        displayWordDetails(data[0]);
+
+        // Fetch image related to the word
+        fetchWordImage(word);
+    } catch (error) {
+        showError(error.message);
+    } finally {
+        document.getElementById("loading").classList.add("hidden");
+    }
+}
+
+function displayWordDetails(wordData) {
+    document.getElementById("wordTitle").textContent = wordData.word;
+    document.getElementById("phonetic").textContent = wordData.phonetic || "No phonetic available.";
+
+    const audio = wordData.phonetics.find(p => p.audio)?.audio;
+    const audioButton = document.getElementById("playAudio");
+
+    if (audio) {
+        audioButton.classList.remove("hidden");
+        audioButton.onclick = () => new Audio(audio).play();
+    } else {
+        audioButton.classList.add("hidden");
+    }
+
+    const meaningsContainer = document.getElementById("meanings");
+    wordData.meanings.forEach(meaning => {
+        const meaningElement = document.createElement("div");
+        meaningElement.classList.add("meaning");
+
+        meaningElement.innerHTML = `
+            <h3>${meaning.partOfSpeech}</h3>
+            <p>${meaning.definitions[0].definition}</p>
+            ${meaning.definitions[0].example ? `<p class="example">"${meaning.definitions[0].example}"</p>` : ""}
+        `;
+
+        meaningsContainer.appendChild(meaningElement);
+    });
+
+    document.getElementById("wordDetails").classList.remove("hidden");
+}
+
+async function fetchWordImage(word) {
+    try {
+        const response = await fetch(`${UNSPLASH_URL}${word}&client_id=${UNSPLASH_API_KEY}`);
+        const data = await response.json();
+
+        if (data[0]?.urls?.regular) {
+            const wordImage = document.getElementById("wordImage");
+            wordImage.src = data[0].urls.regular;
+            wordImage.alt = word;
+            wordImage.classList.remove("hidden");
+        }
+    } catch (error) {
+        console.error("Failed to fetch image:", error);
+    }
+}
+
+function showError(message) {
+    document.getElementById("errorMessage").textContent = message;
+    document.getElementById("errorMessage").classList.remove("hidden");
+}
+</script>

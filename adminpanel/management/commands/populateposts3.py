@@ -17,6 +17,10 @@ class Command(BaseCommand):
 
         name=["snake",'frog',"horse","pig","tree",'dog',"bird",'eagle',"cricket",'football']
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 1b01296eb6435b15886139e244cc2e2b5ad4bba5
         image=["https://tse3.mm.bing.net/th?id=OIP.RL0ZKNoaDbaPGzZkuAdHAwHaHa&pid=Api&P=0&h=180","https://tse4.mm.bing.net/th?id=OIP.Bq6pyy9PsKGHa48VFeUtoQHaFj&pid=Api&P=0&h=180",
                "https://tse2.mm.bing.net/th?id=OIP.l5MlccMpovMVFgb3H5dQdgHaGO&pid=Api&P=0&h=180","https://tse3.mm.bing.net/th?id=OIP.EzJrrZwrVWEpOX4P9nI-vgHaIw&pid=Api&P=0&h=180","https://tse3.mm.bing.net/th?id=OIP.GkMD2FBlCrgUQjlEvqLGtwHaH8&pid=Api&P=0&h=180",
                "https://tse2.mm.bing.net/th?id=OIP.ZfuC4RnPRyyKHJ9co6w-PQHaFS&pid=Api&P=0&h=180","https://tse3.mm.bing.net/th?id=OIP.yKJsIdxjAg8xnLaLBIpOYgHaGO&pid=Api&P=0&h=180",
