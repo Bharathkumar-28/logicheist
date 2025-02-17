@@ -1,220 +1,106 @@
 {% extends 'base.html' %}
 {% block content %}
 <style>
-    /* Modern color scheme and variables */
-    :root {
-        --primary-color: #2563eb;
-        --hover-color: #1d4ed8;
-        --background-color: #f8fafc;
-        --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        --hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    }
-
-    body {
-        background: var(--background-color);
-        font-family: system-ui, -apple-system, sans-serif;
-    }
-
-    /* Page header styling */
-    .header {
-        text-align: center;
-        padding: 3rem 1rem;
-        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-        color: white;
-        margin-bottom: 2rem;
-    }
-
-    .header h1 {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-    }
-
-    .header p {
-        font-size: 1.1rem;
-        opacity: 0.9;
-        max-width: 600px;
-        margin: 0 auto;
-    }
-
-    /* Grid container improvements */
+    /* Overall layout and container */
     .image-container {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 2rem;
-        padding: 2rem;
-        max-width: 1200px;
-        margin: 0 auto;
+        grid-template-columns: repeat(2, 1fr); /* Two images per row */
+        gap: 30px; /* Space between images */
+        padding: 30px;
+        justify-items: center; /* Center images */
+       
+    }
+    h3{
+        color:black;
     }
 
-    /* Enhanced card styling */
+    /* Styling for each link */
     .image-link {
-        display: block;
-        text-decoration: none;
+        display: inline-block;
+        text-decoration: none; /* Remove underline */
         position: relative;
-        border-radius: 1rem;
         overflow: hidden;
-        background: white;
-        box-shadow: var(--card-shadow);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        aspect-ratio: 1;
-    }
-
-    .image-link:hover {
-        transform: translateY(-5px) scale(1.02);
-        box-shadow: var(--hover-shadow);
-    }
-
-    .image-effect {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .image-link:hover .image-effect {
-        transform: scale(1.1);
-    }
-
-    /* Card content overlay */
-    .card-content {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 1.5rem;
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
-        color: white;
-        transform: translateY(0);
+        border-radius: 16px; /* Rounded corners */
+        width: 220px; /* Increased width for larger images */
+        height: 220px; /* Maintain square aspect ratio */
         transition: transform 0.3s ease;
     }
 
-    .image-link:hover .card-content {
-        transform: translateY(-5px);
+    /* Styling for each image */
+    .image-effect {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Ensures images fill container without distortion */
+        border-radius: 16px; /* Rounded corners */
+        transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
     }
 
-    .card-content h3 {
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin: 0 0 0.5rem 0;
-        color: white;
+    /* Hover effect for images */
+    .image-link:hover .image-effect {
+        transform: scale(1.05); /* Slightly enlarge image */
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Deeper shadow */
+        opacity: 0.95; /* Subtle transparency */
     }
 
-    .card-content p {
-        font-size: 0.9rem;
-        margin: 0;
-        opacity: 0.9;
+    /* Active effect for clicked image */
+    .image-link:active .image-effect {
+        transform: scale(0.98); /* Slightly shrink when clicked */
     }
 
-    /* Icon styling */
-    .card-icon {
+    /* Titles under each image */
+    .image-link h3 {
         position: absolute;
-        top: 1rem;
-        right: 1rem;
-        background: rgba(255, 255, 255, 0.9);
-        padding: 0.5rem;
-        border-radius: 50%;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        bottom: 10px;
+        left: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); /* Shadow for better readability */
+        margin: 0;
     }
 
-    /* Loading animation */
-    @keyframes shimmer {
-        0% { background-position: -1000px 0; }
-        100% { background-position: 1000px 0; }
-    }
-
-    .image-link.loading {
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-        background-size: 1000px 100%;
-        animation: shimmer 2s infinite linear;
-    }
-
-    /* Responsive improvements */
+    /* Responsiveness */
     @media (max-width: 768px) {
-        .header h1 {
-            font-size: 2rem;
+        .image-link {
+            width: 100%;
+            height: 180px;
         }
 
         .image-container {
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            padding: 1rem;
-            gap: 1rem;
-        }
-
-        .card-content h3 {
-            font-size: 1.25rem;
+            grid-template-columns: repeat(1, 1fr); /* One image per row on mobile */
         }
     }
 
-    /* Accessibility improvements */
-    .image-link:focus {
-        outline: 3px solid var(--primary-color);
-        outline-offset: 2px;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        .image-link,
-        .image-effect,
-        .card-content {
-            transition: none;
-        }
-    }
 </style>
-
 
 <div class="image-container">
     <a href="/texttospeech" class="image-link">
-        <div class="card-icon">🗣️</div>
-        <img src="https://images.unsplash.com/photo-1589254065878-42c9da997008?auto=format&fit=crop&q=80&w=800" alt="Text to Speech" class="image-effect">
-        <div class="card-content">
-            <h3>Text to Speech</h3>
-            <p>Convert written text into natural-sounding speech</p>
-        </div>
+        <img src="https://img.freepik.com/free-vector/speech-text-concept-illustration_114360-4235.jpg?semt=ais_hybrid" alt="Text to Speech" class="image-effect">
+        
     </a>
 
     <a href="/game" class="image-link">
-        <div class="card-icon">🎮</div>
-        <img src="https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?auto=format&fit=crop&q=80&w=800" alt="Word Game" class="image-effect">
-        <div class="card-content">
-            <h3>Word Game</h3>
-            <p>Fun and engaging word puzzles to test your skills</p>
-        </div>
+        <img src="https://img.freepik.com/free-vector/background-people-television-contest_23-2147595530.jpg?semt=ais_hybrid" alt="Word Game" class="image-effect">
+        <h3>Word Game</h3>
     </a>
 
     <a href="/game2" class="image-link">
-        <div class="card-icon">🧩</div>
-        <img src="https://images.unsplash.com/photo-1606326608690-4e0281b1e588?auto=format&fit=crop&q=80&w=800" alt="Advanced Quiz" class="image-effect">
-        <div class="card-content">
-            <h3>Advanced Quiz</h3>
-            <p>Challenge yourself with advanced word puzzles</p>
-        </div>
+        <img src="https://img.freepik.com/free-vector/people-connecting-puzzle-pieces_23-2148071463.jpg?semt=ais_hybrid" alt="Advanced Word Game" class="image-effect">
+        <h3>quiz2</h3>
     </a>
 
     <a href="/speechtotext" class="image-link">
-        <div class="card-icon">🎤</div>
-        <img src="https://media.istockphoto.com/id/861092546/photo/speech-recognition-concept-hands-free-communication-machine-translation.webp?a=1&b=1&s=612x612&w=0&k=20&c=hTMfhvSQuBokYAfrqxDi_aDrbbEdtZ3-XTl9DjijYJo=" alt="Speech to Text" class="image-effect">
-        <div class="card-content">
-            <h3>Speech to Text</h3>
-            <p>Convert spoken words into written text instantly</p>
-        </div>
+        <img src="https://img.freepik.com/free-vector/speech-text-abstract-concept-illustration_335657-1879.jpg?semt=ais_hybrid" alt="Speech to Text" class="image-effect">
+        <h3 >Speech to Text</h3>
     </a>
 
     <a href="/spell" class="image-link">
-        <div class="card-icon">✨</div>
-        <img src="https://images.unsplash.com/photo-1456735190827-d1262f71b8a3?auto=format&fit=crop&q=80&w=800" alt="Spell Checker" class="image-effect">
-        <div class="card-content">
-            <h3>Spell Checker</h3>
-            <p>Improve your spelling with instant corrections</p>
-        </div>
+        <img src="https://img.freepik.com/premium-vector/businessman-found-success-word-search-puzzle_47328-500.jpg?semt=ais_hybrid" alt="Spell Checker" class="image-effect">
+        <h3>Spell Checker</h3>
     </a>
+  
 
-    <a href="/learn" class="image-link">
-        <div class="card-icon">📚</div>
-        <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&q=80&w=800" alt="Learning Hub" class="image-effect">
-        <div class="card-content">
-            <h3>Learning Hub</h3>
-            <p>Explore comprehensive learning resources</p>
-        </div>
-    </a>
+    
 </div>
+
 {% endblock %}
