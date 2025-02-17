@@ -53,11 +53,13 @@ urlpatterns = [
         
           path('home/',views.home,name='home'),
            path('chat/', views.chat, name='chat'),
-           path('avinash',views.avinash,name="avinash"),
+           path('avinash/<int:postid>',views.avinash,name="avinash"),
+           path('speechquizcard/',views.speechquizes,name="speechquiz"),
            path('courses/',views.coursesda,name="courses"),
            path('attemptcourses/<int:postid>',views.attemptcourses,name="attemptcourses"),
            path('leaderboarda/',views.leaderboarda,name='leaderboard'),
-           path('leaderboardview/',views.leaderboardview,name='leaderboardview')
+           path('leaderboardview/',views.leaderboardview,name='leaderboardview'),
+           path('deepak/',views.deepak,name='deepak'),
 
 
 

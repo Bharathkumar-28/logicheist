@@ -1,26 +1,124 @@
-<style>
-    .anchor{
-        margin:900px;
-        bottom:600px;
-        postion:sticky;
-    }
-</style>
-<footer>
-<a href="/home" class="anchor sticky-top>">
-    <img src="https://c.tenor.com/CigpzapemsoAAAAC/hi-robot.gif" alt="Spell Checker" class="image-effect" style="width: 100px; height: 100px; object-fit: contain;">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Customizer</title>
+    <style>
+        /* General reset and styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
 
-    
-</a>
-</footer>
+        /* Menu bar styling */
+        .menu-bar {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
 
-{% comment %} 
-<div class="text-container1 footer" id="flowingText">SMARTEDUCATION</div>
-<script>
-    // Optional: You can change the text dynamically using JavaScript
-    let textElement = document.getElementById('flowingText');
+        .menu-bar h3 {
+            margin: 0;
+        }
 
-    // Example: Change the text after 3 seconds
-    setTimeout(() => {
-        textElement.textContent = "SMART EDUCATION";
-    }, 3000);
-</script> {% endcomment %}
+        .menu-bar .customizer-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        input[type="range"] {
+            width: 100px;
+        }
+
+        /* Content below the menu */
+        .content {
+            padding: 20px;
+            flex-grow: 1;
+        }
+
+        /* Optional: Basic styles for the text that will change */
+        .text-container {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin: 20px 0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Menu Bar -->
+    <div class="menu-bar">
+        <h3>Text Customizer</h3>
+        <div class="customizer-controls">
+            <!-- Font Size -->
+            <div class="control-group">
+                <label for="fontSize">Font Size:</label>
+                <input type="range" id="fontSize" min="14" max="40" step="1" value="16" onchange="updateTextStyles()">
+            </div>
+
+            <!-- Line Height -->
+            <div class="control-group">
+                <label for="lineHeight">Line Height:</label>
+                <input type="range" id="lineHeight" min="1.2" max="7.4" step="0.1" value="1.6" onchange="updateTextStyles()">
+            </div>
+
+            <!-- Letter Spacing -->
+            <div class="control-group">
+                <label for="letterSpacing">Letter Spacing:</label>
+                <input type="range" id="letterSpacing" min="0" max="8" step="0.1" value="0" onchange="updateTextStyles()">
+            </div>
+
+            <!-- Word Spacing -->
+            <div class="control-group">
+                <label for="wordSpacing">Word Spacing:</label>
+                <input type="range" id="wordSpacing" min="0" max="8" step="0.1" value="0" onchange="updateTextStyles()">
+            </div>
+        </div>
+    </div>
+
+  
+    <script>
+        // Update text styles globally
+        function updateTextStyles() {
+            // Get values from the customizer controls
+            const fontSize = document.getElementById('fontSize').value;
+            const lineHeight = document.getElementById('lineHeight').value;
+            const letterSpacing = document.getElementById('letterSpacing').value;
+            const wordSpacing = document.getElementById('wordSpacing').value;
+
+            // Apply styles globally to all elements with text
+            document.body.style.fontSize = `${fontSize}px`;
+            document.body.style.lineHeight = lineHeight;
+            document.body.style.letterSpacing = `${letterSpacing}px`;
+            document.body.style.wordSpacing = `${wordSpacing}px`;
+        }
+    </script>
+
+</body>
+</html>

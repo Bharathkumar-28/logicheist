@@ -342,7 +342,7 @@
     // Enhanced dark mode toggle with smooth transition
     function toggleMode() {
         const body = document.body;
-        const modeToggle = document.querySelector('.mode-toggle');
+        const modeToggle = document.querySelector('.mode-toggle1'); // Fixed class name
 
         body.classList.toggle('dark-mode');
         modeToggle.textContent = body.classList.contains('dark-mode') ? '🌙' : '🌞';
@@ -355,7 +355,7 @@
     window.addEventListener('load', function() {
         if (localStorage.getItem('dark-mode') === 'true') {
             document.body.classList.add('dark-mode');
-            document.querySelector('.mode-toggle').textContent = '🌙';
+            document.querySelector('.mode-toggle1').textContent = '🌙';
         }
 
         // Add initial animation class

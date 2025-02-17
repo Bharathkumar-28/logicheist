@@ -98,6 +98,18 @@ class courses(models.Model):
 class  leaderboard(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE,null=True)
     data=models.JSONField(null=True,blank=True)
+class speechquiz2(models.Model):
+   
+   
+    title=models.CharField(max_length=100,null=True)
+    name=models.CharField(max_length=100,null=True)
+    image=models.ImageField(null=True,upload_to='posts/images',blank=True)
+    data=models.JSONField(null=True,blank=True)
+    @property        
+    def formattedimgurl(self):
+        url=self.image if self.image.__str__().startswith(('http','https://')) else self.image.url
+        return url
+      
 
 
 

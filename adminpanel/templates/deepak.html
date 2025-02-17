@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Explorer</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="script.js"></script>
+</head>
+<style>
+    /* General Styles */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    /* Main Container */
+    .container {
+        width: 80%;
+        max-width: 1000px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Flexbox for Layout */
+    .content {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    /* Left Side: Image */
+    .image-container {
+        flex: 1;
+        text-align: center;
+    }
+
+    .word-image {
+        width: 100%;
+        max-width: 1000px;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 8px;
+        display: block;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Right Side: Word Explorer */
+    .word-explorer {
+        flex: 1;
+    }
+
+    .title {
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .subtitle {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 20px;
+    }
+
+    /* Search Bar */
+    .search-bar {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .search-bar input {
+        flex: 1;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .search-bar button {
+        padding: 10px 15px;
+        font-size: 16px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .search-bar button:hover {
+        background: #0056b3;
+    }
+
+    /* Word Details */
+    .word-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    h2 {
+        margin: 0;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .error-message {
+        color: red;
+    }
+
+    .meaning {
+        margin-bottom: 10px;
+    }
+
+    .example {
+        color: #555;
+        font-style: italic;
+    }
+</style>
+<body>
+    <div class="container">
+        <div class="content">
+            <!-- Left Side: Image -->
+            <div class="image-container">
+                <img id="wordImage" class="word-image hidden" src="" alt="Related image">
+            </div>
+
+            <!-- Right Side: Word Explorer -->
+            <div class="word-explorer">
+                <h1 class="title">Word Explorer</h1>
+                <p class="subtitle">Discover meanings, pronunciations, and images</p>
+
+                <div class="search-bar">
+                    <input type="text" id="wordInput" placeholder="Enter a word...">
+                    <button id="searchButton">Search</button>
+                </div>
+
+                <div id="loading" class="loading hidden">Searching...</div>
+                <div id="errorMessage" class="error-message hidden"></div>
+
+                <div id="wordDetails" class="hidden">
+                    <div class="word-header">
+                        <h2 id="wordTitle"></h2>
+                        <p id="phonetic"></p>
+                        <button id="playAudio" class="hidden">🔊</button>
+                    </div>
+                    <div id="meanings"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+const API_URL = "https://api.dictionaryapi.dev/api/v2/entries/en/";
+const UNSPLASH_API_KEY = "kN6beJ0ZB8zSeL7npUa4r4gAM-jiHX4v13SptWH9tL0"; // Get this from https://unsplash.com/developers
+const UNSPLASH_URL = "https://api.unsplash.com/photos/random?query=";
+
+document.getElementById("searchButton").addEventListener("click", fetchWordDetails);
+document.getElementById("wordInput").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        fetchWordDetails();
+    }
+});
+
+async function fetchWordDetails() {
+    const word = document.getElementById("wordInput").value.trim();
+    if (!word) {
+        showError("Please enter a word to search.");
+        return;
+    }
+
+    document.getElementById("loading").classList.remove("hidden");
+    document.getElementById("errorMessage").classList.add("hidden");
+    document.getElementById("wordDetails").classList.add("hidden");
+    document.getElementById("meanings").innerHTML = "";
+    document.getElementById("wordImage").classList.add("hidden");
+
+    try {
+        const response = await fetch(API_URL + encodeURIComponent(word));
+        if (!response.ok) throw new Error("Word not found!");
+
+        const data = await response.json();
+        displayWordDetails(data[0]);
+
+        // Fetch image related to the word
+        fetchWordImage(word);
+    } catch (error) {
+        showError(error.message);
+    } finally {
+        document.getElementById("loading").classList.add("hidden");
+    }
+}
+
+function displayWordDetails(wordData) {
+    document.getElementById("wordTitle").textContent = wordData.word;
+    document.getElementById("phonetic").textContent = wordData.phonetic || "No phonetic available.";
+
+    const audio = wordData.phonetics.find(p => p.audio)?.audio;
+    const audioButton = document.getElementById("playAudio");
+
+    if (audio) {
+        audioButton.classList.remove("hidden");
+        audioButton.onclick = () => new Audio(audio).play();
+    } else {
+        audioButton.classList.add("hidden");
+    }
+
+    const meaningsContainer = document.getElementById("meanings");
+    wordData.meanings.forEach(meaning => {
+        const meaningElement = document.createElement("div");
+        meaningElement.classList.add("meaning");
+
+        meaningElement.innerHTML = `
+            <h3>${meaning.partOfSpeech}</h3>
+            <p>${meaning.definitions[0].definition}</p>
+            ${meaning.definitions[0].example ? `<p class="example">"${meaning.definitions[0].example}"</p>` : ""}
+        `;
+
+        meaningsContainer.appendChild(meaningElement);
+    });
+
+    document.getElementById("wordDetails").classList.remove("hidden");
+}
+
+async function fetchWordImage(word) {
+    try {
+        const response = await fetch(`${UNSPLASH_URL}${word}&client_id=${UNSPLASH_API_KEY}`);
+        const data = await response.json();
+
+        if (data[0]?.urls?.regular) {
+            const wordImage = document.getElementById("wordImage");
+            wordImage.src = data[0].urls.regular;
+            wordImage.alt = word;
+            wordImage.classList.remove("hidden");
+        }
+    } catch (error) {
+        console.error("Failed to fetch image:", error);
+    }
+}
+
+function showError(message) {
+    document.getElementById("errorMessage").textContent = message;
+    document.getElementById("errorMessage").classList.remove("hidden");
+}
+</script>
