@@ -15,7 +15,13 @@
                 <a class="text-light text-decoration-none" href="/">Home</a>
                 <a class="text-light text-decoration-none" href="/about">About</a>
                 <a class="text-light text-decoration-none" href="/contact">Contact</a>
-                <a class="text-light text-decoration-none" href="/index1">Practice</a>
+                <select id="levelSelect" onchange="window.location.href = this.value;" name="practice">
+                    <option value="/game2">Practice 1</option>
+                    <option value="/avinash">Practice 2</option>
+                    <option value="/index3">Practice 3</option>
+                  </select>
+                  
+                  
                 <a class="text-light text-decoration-none" href="/leaderboardview">Leaderboard</a>
 
                 {% if user.is_authenticated %}

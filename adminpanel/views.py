@@ -17,7 +17,7 @@ from adminpanel.models import post,profile, words
 import pdb
 import logging
 from django.http import JsonResponse
-from .models import courses, gameresult, quiz,leaderboard
+from .models import courses, gameresult, quiz,leaderboard, speechquiz2
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
@@ -49,7 +49,7 @@ def attempt(request,postid):
     quiz_instance = quiz.objects.get(id=postid)
     gameresult2.objects.all().delete() 
 
-    # Get the data (assuming it's a dictionary)
+ 
     data = quiz_instance.data
     print("Data:", data)
 
@@ -68,7 +68,6 @@ def attempt(request,postid):
 
     
 
-# Create your views here.
 def register(request):
     form=registerform()
     blogtitle="bjarath" 
@@ -183,17 +182,16 @@ def spell(request):
     if request.method == 'POST':
         word = request.POST.get('word', '').strip()
         
-        # Initialize the spell checker
+       
         spell = SpellChecker()
 
-        # Get the suggestions for the word
         misspelled = spell.unknown([word])
         suggestions = []
 
         for word in misspelled:
-            suggestions = spell.candidates(word)  # Get all suggestions
+            suggestions = spell.candidates(word)  
 
-        # Return the suggestions as JSON
+  
         return JsonResponse({'suggestions': list(suggestions)})
     return render(request,"spell.html")
 
@@ -207,7 +205,7 @@ def profiles(request):
     return render(request,"profile.html",{'posts':posts})
 @login_required
 def game(request):
-    # Fetch all the word posts
+ 
     posts = words.objects.all().values('name', 'image')  # Get 'name' and 'image' fields
     # Serialize the data to JSON format
     posts_json = json.dumps(list(posts))
@@ -522,9 +520,24 @@ def chat(request):
         return JsonResponse({"reply": model_response})
 
     return JsonResponse({"reply": "Invalid request."}, status=400)
+def speechquizes(request):
+    posts=speechquiz2.objects.all()
+    return render(request,'speechquizcard.html',{"posts":posts})
+def avinash(request,postid):
+    oii=speechquiz2.objects.get(id=postid)
+    soii=oii.data
+    list_data=[ i for i in soii]
+    serialized_data = json.dumps(list_data)
+    print(serialized_data)
+    return render(request,"avinash.html",{"serialized_data ":serialized_data })
+    
 
-def avinash(request):
-    return render(request,'avinash.html')
+
+
+
+
+
+   
 def coursesda(request):
     posts=courses.objects.all()
     return render(request,"coursesda.html",{"posts":posts})
@@ -610,18 +623,28 @@ def leaderboarda(request):
 from django.shortcuts import render
 
 
+from django.shortcuts import render
+from .models import leaderboard  # Adjust the import if needed
+
 def leaderboardview(request):
-    # Retrieve the top 10 leaderboard entries (or as many as you need)
-    leaderboard_entries =leaderboard.objects.all().order_by('data')
-    
-    # Prepare the data to pass to the template
+    # Retrieve the leaderboard entries (you can adjust the number of entries)
+    leaderboard_entries = leaderboard.objects.all()
+
     leaderboard_data = []
     for entry in leaderboard_entries:
-        # Assuming your `data` field is a list of results
-        latest_result = entry.data[-1] if entry.data else {'word': 'N/A', 'is_correct': 0}
+   
+        
+       
+        total_score = sum(result['is_correct'] for result in entry.data)  # Calculate total score
+
         leaderboard_data.append({
             'user': entry.user.username if entry.user else 'Anonymous',
-            'score': sum(result['is_correct'] for result in entry.data)  # Calculate total score
+            'score': total_score
         })
+
+
+    leaderboard_data.sort(key=lambda x: x['score'], reverse=True)
     
     return render(request, 'leaderboard.html', {'leaderboard_data': leaderboard_data})
+def deepak(request):
+    return render(request, 'deepak.html' )
