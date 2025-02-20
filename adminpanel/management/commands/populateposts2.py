@@ -14,16 +14,16 @@ class Command(BaseCommand):
         #deleting existing data
         profile.objects.all().delete()
 
-        Name=["bharathkumar"]
-        age=[20]
+        names=["bharathkumar"]
+        ages=[20]
 
-        content=["i am web developer"]
+        contents=["i am web developer"]
              
-        
-        address=['vellore']
-        image=["https://picsum.photos/id/1/200/300"]
-        for name,age,content,address,image in zip(Name,age,content,address,image):
-            profile.objects.create(Name=Name,age=age,content=content,address=address,image=image)
+        emails=["hellojiohellojio@gmail.com"]
+        addresss=['vellore']
+        images=["https://picsum.photos/id/1/200/300"]
+        for name,age,content,address,image,email in zip(names,ages,contents,addresss,images,emails):
+            profile.objects.create(Name=name,age=age,content=content,address=address,image=image,email=email)
         self.stdout.write(self.style.SUCCESS("completed inserting data"))    
 
 

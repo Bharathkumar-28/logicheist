@@ -42,6 +42,7 @@ class profile(models.Model):
      age=models.PositiveIntegerField()  
      content=models.CharField(max_length=100) 
      address=models.CharField(max_length=100) 
+     user=models.ForeignKey(User,on_delete=models.CASCADE,null=True)
      
      @property        
      def formattedimgurl(self):

@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import get_object_or_404, render,redirect
 from django.http import HttpResponse
 from django.urls import  reverse
 from django.contrib import messages
@@ -213,15 +213,16 @@ def game(request):
     # Pass the serialized data to the template
     return render(request, "game.html", {'posts': posts_json, 'blogtitle': 'bjarath'})
 @login_required
-def createprofile(request):
+def createprofile(request,postid):
+    profileinstance= get_object_or_404(profile, id=postid)
     form=profileform()
     if request.method=="POST":
-        form=profileform(request.POST,request.FILES)
+        form=profileform(request.POST,request.FILES,instance=profileinstance)
         if form .is_valid():
             post=form.save(commit=False)
             post.user=request.user
             post.save()
-            return redirect('profile')
+            return redirect('profiles')
     return render(request,"createprofile.html",{'form':form})
 
 """ def newpost(request):
@@ -523,13 +524,19 @@ def chat(request):
 def speechquizes(request):
     posts=speechquiz2.objects.all()
     return render(request,'speechquizcard.html',{"posts":posts})
-def avinash(request,postid):
-    oii=speechquiz2.objects.get(id=postid)
-    soii=oii.data
-    list_data=[ i for i in soii]
-    serialized_data = json.dumps(list_data)
-    print(serialized_data)
-    return render(request,"avinash.html",{"serialized_data ":serialized_data })
+from django.shortcuts import render
+import json
+
+def avinash(request, postid):
+    oii = speechquiz2.objects.get(id=postid)  # Fetch the object using the post ID
+    soii = oii.data  # Get the 'data' field (presumably a list of words)
+    
+    list_data = [i for i in soii]  # Convert data into a list (if needed)
+    serialized_data = json.dumps(list_data)  # Serialize the list into JSON format
+    print(serialized_data)  # For debugging
+    
+    return render(request, "avinash.html", {"serialized_data": serialized_data})
+
     
 
 
@@ -648,3 +655,4 @@ def leaderboardview(request):
     return render(request, 'leaderboard.html', {'leaderboard_data': leaderboard_data})
 def deepak(request):
     return render(request, 'deepak.html' )
+
