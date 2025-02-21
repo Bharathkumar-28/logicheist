@@ -12,6 +12,10 @@
 </head>
 <body>
     <h1>Add New Quiz</h1>
+    <div class="">
+        <!-- Error messages -->
+        {% include 'includes/errors.html'  %}
+    </div>
     
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}

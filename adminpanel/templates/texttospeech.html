@@ -21,6 +21,11 @@
         box-shadow: 0 0 15px rgba(52, 152, 219, 0.2);
     }
 
+    .highlight {
+        background-color: rgba(105, 52, 219, 0.3);  /* Blue highlight */
+        transition: background-color 0.2s ease;
+    }
+
     .controls {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -193,6 +198,8 @@
         let voices = [];
         let currentUtterance = null;
         let isPaused = false;
+        let currentWordIndex = 0;
+        let words = [];
 
         // Function to populate available voices
         function populateVoiceList() {
@@ -222,6 +229,26 @@
             document.getElementById('pitch-value').textContent = e.target.value;
         });
 
+        // Function to highlight the current word
+        function highlightText(currentIndex) {
+            const textInput = document.getElementById('text-input');
+            const wordsArray = textInput.value.split(' ');
+
+            // Reset previous highlight
+            textInput.innerHTML = textInput.value;
+
+            if (currentIndex < wordsArray.length) {
+                const highlightedText = wordsArray.map((word, index) => {
+                    if (index === currentIndex) {
+                        return `<span class="highlight">${word}</span>`;
+                    }
+                    return word;
+                }).join(' ');
+
+                textInput.innerHTML = highlightedText;
+            }
+        }
+
         // Button to start speaking the text
         document.getElementById('speak-button').addEventListener('click', () => {
             const text = document.getElementById('text-input').value.trim();
@@ -232,11 +259,12 @@
 
             speechSynthesis.cancel();
             isPaused = false;
+            currentWordIndex = 0;
+            words = text.split(' ');
 
             currentUtterance = new SpeechSynthesisUtterance(text);
             const voiceIndex = document.getElementById('voice-select').value;
             currentUtterance.voice = voices[voiceIndex];
-
             currentUtterance.rate = parseFloat(document.getElementById('rate').value);
             currentUtterance.pitch = parseFloat(document.getElementById('pitch').value);
 
@@ -247,6 +275,13 @@
             currentUtterance.onend = () => {
                 document.getElementById('status').classList.remove('speaking');
                 isPaused = false;
+            };
+
+            currentUtterance.onboundary = (event) => {
+                if (event.name === 'word') {
+                    highlightText(currentWordIndex);
+                    currentWordIndex++;
+                }
             };
 
             speechSynthesis.speak(currentUtterance);

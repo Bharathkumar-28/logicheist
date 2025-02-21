@@ -36,6 +36,8 @@ urlpatterns = [
            path('game/',views.game,name='game'),
            path('profiles/',views.profiles,name='profiles'),
            path('createprofile/<int:postid>/',views.createprofile,name='createprofile'),
+           path('addprofiles/',views.addprofiles,name="addprofiles"),
+             
 
           path('contact/',views.contact,name='contact'),
           path('graph/',views.graph,name='graph'),
@@ -59,7 +61,7 @@ urlpatterns = [
            path('attemptcourses/<int:postid>',views.attemptcourses,name="attemptcourses"),
            path('leaderboarda/',views.leaderboarda,name='leaderboard'),
            path('leaderboardview/',views.leaderboardview,name='leaderboardview'),
-           path('deepak/',views.deepak,name='deepak'),
+           
 
 
 

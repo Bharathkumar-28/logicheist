@@ -87,6 +87,7 @@ def register(request):
     return render (request,"register.html",{'form':form,'blogtitle':blogtitle})
 
 def about(request):
+    print('abougannnnnnn')
     gameresult2.objects.all().delete() 
     return render(request,'about.html')
 
@@ -201,8 +202,54 @@ def index(request):
     return render(request,"index.html")
 @login_required
 def profiles(request):
-    posts=profile.objects.first()
-    return render(request,"profile.html",{'posts':posts})
+    posts = profile.objects.filter(user=request.user)
+    if posts:
+    
+        # Get the posts related to the authenticated user
+        posts = profile.objects.filter(user=request.user)
+
+        # Print each post's information in the QuerySet
+        print('oiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii')
+        for post in posts:
+            print(f"Post ID: {post.id}, User: {post.user}, Title: {post.Name}")  # Example: print the id, user, and title of each post
+        
+        return render(request, "profile.html", {'posts': posts})
+    else:
+        if not posts:
+            return redirect('addprofiles')
+       
+      
+    
+
+    
+
+
+     
+     
+from django.shortcuts import render, redirect
+
+from django.contrib.auth.models import User
+  # You can create a ModelForm to make this easier
+
+def addprofiles(request):
+    print('manishkumar')
+    form=profileform()
+    if request.method=="POST":
+        print("doiiiiiiiiiiiiiiiii hdhjdjnhcdhbhdcbchb")
+        form=profileform(request.POST,request.FILES)
+        print("oii",form.is_valid()) 
+        if form .is_valid():
+            post=form.save(commit=False)
+            post.user=request.user
+            post.save()
+        # Get the data from the form
+      
+
+        return redirect('profiles')  # Redirect to a new page or success message
+
+    return render(request, 'addprofile.html',{'form':form})
+
+    
 @login_required
 def game(request):
  
@@ -633,26 +680,39 @@ from django.shortcuts import render
 from django.shortcuts import render
 from .models import leaderboard  # Adjust the import if needed
 
+from django.shortcuts import render
+from .models import leaderboard, profile
+
+from django.shortcuts import render
+from .models import leaderboard, profile
+from django.contrib.auth.models import User
+
 def leaderboardview(request):
-    # Retrieve the leaderboard entries (you can adjust the number of entries)
-    leaderboard_entries = leaderboard.objects.all()
+    # Retrieve all users
+    users = User.objects.all()
+    posts = profile.objects.all()
 
     leaderboard_data = []
-    for entry in leaderboard_entries:
-   
-        
-       
-        total_score = sum(result['is_correct'] for result in entry.data)  # Calculate total score
+
+    for user in users:
+        # Get the user's profile image (if available)
+        user_profile = posts.filter(user=user).first()  # Get the profile for the current user
+        user_image = user_profile.image.url if user_profile and user_profile.image else None  # Get the image URL
+
+        # Check if the user has a leaderboard entry
+        leaderboard_entry = leaderboard.objects.filter(user=user).first()
+
+        if leaderboard_entry:
+            total_score = sum(result['is_correct'] for result in leaderboard_entry.data)  # Calculate total score
+        else:
+            total_score = 0  # Default score if no leaderboard entry
 
         leaderboard_data.append({
-            'user': entry.user.username if entry.user else 'Anonymous',
-            'score': total_score
+            'user': user.username,
+            'score': total_score,
+            'image': user_image  # Add the image to the data
         })
 
+    leaderboard_data.sort(key=lambda x: x['score'], reverse=True)  # Sort by score, highest first
 
-    leaderboard_data.sort(key=lambda x: x['score'], reverse=True)
-    
     return render(request, 'leaderboard.html', {'leaderboard_data': leaderboard_data})
-def deepak(request):
-    return render(request, 'deepak.html' )
-
