@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'adminpanel',
       'corsheaders',
 ]
-
+APPEND_SLASH=False
+DEBUG = False
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

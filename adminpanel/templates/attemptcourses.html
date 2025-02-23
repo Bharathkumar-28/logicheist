@@ -3,12 +3,10 @@
 {% block content %}
 <style>
     /* Global Styles */
- 
-
     /* Game Container */
     .game-container {
         margin: 50px auto;
-        max-width: 500px; /* Adjust width of the container */
+        max-width: 90%%;
         padding: 30px;
         background-color: #ffffff;
         border-radius: 15px;
@@ -41,15 +39,15 @@
         margin-top: 20px;
         background-color: #f9f9f9;
         border-radius: 10px;
-        padding: 10px; /* Reduced padding */
-        width: 100px; /* Reduced width */
+        padding: 10px;
+        width: 100px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         text-align: center;
         margin: 0 auto;
     }
 
     .word-card img {
-        width: 150px; /* Reduced image size */
+        width: 150px;
         height: 150px;
         border-radius: 10px;
         object-fit: cover;
@@ -163,10 +161,6 @@
     }
 </style>
 
-
-
-
-
 <div class="game-container">
     <h1>Word Scramble Game</h1>
     <p>Unscramble the letters to form a word.</p>
@@ -198,18 +192,25 @@
         <button id="prevPage" onclick="changePage(-1)">Previous</button>
         <button id="nextPage" onclick="changePage(1)">Next</button>
     </div>
+
+    <div class="input-container">
+        <button onclick="revealNextCluster()">Reveal Next Cluster</button>
+    </div>
 </div>
 
 <script>
     // Global variables
+    let currentWord = {}; 
+    let currentClusters = [];
+    let clusterIndex = 0;
+    let pitch = 1;
+    let speed = 1;
+    let currentPage = 0;  // Initialize current page to 0
     const wordsData = JSON.parse('{{ list_data|safe|escapejs }}');
     const wordsPerPage = 5;
-    let currentPage = 0;
-    let currentWord = {}; // Initialize currentWord globally
-    let pitch = 1; // Default pitch
-    let speed = 1; // Default speed
-
     let words = [];
+
+    // Prepare words list
     wordsData.forEach(post => {
         words.push({
             word: post.word,
@@ -217,31 +218,85 @@
         });
     });
 
+    // Get words for the current page
     function getWordsForPage(page) {
         const start = page * wordsPerPage;
         const end = start + wordsPerPage;
         return words.slice(start, end);
     }
 
+    // Get random word from current page
     function getRandomWord() {
         const wordSubset = getWordsForPage(currentPage);
         const randomIndex = Math.floor(Math.random() * wordSubset.length);
         return wordSubset[randomIndex];
     }
 
-    function shuffleWord(word) {
-        return word.split('').sort(() => 0.3 - Math.random()).join('');
+    // Function to break word into clusters (letter-by-letter)
+    function processWord() {
+        let word = document.getElementById("userInput").value.trim().toLowerCase();
+        if (!word) return;
+
+        const commonPrefixes = ['pre', 'un', 'dis', 'in', 're', 'mis'];
+        const commonSuffixes = ['ly', 'ing', 'ed', 'ness', 'ful', 'able'];
+
+        // Function to break word into clusters
+        let clusters = [];
+
+        // Check for prefixes
+        for (let prefix of commonPrefixes) {
+            if (word.startsWith(prefix)) {
+                clusters.push(`<span class="cluster prefix">${prefix}</span>`);
+                word = word.substring(prefix.length); // Remove prefix from the word
+                break;  // Stop once a prefix is found
+            }
+        }
+
+        // Check for suffixes
+        for (let suffix of commonSuffixes) {
+            if (word.endsWith(suffix)) {
+                clusters.push(`<span class="cluster suffix">${word.slice(0, -suffix.length)}</span>`);
+                clusters.push(`<span class="cluster suffix">${suffix}</span>`);
+                displayClusters(clusters);
+                speakClusters(clusters); // Speak each cluster one by one
+                return;
+            }
+        }
+
+        // Default if no prefix/suffix is found: display the word as is, with simple chunks
+        clusters.push(word.split('').join('-')); // Simple chunking by characters (e.g., "L-i-o-n")
+        displayClusters(clusters);
+        speakClusters(clusters); // Speak each cluster one by one
     }
 
+    // Display clusters
+    function displayClusters(clusters) {
+        document.getElementById('scrambledWord').innerHTML = clusters.join('');
+    }
+
+    // Speak clusters
+    function speakClusters(clusters) {
+        clusters.forEach((cluster, index) => {
+            setTimeout(() => {
+                const clusterText = cluster.replace(/<\/?span.*?>/g, ''); // Remove HTML tags
+                speakWord(clusterText); // Speak the cluster (letter or word part)
+            }, index * 1000); // Delay between each cluster
+        });
+    }
+
+    // Split word into clusters (letter-by-letter)
+    function getWordClusters(word) {
+        return word.split(''); // Break word into individual letters (e.g., 'L', 'i', 'o', 'n')
+    }
+
+    // Load a new word
     function loadNewWord() {
         const wordObj = getRandomWord();
-        currentWord = wordObj;  // Store current word globally
-        const scrambled = shuffleWord(wordObj.word);
-        
-        // Display scrambled word
-        document.getElementById('scrambledWord').textContent = scrambled;
-        
-        // Display word card with image
+        currentWord = wordObj;
+        currentClusters = getWordClusters(wordObj.word);
+        clusterIndex = 0;
+
+        // Display word card
         const wordCard = `
             <div class="card">
                 <h3>${wordObj.word}</h3>
@@ -249,79 +304,68 @@
             </div>
         `;
         document.getElementById('wordCard').innerHTML = wordCard;
-        
-        // Clear previous feedback
         document.getElementById('feedbackText').innerHTML = '';
-        
-        // Clear input field
         document.getElementById('userInput').value = '';
+        displayClusters([wordObj.word.split('').join('-')]); // Display the word with hyphen separators
     }
 
-    function checkAnswer() {
-        const userInput = document.getElementById('userInput').value.toLowerCase();
-        const isCorrect = userInput === currentWord.word.toLowerCase();
-        
-        if (isCorrect) {
-            document.getElementById('feedbackText').textContent = 'Correct!';
-            document.getElementById('feedbackText').className = 'feedback correct';
-            stopSpeech(); // Stop any ongoing speech synthesis
-            setTimeout(function() {
-                loadNewWord(); // Load new word after correct answer
-            }, 1000);
+    // Start speech for the word (letter by letter)
+    function startSpeech() {
+        if (currentWord && currentWord.word) {
+            // Break the word into letters
+            const letters = currentWord.word.split('');
+            
+            // First, speak each letter
+            let delay = 0;
+            letters.forEach((letter, index) => {
+                setTimeout(() => {
+                    speakWord(letter); // Speak the letter
+                }, delay);
+                delay += 500; // Delay of 500ms between each letter
+            });
+
+            // After the letters, speak the full word
+            setTimeout(() => {
+                speakWord(currentWord.word); // Speak the full word
+            }, delay);
         } else {
-            document.getElementById('feedbackText').textContent = 'Oops! Try again!';
-            document.getElementById('feedbackText').className = 'feedback incorrect';
+            alert("No word loaded yet!");
         }
     }
 
+    // Speak the word/letter using the Speech API
     function speakWord(word) {
-        if (!word) {
-            alert("No word loaded yet!");
-            return;
-        }
-        
         const wordUtterance = new SpeechSynthesisUtterance(word);
         wordUtterance.pitch = pitch;
         wordUtterance.rate = speed;
         window.speechSynthesis.speak(wordUtterance);
     }
 
-    function stopSpeech() {
-        window.speechSynthesis.cancel();
-    }
+    // Check user's answer
+    function checkAnswer() {
+        const userAnswer = document.getElementById('userInput').value.toLowerCase();
+        const correctAnswer = currentWord.word.toLowerCase();
 
-    function adjustSpeechSettings() {
-        pitch = document.getElementById('pitch').value;
-        speed = document.getElementById('speed').value;
-    }
-
-    function startSpeech() {
-        if (currentWord && currentWord.word) {
-            speakWord(currentWord.word);
+        if (userAnswer === correctAnswer) {
+            document.getElementById('feedbackText').textContent = "Correct!";
+            document.getElementById('feedbackText').classList.add('correct');
+            document.getElementById('feedbackText').classList.remove('incorrect');
         } else {
-            alert("No word loaded yet!");
+            document.getElementById('feedbackText').textContent = "Incorrect, try again!";
+            document.getElementById('feedbackText').classList.add('incorrect');
+            document.getElementById('feedbackText').classList.remove('correct');
         }
     }
 
+    // Handle page change (previous/next)
     function changePage(direction) {
         const totalPages = Math.ceil(words.length / wordsPerPage);
         currentPage += direction;
-
-        if (currentPage < 0) {
-            currentPage = 0;
-        } else if (currentPage >= totalPages) {
-            currentPage = totalPages - 1;
-        }
-
+        currentPage = Math.max(0, Math.min(currentPage, totalPages - 1));
         loadNewWord();
     }
 
     // Initial load
     loadNewWord();
 </script>
-
-
-
-
-
 {% endblock %}

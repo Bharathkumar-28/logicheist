@@ -59,6 +59,7 @@ class profileform(forms.ModelForm):
     address=forms.CharField(label='address', required=True)
     image = forms.ImageField(label='image', required=False)
     email=forms.EmailField(label='email',required=True)
+  
 
     class Meta:
         model = profile
