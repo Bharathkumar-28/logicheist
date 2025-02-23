@@ -113,6 +113,7 @@ class quizform(forms.ModelForm):
     word_1 = forms.CharField(max_length=100, required=False, label="Word 2")
     image_1 = forms.ImageField(required=False, label="Image 2")
     
+    
     class Meta:
         model = quiz
         fields = ['name', 'title', 'content', 'image', 'week', 'word_0', 'image_0', 'word_1', 'image_1']
