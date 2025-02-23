@@ -87,6 +87,21 @@
         transform: translateY(-2px);
     }
 
+    /* Progress Tracker Styles */
+    .star-container {
+        margin-top: 30px;
+        font-size: 2em;
+        color: #ffd700;
+    }
+
+    .star {
+        margin: 0 5px;
+    }
+
+    .star.empty {
+        color: #ddd;
+    }
+
     @keyframes fadeIn {
         0% { opacity: 0; }
         100% { opacity: 1; }
@@ -98,6 +113,16 @@
     <h1>Word Scramble Game</h1>
     <p>Unscramble the letters to form a word.</p>
     <div class="word-container" id="scrambledWord"></div>
+
+    <!-- Star Progress Tracker -->
+    <div class="star-container" id="starProgress">
+        <span class="star empty">&#9733;</span>
+        <span class="star empty">&#9733;</span>
+        <span class="star empty">&#9733;</span>
+        <span class="star empty">&#9733;</span>
+        <span class="star empty">&#9733;</span>
+    </div>
+
     <div class="input-container">
         <input type="text" id="userInput" placeholder="Enter your guess" />
         <button onclick="checkAnswer()">Submit</button>
@@ -109,85 +134,77 @@
 </div>
 
 <script>
-    // JavaScript code
     const wordsData = JSON.parse('{{ list_data|safe|escapejs }}');
-
-    console.log("list_data:", '{{ list_data|safe|escapejs }}');
-    console.log("wordsData:", wordsData);
-    console.log("Type of wordsData:", typeof wordsData);
-    
     const words = [];
+    let correctAnswers = 0;
+
     wordsData.forEach(post => {
         words.push({
-            word: post.word,      // Word is passed here
-            image: post.image     // Image URL is passed here
+            word: post.word,
+            image: post.image
         });
     });
-    console.log("Words array:", words);
 
     let currentWord;
-    
+
     function getRandomWord() {
         const randomIndex = Math.floor(Math.random() * words.length);
         currentWord = words[randomIndex];
-        console.log("New random word:", currentWord);
-        console.log("Current Word Image:", currentWord.image); // Debug image
         return currentWord;
     }
-    
-    function shuffleWord(word) {
-        const shuffled = word.split('').sort(() => 0.3- Math.random()).join('');
-        console.log("Shuffled word:", shuffled);
-        return shuffled;
-    }
-    
-    function loadNewWord() {
-        console.log("Loading a new word...");
-        const wordObj = getRandomWord();
-        console.log("wordObj:", wordObj);
-    
-        const scrambled = shuffleWord(wordObj.word);
-    
-        // Display the scrambled word
-        document.getElementById('scrambledWord').textContent = scrambled;
-    
-        // Clear previous feedback text first
-        document.getElementById('feedbackText').innerHTML = ''; 
 
-        // Display the associated image if available
+    function shuffleWord(word) {
+        return word.split('').sort(() => 0.3 - Math.random()).join('');
+    }
+
+    function loadNewWord() {
+        const wordObj = getRandomWord();
+        const scrambled = shuffleWord(wordObj.word);
+        document.getElementById('scrambledWord').textContent = scrambled;
+        document.getElementById('feedbackText').innerHTML = '';
         if (wordObj.image) {
-            console.log("Image URL:", wordObj.image); // Check if the URL is correct
             document.getElementById('feedbackText').innerHTML = `<img src="${wordObj.image}" alt="${wordObj.word}" style="width: 200px; height: 200px;">`;
         } else {
             document.getElementById('feedbackText').textContent = "No image available.";
         }
-    
-        // Clear input field
-        document.getElementById('userInput').value = ''; 
+        document.getElementById('userInput').value = '';
     }
-    
+
     function checkAnswer() {
-        console.log("Checking answer...");
         const userInput = document.getElementById('userInput').value.toLowerCase();
         const isCorrect = userInput === currentWord.word.toLowerCase();
-    
+
         if (isCorrect) {
             document.getElementById('feedbackText').textContent = 'Correct!';
             document.getElementById('feedbackText').className = 'feedback correct';
+            correctAnswers++;
+            updateStarProgress();
         } else {
             document.getElementById('feedbackText').textContent = 'Oops! Try again!';
             document.getElementById('feedbackText').className = 'feedback incorrect';
         }
-    
+
         sendGameResult(currentWord.word, currentWord.word, userInput, isCorrect);
         sendGameResult2(currentWord.word, currentWord.word, userInput, isCorrect);
-    
+
         setTimeout(function() {
-            console.log("Calling loadNewWord()...");
             loadNewWord();
         }, 1000);
     }
-    
+
+    function updateStarProgress() {
+        const stars = document.querySelectorAll('.star');
+        stars.forEach((star, index) => {
+            if (index < correctAnswers) {
+                star.classList.remove('empty');
+                star.classList.add('filled');
+            } else {
+                star.classList.remove('filled');
+                star.classList.add('empty');
+            }
+        });
+    }
+
     function sendGameResult(word, correctAnswer, userAnswer, isCorrect) {
         fetch('/graph2/', {
             method: 'POST',
@@ -207,6 +224,7 @@
         })
         .catch(error => console.error('Error:', error));
     }
+
     function sendGameResult2(word, correctAnswer, userAnswer, isCorrect) {
         fetch('/leaderboarda/', {
             method: 'POST',
@@ -226,12 +244,11 @@
         })
         .catch(error => console.error('Error:', error));
     }
-    
+
     function getCSRFToken() {
-        let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        return csrfToken;
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;
     }
-    
+
     // Initial call to load the first word
     loadNewWord();
 </script>

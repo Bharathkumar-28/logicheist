@@ -570,6 +570,7 @@ def chat(request):
     return JsonResponse({"reply": "Invalid request."}, status=400)
 def speechquizes(request):
     posts=speechquiz2.objects.all()
+    gameresult2.objects.all().delete()
     return render(request,'speechquizcard.html',{"posts":posts})
 from django.shortcuts import render
 import json
@@ -711,6 +712,7 @@ def leaderboardview(request):
             'user': user.username,
             'score': total_score,
             'image': user_image  # Add the image to the data
+
         })
 
     leaderboard_data.sort(key=lambda x: x['score'], reverse=True)  # Sort by score, highest first

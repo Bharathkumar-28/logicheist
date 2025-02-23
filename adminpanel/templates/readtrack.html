@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Clusters for Dyslexia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #output {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .cluster {
+            font-size: 20px;
+            margin: 5px;
+        }
+
+        .prefix {
+            color: blue;
+            font-weight: bold;
+        }
+
+        .suffix {
+            color: green;
+            font-weight: bold;
+        }
+
+        /* Reading ruler style */
+        #readingRuler {
+            display: none;
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background-color: yellow;
+            margin-top: 50px;
+            top: 0;
+        }
+
+        .controls {
+            margin-top: 20px;
+        }
+
+        select {
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Word Clusters Example</h2>
+    <p>Enter a word to see it broken into clusters:</p>
+
+    <input type="text" id="wordInput" placeholder="Enter a word..." />
+    <button onclick="processWord()">Process Word</button>
+
+    <div id="output"></div>
+
+    <div class="controls">
+        <button onclick="toggleRuler()">Toggle Reading Ruler</button>
+        <div>
+            <label for="color">Ruler Color:</label>
+            <select id="color" onchange="changeColor()">
+                <option value="yellow">Yellow</option>
+                <option value="lightblue">Blue</option>
+                <option value="lightgreen">Green</option>
+                <option value="pink">Pink</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="readingRuler"></div>
+
+    <script>
+        function processWord() {
+            let word = document.getElementById("wordInput").value.trim().toLowerCase();
+            if (!word) return;
+
+            const commonPrefixes = ['pre', 'un', 'dis', 'in', 're', 'mis'];
+            const commonSuffixes = ['ly', 'ing', 'ed', 'ness', 'ful', 'able'];
+
+            // Function to break word into clusters
+            let clusters = [];
+
+            // Check for prefixes
+            for (let prefix of commonPrefixes) {
+                if (word.startsWith(prefix)) {
+                    clusters.push(`<span class="cluster prefix">${prefix}</span>`);
+                    word = word.substring(prefix.length); // Remove prefix from the word
+                    break;  // Stop once a prefix is found
+                }
+            }
+
+            // Check for suffixes
+            for (let suffix of commonSuffixes) {
+                if (word.endsWith(suffix)) {
+                    clusters.push(`<span class="cluster suffix">${word.slice(0, -suffix.length)}</span>`);
+                    clusters.push(`<span class="cluster suffix">${suffix}</span>`);
+                    displayClusters(clusters);
+                    speakClusters(clusters); // Speak each cluster one by one
+                    return;
+                }
+            }
+
+            // Default if no prefix/suffix is found: display the word as is, with simple chunks
+            clusters.push(word.split('').join('-')); // Simple chunking by characters
+            displayClusters(clusters);
+            speakClusters(clusters); // Speak each cluster one by one
+        }
+
+        function displayClusters(clusters) {
+            document.getElementById("output").innerHTML = clusters.join(''); // Join clusters into one string
+        }
+
+        function speakClusters(clusters) {
+            let index = 0;
+
+            function speakNextCluster() {
+                if (index < clusters.length) {
+                    const clusterText = clusters[index].replace(/<[^>]*>/g, ''); // Strip HTML tags for speech
+                    const utterance = new SpeechSynthesisUtterance(clusterText);
+                    utterance.lang = 'en-US'; // English (US)
+                    utterance.pitch = 1; // Default pitch
+                    utterance.rate = 1; // Default rate
+                    utterance.onend = function () {
+                        index++;
+                        speakNextCluster(); // Speak the next cluster after the current one finishes
+                    };
+                    speechSynthesis.speak(utterance);
+                } else {
+                    speakFullWord(); // After all clusters are spoken, speak the full word
+                }
+            }
+
+            speakNextCluster(); // Start speaking clusters
+        }
+
+        function speakFullWord() {
+            const word = document.getElementById("wordInput").value.trim();
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.lang = 'en-US';
+            utterance.pitch = 1;
+            utterance.rate = 1;
+            speechSynthesis.speak(utterance); // Speak the full word
+        }
+
+        function toggleRuler() {
+            const ruler = document.getElementById("readingRuler");
+            ruler.style.display = ruler.style.display === 'none' ? 'block' : 'none'; // Toggle ruler visibility
+        }
+
+        function changeColor() {
+            const color = document.getElementById("color").value;
+            const ruler = document.getElementById("readingRuler");
+            ruler.style.backgroundColor = color; // Change ruler color
+        }
+    </script>
+
+</body>
+</html>

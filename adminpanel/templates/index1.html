@@ -1,21 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container-fluid ">
+<div class="container-fluid">
     <div class="row my-2">
         <div class="col">
-           <!--  <h2 >{{blogtitle | upper}}</h2> -->
-          <!--  <h2 >{{blogtitle | length}}</h2> -->
-          <!-- <h2 >{{blogtitle | truncatewords:1}}</h2> -->
-          <h2 >{{blogtitle|default:"no any posts"}}</h2>
-         
-          <!-- This will print the posts directly in the template -->
-          
-
+            <!-- Display Blog Title or "No Posts" -->
+            <h2>{{ blogtitle | default:"No Posts Available" }}</h2>
         </div>
-       
     </div>
-    <div class="row m-3">
+
+    <!-- Progress Tracker for Each Post (Quiz) -->
+    <div class="row my-4">
         {% if posts %}
             {% for post in posts %}
                 <div class="col-4 mb-4">
@@ -23,16 +18,23 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-4">
-                                    <!-- Check if the post has an image, if not, show a placeholder image -->
-                                    <img style="height :300,width:300" src="{{post.formattedimgurl}}" class="img-fluid" alt="...">
+                                    <!-- Image for the post -->
+                                    <img style="height:300px;width:300px;" src="{{ post.formattedimgurl }}" class="img-fluid" alt="...">
                                 </div>
                                 <div class="col-md-8">
-                                    <!-- Truncate title after 5 words and content after 100 characters -->
-                                    <h5 class="card-title">{{ post.title|truncatewords:5 }}</h5>
-                                    <p class="card-text">{{ post.content|truncatechars:100 }}</p>
-                      {% comment %}       <p>oiii{{postid}}</p> {% endcomment %}
-                             <a type="button" class="btn btn-info" href="{% url 'attempt' postid=post.id %}">Go to quiz:{{post.week}}</a>  
+                                    <h5 class="card-title">{{ post.title | truncatewords:5 }}</h5>
+                                    <p class="card-text">{{ post.content | truncatechars:100 }}</p>
 
+                                    <!-- Progress Bar for Each Quiz -->
+                                    <h5>Progress Tracker</h5>
+                                    <div class="progress">
+                                        <div class="progress-bar" id="progressBar-{{ post.id }}" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                            <span id="progressPercentage-{{ post.id }}">0%</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Button to go to the quiz -->
+                                    <a type="button" class="btn btn-info" href="{% url 'attempt' postid=post.id %}">Go to quiz: {{ post.week }}</a>
                                 </div>
                             </div>
                         </div>
@@ -40,10 +42,52 @@
                 </div>
             {% endfor %}
         {% else %}
-        <p>no anything.</p>
+            <p>No posts available.</p>
         {% endif %}
     </div>
-    
-    
 </div>
-{%endblock%}
+
+<script>
+    // Function to initialize progress tracking for each quiz
+    function initializeProgressBar(postId, totalTasks) {
+        let completedTasks = 0;  // Track the number of completed tasks for this specific quiz
+
+        // Function to update the progress bar for this post (quiz)
+        function updateProgressBar() {
+            // Calculate the progress as a percentage
+            let progress = (completedTasks / totalTasks) * 100;
+            
+            // Get the progress bar and percentage text elements by their unique postId
+            let progressBar = document.getElementById(`progressBar-${postId}`);
+            let progressPercentage = document.getElementById(`progressPercentage-${postId}`);
+
+            // Update the progress bar width and the percentage text
+            progressBar.style.width = progress + "%";
+            progressBar.setAttribute("aria-valuenow", progress);  // Update the aria attribute for accessibility
+            progressPercentage.textContent = Math.round(progress) + "%";  // Round the value to avoid decimals
+        }
+
+        // Example usage - simulate task completion (e.g., after completing a quiz attempt)
+        function taskCompleted() {
+            completedTasks++;  // Increment the number of completed tasks
+            updateProgressBar();  // Update the progress bar based on the new completed task count
+        }
+
+        // Example: Automatically complete tasks after some time (for testing purposes)
+        // In a real scenario, you would call taskCompleted() when the user completes a quiz or task.
+        setTimeout(() => {
+            taskCompleted();
+            setTimeout(() => {
+                taskCompleted();
+            }, 2000);
+        }, 2000);
+    }
+
+    // Initialize progress for each post/quiz on page load
+    {% for post in posts %}
+        // Initialize for each post (you can replace `totalTasks` with the actual number of tasks or steps)
+        initializeProgressBar({{ post.id }}, 3);  // Example: 3 tasks per quiz (replace with real value)
+    {% endfor %}
+</script>
+
+{% endblock %}

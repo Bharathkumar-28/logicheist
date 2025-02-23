@@ -1,13 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text Customizer</title>
+
     <style>
-        /* General reset and styling */
-     
-          
+      
 
         /* Menu bar styling */
         .menu-bar {
@@ -61,32 +54,30 @@
             margin: 20px 0;
         }
        
-            #readingRuler {
-                position: absolute;
-                width: 200px;
-                height: 30px;
-                background-color: rgba(68, 0, 255, 0.2);
-                pointer-events: none;
-                z-index: 1000;
-                display: none;
-            }
-            .content {
-                margin: 2rem;
-                line-height: 1.8;
-                font-size: 16px;
-            }
-            .controls {
-                margin: 2rem;
-                padding: 1rem;
-                border: 1px solid #ccc;
-                border-radius: 5px;
-            }
-            button {
-                padding: 8px 16px;
-                margin-bottom: 10px;
-            }
-        
-
+        #readingRuler {
+            position: absolute;
+            width: 200px;
+            height: 30px;
+            background-color: rgba(68, 0, 255, 0.2);
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+        .content {
+            margin: 2rem;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+        .controls {
+            margin: 2rem;
+            padding: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 8px 16px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -131,10 +122,23 @@
                 <label for="wordSpacing">Word Spacing:</label>
                 <input type="range" id="wordSpacing" min="0" max="8" step="0.1" value="0" onchange="updateTextStyles()">
             </div>
+
+            <!-- Font Family -->
+            <div class="control-group">
+                <label for="fontFamily">Font Family:</label>
+                <select id="fontFamily" onchange="updateFontFamily()">
+                    <option value="Arial, sans-serif">Arial</option>
+                    <option value="Times New Roman, serif">Times New Roman</option>
+                    <option value="OpenDyslexic, sans-serif">OpenDyslexic</option>
+                    <option value="Verdana, sans-serif">Verdana</option>
+                    <option value="Courier New, monospace">Courier New</option>
+                </select>
+            </div>
         </div>
     </div>
 
-  
+   
+
     <script>
         // Update text styles globally
         function updateTextStyles() {
@@ -150,7 +154,14 @@
             document.body.style.letterSpacing = `${letterSpacing}px`;
             document.body.style.wordSpacing = `${wordSpacing}px`;
         }
+
+        // Update font family based on selection
+        function updateFontFamily() {
+            const fontFamily = document.getElementById('fontFamily').value;
+            document.body.style.fontFamily = fontFamily;
+        }
     </script>
+
     <script>
         const ruler = document.getElementById('readingRuler');
         let isRulerActive = false;

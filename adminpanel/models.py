@@ -110,6 +110,16 @@ class speechquiz2(models.Model):
     def formattedimgurl(self):
         url=self.image if self.image.__str__().startswith(('http','https://')) else self.image.url
         return url
+
+from django.contrib.auth.models import User
+
+class UserActivity(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    last_active = models.DateTimeField(auto_now=True)  # Automatically updated when user is active
+
+    def __str__(self):
+        return self.user.username
+    
       
 
 
