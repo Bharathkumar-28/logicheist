@@ -99,6 +99,10 @@ class courses(models.Model):
 class  leaderboard(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE,null=True)
     data=models.JSONField(null=True,blank=True)
+class notes(models.Model):
+    user=models.ForeignKey(User,on_delete=models.CASCADE,null=True)
+    data=models.JSONField(null=True,blank=True)
+
 class speechquiz2(models.Model):
    
    
@@ -115,12 +119,19 @@ from django.contrib.auth.models import User
 
 class UserActivity(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    
     last_active = models.DateTimeField(auto_now=True)  # Automatically updated when user is active
 
     def __str__(self):
         return self.user.username
-    
-      
+class badges(models.Model):
+    name=models.CharField(max_length=100,null=True)
+    image=models.ImageField(null=True)
+    score=models.IntegerField(null=True)        
+    @property        
+    def formattedimgurl(self):
+        url=self.image if self.image.__str__().startswith(('http','https://')) else self.image.url
+        return url
 
 
 

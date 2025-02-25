@@ -106,12 +106,15 @@
         0% { opacity: 0; }
         100% { opacity: 1; }
     }
+    .new{
+        color:red;
+    }
 </style>
 
 <a class="result" href='/finalresult'>VIEW THE RESULT</a>
 <div class="game-container">
-    <h1>Word Scramble Game</h1>
-    <p>Unscramble the letters to form a word.</p>
+    <h1 class='new'>Word Scramble Game</h1>
+    <p class='new'>Unscramble the letters to form a word.</p>
     <div class="word-container" id="scrambledWord"></div>
 
     <!-- Star Progress Tracker -->
@@ -182,6 +185,9 @@
         } else {
             document.getElementById('feedbackText').textContent = 'Oops! Try again!';
             document.getElementById('feedbackText').className = 'feedback incorrect';
+            
+            // Send the wrong word to the backend if the answer is incorrect
+            saveWrongWordToNotes(currentWord.word);
         }
 
         sendGameResult(currentWord.word, currentWord.word, userInput, isCorrect);
@@ -203,6 +209,26 @@
                 star.classList.add('empty');
             }
         });
+    }
+
+    function saveWrongWordToNotes(wrongWord) {
+        fetch('/takenotes/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: JSON.stringify({ 'wrong_word': wrongWord })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                console.log('Wrong word saved successfully.');
+            } else {
+                console.log('Error saving wrong word:', data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
     }
 
     function sendGameResult(word, correctAnswer, userAnswer, isCorrect) {

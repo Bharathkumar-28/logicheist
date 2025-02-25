@@ -1,189 +1,177 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dyslexia Support Assistant</title>
-    <script type="text/javascript">
-        function getCSRFToken() {
-            const csrfToken = document.cookie.match(/csrftoken=([^;]+)/);
-            return csrfToken ? csrfToken[1] : '';
-        }
-    </script>
-    <style>
-        /* WhatsApp-like chat interface */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #ece5dd;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
+{% extends 'base.html' %}
 
-        .chat-container {
-            width: 100%;
-            max-width: 480px;
-            height: 95vh;
-            margin: 20px auto;
-            background: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
+{% block content %}
 
-        .chat-header {
-            background-color: #25D366;
-            color: white;
-            padding: 15px;
-            font-size: 20px;
-            font-weight: bold;
-            text-align: center;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
-        }
+<script type="text/javascript">
+    function getCSRFToken() {
+        const csrfToken = document.cookie.match(/csrftoken=([^;]+)/);
+        return csrfToken ? csrfToken[1] : '';
+    }
+</script>
 
-        .chat-body {
-            padding: 15px;
-            overflow-y: auto;
-            flex-grow: 1;
-            background: #f8f8f8;
-        }
+<style>
+    /* WhatsApp-like chat interface */
+    .apple-chat-container {
+        width: 100%;
+        max-width: 600px;
+        height: 400px;
+        margin: 20px auto;
+        background: rgba(0, 0, 0, 0.9);
+        border-radius: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        overflow: visible;
+    }
 
-        .message {
-            display: flex;
-            margin-bottom: 15px;
-        }
+    .banana-chat-header {
+        background-color: black;
+        color: red;
+        padding: 15px;
+        font-size: 20px;
+        font-weight: bold;
+        text-align: center;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+    }
 
-        .message.outgoing {
-            justify-content: flex-end;
-        }
+    .cherry-chat-body {
+        padding: 15px;
+        overflow-y: auto;
+        flex-grow: 1;
+        background: rgba(0, 0, 0, 0.9);
+    }
 
-        .message.incoming {
-            justify-content: flex-start;
-        }
+    .date-message {
+        display: flex;
+        margin-bottom: 15px;
+    }
 
-        .message .text {
-            padding: 12px;
-            border-radius: 18px;
-            max-width: 80%;
-            word-wrap: break-word;
-            background-color: #e5e5e5;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
+    .date-message.orange {
+        justify-content: flex-end;
+    }
 
-        .message.outgoing .text {
-            background-color: #dcf8c6;
-        }
+    .date-message.mango {
+        justify-content: flex-start;
+    }
 
-        .message.incoming .text {
-            background-color: #ffffff;
-        }
+    .date-message .pear-text {
+        padding: 12px;
+        border-radius: 18px;
+        max-width: 80%;
+        word-wrap: break-word;
+        background-color: #e5e5e5;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
 
-        .message .avatar {
-            margin-right: 10px;
-            margin-left: 10px;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background-color: #25D366;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-        }
+    .date-message.orange .pear-text {
+        background-color: aqua;
+    }
 
-        .chat-footer {
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            border-top: 1px solid #ddd;
-            background-color: #ffffff;
-        }
+    .date-message.mango .pear-text {
+        background-color:aqua;
+    }
 
-        .input-group {
-            display: flex;
-            width: 100%;
-            align-items: center;
-        }
+    .date-message .kiwi-avatar {
+        margin-right: 10px;
+        margin-left: 10px;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background-color: #25D366;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+    }
 
-        input {
-            flex: 1;
-            padding: 12px;
-            border-radius: 18px;
-            border: 1px solid #ddd;
-            font-size: 16px;
-        }
+    .orange-chat-footer {
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        border-top: 1px solid #ddd;
+        background-color: aqua;
+    }
 
-        button {
-            background-color: #25D366;
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 18px;
-        }
+    .peach-input-group {
+        display: flex;
+        width: 100%;
+        align-items: center;
+    }
 
-        button:focus {
-            outline: none;
-        }
+    .grape-input {
+        flex: 1;
+        padding: 12px;
+        border-radius: 18px;
+        border: 1px solid #ddd;
+        font-size: 16px;
+    }
 
-        .voice-btn {
-            background: #4CAF50;
-            color: white;
-            font-size: 18px;
-            padding: 8px;
-            border-radius: 50%;
-            margin-left: 10px;
-            cursor: pointer;
-        }
+    .apple-button {
+        background-color: #25D366;
+        color: white;
+        padding: 12px;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 18px;
+    }
 
-        .voice-btn:active {
-            background-color: #45a049;
-        }
+    .apple-button:focus {
+        outline: none;
+    }
 
-        .stop-btn {
-            background: #FF6347;
-            color: white;
-            font-size: 16px;
-            padding: 8px;
-            border-radius: 50%;
-            margin-left: 10px;
-            cursor: pointer;
-        }
+    .kiwi-voice-btn {
+        background: #4CAF50;
+        color: white;
+        font-size: 18px;
+        padding: 8px;
+        border-radius: 50%;
+        margin-left: 10px;
+        cursor: pointer;
+    }
 
-        .stop-btn:active {
-            background-color: #e55347;
-        }
-    </style>
-</head>
+    .kiwi-voice-btn:active {
+        background-color: #45a049;
+    }
+
+    .pineapple-stop-btn {
+        background: #FF6347;
+        color: white;
+        font-size: 16px;
+        padding: 8px;
+        border-radius: 50%;
+        margin-left: 10px;
+        cursor: pointer;
+    }
+
+    .pineapple-stop-btn:active {
+        background-color: #e55347;
+    }
+</style>
 
 <body>
-    <div class="chat-container">
-        <div class="chat-header">
+    <div class="apple-chat-container">
+        <div class="banana-chat-header">
             Dyslexia Support Assistant
         </div>
-        <a href="/">home</a>
-        <div class="chat-body" id="messages">
-            <div class="message incoming">
-                <div class="avatar">A</div>
-                <div class="text">Hello! How can I assist you today?</div>
+     
+        <div class="cherry-chat-body" id="messages">
+            <div class="date-message mango">
+                <div class="kiwi-avatar">A</div>
+                <div class="pear-text">Hello! How can I assist you today?</div>
             </div>
         </div>
-        <div class="chat-footer">
-            <div class="input-group">
-                <input type="text" id="user-input" placeholder="Type or speak your message..." autocomplete="off">
-                <button id="send-btn">Send</button>
-                <button id="voice-btn" class="voice-btn">🎤</button>
+        <div class="orange-chat-footer">
+            <div class="peach-input-group">
+                <input type="text" id="user-input" class="grape-input" placeholder="Type or speak your message..." autocomplete="off">
+                <button id="send-btn" class="apple-button">Send</button>
+                <button id="voice-btn" class="kiwi-voice-btn">🎤</button>
             </div>
             <div>
-                <button id="stop-btn" class="stop-btn">Stop Speech</button>
+                <button id="stop-btn" class="pineapple-stop-btn">Stop Speech</button>
             </div>
         </div>
     </div>
@@ -201,17 +189,17 @@
         async function sendMessage() {
             const text = userInput.value.trim();
             if (!text) return;
-        
+
             // Stop any ongoing speech before sending the message
             if (window.speechSynthesis.speaking) {
                 window.speechSynthesis.cancel();
             }
-        
-            appendMessage('outgoing', text);
+
+            appendMessage('orange', text);
             userInput.value = '';
-        
+
             const csrfToken = getCSRFToken();  // Get the CSRF token from the cookie
-        
+
             try {
                 const response = await fetch('/chat/', {
                     method: 'POST',
@@ -221,32 +209,31 @@
                     },
                     body: `message=${text}`
                 });
-        
+
                 if (response.ok) {
                     const data = await response.json();
-                    appendMessage('incoming', data.reply);
+                    appendMessage('mango', data.reply);
                 } else {
-                    appendMessage('incoming', 'Error processing your request');
+                    appendMessage('mango', 'Error processing your request');
                 }
             } catch (error) {
-                appendMessage('incoming', 'Error processing your request');
+                appendMessage('mango', 'Error processing your request');
                 console.error('Error:', error);
             }
         }
-        
 
         function appendMessage(role, text) {
             const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${role}`;
+            messageDiv.className = `date-message ${role}`;
             const avatarDiv = document.createElement('div');
-            avatarDiv.className = 'avatar';
-            avatarDiv.textContent = role === 'incoming' ? 'A' : 'You';
+            avatarDiv.className = 'kiwi-avatar';
+            avatarDiv.textContent = role === 'mango' ? 'A' : 'You';
             const textDiv = document.createElement('div');
-            textDiv.className = 'text';
+            textDiv.className = 'pear-text';
             textDiv.textContent = text;
 
             // Add the read button for incoming messages
-            if (role === 'incoming') {
+            if (role === 'mango') {
                 const readBtn = document.createElement('button');
                 readBtn.className = 'read-btn';
                 readBtn.textContent = 'Read';
@@ -274,24 +261,24 @@
             recognition.lang = 'en-US';
             recognition.start();
 
-            recognition.onstart = function() {
+            recognition.onstart = function () {
                 isListening = true;
                 voiceBtn.textContent = '🛑';
             };
 
-            recognition.onresult = function(event) {
+            recognition.onresult = function (event) {
                 const speechToText = event.results[0][0].transcript;
                 userInput.value = speechToText;
                 sendMessage();
             };
 
-            recognition.onerror = function(event) {
+            recognition.onerror = function (event) {
                 console.error('Speech recognition error:', event.error);
                 isListening = false;
                 voiceBtn.textContent = '🎤';
             };
 
-            recognition.onend = function() {
+            recognition.onend = function () {
                 isListening = false;
                 voiceBtn.textContent = '🎤';
             };
@@ -326,5 +313,6 @@
             }
         });
     </script>
+
 </body>
-</html>
+{% endblock %}

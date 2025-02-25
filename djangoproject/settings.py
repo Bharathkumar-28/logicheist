@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'adminpanel',
       'corsheaders',
 ]
-APPEND_SLASH=False
+APPEND_SLASH=True
 DEBUG = False
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -122,6 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
+APPEND_SLASH=True
 
 TIME_ZONE = 'UTC'
 

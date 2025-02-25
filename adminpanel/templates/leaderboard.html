@@ -1,24 +1,33 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
 <style>
+    /* Container Styles */
     .leaderboard-container {
-        background-color: #fff;
+        background-color: #333;
         padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        width: 80%;
-        max-width: 600px;
+        border-radius: 12px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        width: 90%;
+        max-width: 900px;
+        margin: 30px auto;
         text-align: center;
+        transition: all 0.3s ease;
     }
 
+   
+
+    /* Title */
     .leaderboard-title {
         font-size: 2.5rem;
         color: #4CAF50;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: bold;
     }
 
+    /* Table Styles */
     .leaderboard-table {
         width: 100%;
         border-collapse: collapse;
@@ -26,28 +35,30 @@
     }
 
     .leaderboard-table th, .leaderboard-table td {
-        padding: 10px;
+        padding: 15px 20px;
         text-align: center;
         font-size: 1.1rem;
         border: 1px solid #ddd;
+        transition: background-color 0.3s ease;
     }
 
     .leaderboard-table th {
         background-color: #4CAF50;
         color: white;
+        font-weight: bold;
     }
 
     .leaderboard-table tr:nth-child(even) {
-        background-color: #f2f2f2;
+        background-color: #333;
     }
 
     .leaderboard-table tr:hover {
-        background-color: #ddd;
+        background-color: #333;
     }
 
     .leaderboard-table td {
         font-weight: bold;
-        color: #4CAF50;
+        color: #333;
     }
 
     .leaderboard-table td:nth-child(1) {
@@ -57,81 +68,138 @@
 
     .leaderboard-table td:nth-child(2) {
         color: #2196F3; /* Blue for user name */
+        font-size: 1.1rem;
     }
 
     .leaderboard-table td:nth-child(3) {
         color: #8BC34A; /* Green for score */
     }
 
+    /* Image Styles */
     .user-image {
         width: 40px;
         height: 40px;
         border-radius: 50%;
         object-fit: cover;
         margin-right: 10px;
+        border: 2px solid #4CAF50;
+        transition: transform 0.3s ease;
     }
+
+    .user-image:hover {
+        transform: scale(1.1); /* Image zoom on hover */
+    }
+
+    .badge-image {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .badge-image:hover {
+        transform: scale(1.1); /* Badge image zoom on hover */
+    }
+
+    /* Default Image for No Profile Image */
+    .default-image {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-image: url('https://tse2.mm.bing.net/th?id=OIP.DwCrm6CqdEFxMyAz_-94jQAAAA&pid=Api&P=0&h=180');
+        background-size: cover;
+        background-position: center;
+        border: 2px solid #ddd;
+    }
+
+    /* Your Badge Section */
+    .your-badge-container {
+        background-color: #333;
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 30px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .your-badge-container h2 {
+        color: red;
+        margin-bottom: 15px;
+        font-size: 1.8rem;
+        font-weight: bold;
+    }
+
+    .your-badge-container p {
+        font-size: 1.1rem;
+        color: #555;
+        margin-top: 15px;
+    }
+
+    /* Styling for "No Badge" message */
+    .no-badge-message {
+        font-size: 1.2rem;
+        color: #FF5722;
+        font-weight: bold;
+    }
+
 </style>
 
-<body>
-    <div class="leaderboard-container">
-        <h1 class="leaderboard-title">Game Leaderboard</h1>
-        <table class="leaderboard-table">
-            <thead>
+<div class="leaderboard-container">
+    <h1 class="leaderboard-title">Game Leaderboard</h1>
+
+    <table class="leaderboard-table">
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Name</th>
+                <th>Score</th>
+              
+                <th>Badge</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in leaderboard_data %}
                 <tr>
-                    <th>Rank</th>
-                    <th>Name</th>
-                    <th>Score</th>
-                    <th>Profile Picture</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{user}}
-                {% for entry in leaderboard_data %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>
+                    <td>{{ forloop.counter }}</td>
+                    <td>
+                        {% if entry.image %}
                             <img src="{{ entry.image }}" class="user-image" alt="{{ entry.user }}'s profile image">
-                            {{ entry.user }}
-                        </td>
-                        <td>{{ entry.score }}</td>
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="4">No leaderboard entries yet!</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                        {% else %}
+                            <div class="default-image"></div>  <!-- Default image for missing profile image -->
+                        {% endif %}
+                        {{ entry.user }}
+                    </td>
+                    <td>{{ entry.score }}</td>
+                   
+                    <td>
+                        {% if entry.badge_image %}
+                            <img src="{{ entry.badge_image }}" class="badge-image" alt="Badge for {{ entry.user }}">
+                            <p style='color:aqua'>{{ entry.badge_name }}</p>
+                        {% else %}
+                            <p style='color:aqua'>No badge</p>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5">No leaderboard entries yet!</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if a and b %}
+    <div class="your-badge-container">
+        <h2>Your Badge:</h2>
+        <img src="{{ b }}" class="badge-image" alt="Your Badge">
+        <p style='color:aqua'>Badge: {{ a }}</p>
     </div>
-</body>
-
-<script>
-    function fetchLeaderboard() {
-        fetch('/leaderboardview/')  // Adjust the URL to your view
-            .then(response => response.json())
-            .then(data => {
-                const leaderboardTable = document.querySelector('.leaderboard-table tbody');
-                leaderboardTable.innerHTML = '';  // Clear existing rows
-
-                // Add new leaderboard data
-                data.leaderboard_data.forEach((entry, index) => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${index + 1}</td>
-                        <td>
-                            <img src="${entry.image}" class="user-image" alt="${entry.user}'s profile image">
-                            ${entry.user}
-                        </td>
-                        <td>${entry.score}</td>
-                    `;
-                    leaderboardTable.appendChild(row);
-                });
-            })
-            .catch(error => console.error('Error fetching leaderboard:', error));
-    }
-
-    // Call fetchLeaderboard when the page loads
-    document.addEventListener('DOMContentLoaded', fetchLeaderboard);
-</script>
+{% else %}
+    <div class="your-badge-container">
+        <p class="no-badge-message">No badge earned yet.</p>
+    </div>
+{% endif %}
 
 {% endblock %}

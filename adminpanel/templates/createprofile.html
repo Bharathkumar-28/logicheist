@@ -1,59 +1,175 @@
-
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="container-fluid">
-        <div class="row d-flex justify-content-center mt-5">
-            <div class="col-4">
-                <h3>createprofile</h3>
-                <div class="">
-                    <!-- Error messages -->
-                    {% include 'includes/errors.html'  %}
+<style>
+   
+
+
+    .custom-form-container {
+        max-width: 1000px;
+        background: rgba(0, 0, 0, 0.9);
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 0 15px rgba(0, 238, 255, 0.5);
+        margin: auto;
+        margin-top: 50px;
+    }
+
+    h3 {
+        color: #0ef;
+        text-shadow: 0 0 10px rgba(0, 238, 255, 0.7);
+        margin-bottom: 25px;
+        text-align: center;
+        font-size: 28px;
+        text-transform: capitalize;
+    }
+
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -15px;
+    }
+
+    .form-col {
+        flex: 0 0 50%;
+        padding: 0 15px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        color: #0ef;
+        font-weight: 500;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid #0ef;
+        color: #fff;
+        transition: all 0.3s ease;
+        padding: 10px;
+        border-radius: 8px;
+        width: 100%;
+    }
+
+    .form-control:focus {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: #0ef;
+        box-shadow: 0 0 10px rgba(0, 238, 255, 0.3);
+        color: #fff;
+        outline: none;
+    }
+
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .form-control-file {
+        background: transparent;
+        border: 1px dashed #0ef;
+        color: #fff;
+        padding: 10px;
+        border-radius: 8px;
+        width: 100%;
+    }
+
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .btn-primary {
+        background-color: #0ef;
+        border: none;
+        padding: 12px 30px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 238, 255, 0.4);
+        border-radius: 10px;
+        color: #000;
+        cursor: pointer;
+    }
+
+    .btn-primary:hover {
+        background-color: rgb(19, 19, 19);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 238, 255, 0.4);
+        color: #0ef;
+    }
+
+    @media (max-width: 768px) {
+        .form-col {
+            flex: 0 0 100%;
+        }
+        
+        .custom-form-container {
+            padding: 20px;
+        }
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="custom-form-container">
+        <h3>Create Profile</h3>
+        
+        <!-- Error messages -->
+        {% include 'includes/errors.html' %}
+
+        <form method="post" enctype='multipart/form-data'>
+            {% csrf_token %}
+            
+            <div class="form-row">
+                <!-- Left Column -->
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" name="Name" id="name" value="{{Name}}" 
+                               placeholder="Enter your full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="age" class="form-label">Age</label>
+                        <input type="number" class="form-control" id="age" name="age" value="{{age}}"
+                               placeholder="Enter your age">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{email}}"
+                               placeholder="Enter your email address">
+                    </div>
                 </div>
-    
-                <div class="my-3" enctype='multipart/form-data'>
-                    <form method="post" enctype='multipart/form-data'>
-                        {% csrf_token %}
-                   
-                     
-                        <div class="form-group">
-                            <label for="title" class="form-label">name</label>
-                            <input type="text" class="form-control" name="Name" id="name" value="{{Name}}">
-                        </div>
-                       
-                        <div class="form-group">
-                            <label for="content" class="form-label">content</label>
-                            <textarea class="form-control" id="content" name="content"  value="{{content}}"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="image" class="form-label">image</label>
-                            <input type='file'   class="form-control-file" name='image' id=''  value="{{image}}">
-                            
-                        </div>
-                        <div class="form-group">
-                            <label for="content" class="form-label">age</label>
-                            <textarea class="form-control" id="age" name="age"  value="{{age}}"></textarea>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="email" class="form-label">email</label>
-                            <input type="email" class="form-control" id="email" name="email" value="{{email}}" >
-                        </div>
-    
-                        <div class="form-group">
-                            <label for="category" class="form-label">address</label>
-                            <textarea class="form-control" id="address" name="address"  value="{{address}}"></textarea>
-                            
-                            
-                        </div>
-                       
-                        <div class="my-3 d-flex justify-content-end">
-                            <button type="submit" class="btn btn-primary">Create</button>
-                        </div>
-                    </form>
+                
+                <!-- Right Column -->
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" id="address" name="address" value="{{address}}"
+                                  placeholder="Enter your complete address"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="content" class="form-label">About Me</label>
+                        <textarea class="form-control" id="content" name="content" value="{{content}}"
+                                  placeholder="Tell us something about yourself"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="image" class="form-label">Profile Image</label>
+                        <input type='file' class="form-control-file" name='image' id='image' value="{{image}}"
+                               placeholder="Choose a profile picture">
+                    </div>
                 </div>
             </div>
-        </div>
+            
+            <div class="my-3 d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary">Create Profile</button>
+            </div>
+        </form>
     </div>
-    {% endblock %}  
-    
-    
+</div>
+{% endblock %}

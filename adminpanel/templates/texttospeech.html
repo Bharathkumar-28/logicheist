@@ -2,8 +2,8 @@
 
 {% block content %}
 <style>
-    /* Existing styles */
-    textarea {
+    /* Cricketer-inspired class names */
+    .txtarea-dhoni {
         width: 100%;
         min-height: 200px;
         padding: 1rem;
@@ -15,31 +15,31 @@
         background: rgba(255, 255, 255, 0.9);
     }
 
-    textarea:focus {
+    .txtarea-dhoni:focus {
         outline: none;
         border-color: #3498db;
         box-shadow: 0 0 15px rgba(52, 152, 219, 0.2);
     }
 
-    .highlight {
+    .highlight-kohli {
         background-color: rgba(105, 52, 219, 0.3);  /* Blue highlight */
         transition: background-color 0.2s ease;
     }
 
-    .controls {
+    .control-grid-tendulkar {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 1.5rem;
         margin-bottom: 1.5rem;
     }
 
-    .control-group {
+    .control-set-wasim {
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
     }
 
-    label {
+    label.label-ganguly {
         font-weight: 600;
         color: #2c3e50;
         text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
@@ -59,13 +59,13 @@
         box-shadow: 0 0 10px rgba(52, 152, 219, 0.2);
     }
 
-    .button-group {
+    .btn-group-azhar {
         display: flex;
         gap: 1.5rem;
         justify-content: center;
     }
 
-    button {
+    button.btn-solarflare {
         padding: 1rem 2rem;
         border: none;
         border-radius: 50px;
@@ -80,31 +80,31 @@
         letter-spacing: 1px;
     }
 
-    #speak-button {
+    #btn-speak-celestial {
         background: linear-gradient(135deg, #3498db, #2980b9);
         color: white;
     }
 
-    #pause-button {
+    #btn-pause-eclipse {
         background: linear-gradient(135deg, #f39c12, #e67e22);
         color: white;
     }
 
-    #stop-button {
+    #btn-stop-blackhole {
         background: linear-gradient(135deg, #e74c3c, #c0392b);
         color: white;
     }
 
-    button:hover {
+    button.btn-solarflare:hover {
         transform: translateY(-3px);
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     }
 
-    button:active {
+    button.btn-solarflare:active {
         transform: translateY(-1px);
     }
 
-    .status {
+    .status-virat {
         text-align: center;
         margin-top: 1rem;
         padding: 0.8rem;
@@ -113,85 +113,85 @@
         display: none;
     }
 
-    .status.speaking {
+    .status-virat.speaking {
         display: block;
         background: rgba(52, 152, 219, 0.2);
         color: #2980b9;
         border: 1px solid rgba(52, 152, 219, 0.3);
-        animation: pulse 2s infinite;
+        animation: pulse-ganguly 2s infinite;
     }
 
-    @keyframes pulse {
+    @keyframes pulse-ganguly {
         0% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.4); }
         70% { box-shadow: 0 0 0 10px rgba(52, 152, 219, 0); }
         100% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0); }
     }
 
     @media (max-width: 600px) {
-        .container {
+        .container-kumble {
             padding: 1rem;
         }
 
-        .controls {
+        .control-grid-tendulkar {
             grid-template-columns: 1fr;
         }
 
-        .button-group {
+        .btn-group-azhar {
             flex-direction: column;
         }
 
-        button {
+        button.btn-solarflare {
             width: 100%;
         }
     }
 </style>
 
 <body>
-    <div class="container">
+    <div class="container-kumble">
         <h1>Text to Speech Converter</h1>
         
-        <div class="input-section">
-            <textarea id="text-input" placeholder="Type or paste your text here..."></textarea>
+        <div class="input-section-harbhajan">
+            <textarea id="text-input" class="txtarea-dhoni" placeholder="Type or paste your text here..."></textarea>
         </div>
 
-        <div class="controls">
-            <div class="control-group">
-                <label for="voice-select">Voice:</label>
+        <div class="control-grid-tendulkar">
+            <div class="control-set-wasim">
+                <label for="voice-select" class="label-ganguly">Voice:</label>
                 <select id="voice-select"></select>
             </div>
             
-            <div class="control-group">
-                <label for="rate">Speed: <span id="rate-value">1</span>x</label>
+            <div class="control-set-wasim">
+                <label for="rate" class="label-ganguly">Speed: <span id="rate-value">1</span>x</label>
                 <input type="range" id="rate" min="0.5" max="2" value="1" step="0.1">
             </div>
 
-            <div class="control-group">
-                <label for="pitch">Pitch: <span id="pitch-value">1</span></label>
+            <div class="control-set-wasim">
+                <label for="pitch" class="label-ganguly">Pitch: <span id="pitch-value">1</span></label>
                 <input type="range" id="pitch" min="0.5" max="2" value="1" step="0.1">
             </div>
 
-            <div class="control-group">
-                <label for="file-input">Upload Text File:</label>
+            <div class="control-set-wasim">
+                <label for="file-input" class="label-ganguly">Upload Text File:</label>
                 <input type="file" id="file-input" accept=".txt">
             </div>
         </div>
 
-        <div class="button-group">
-            <button id="speak-button">
+        <div class="btn-group-azhar">
+            <button id="btn-speak-celestial" class="btn-solarflare">
                 <span>Speak</span>
             </button>
-            <button id="pause-button">
+            <button id="btn-pause-eclipse" class="btn-solarflare">
                 <span>Pause/Resume</span>
             </button>
-            <button id="stop-button">
+            <button id="btn-stop-blackhole" class="btn-solarflare">
                 <span>Stop</span>
             </button>
-            <button id="erase-button">
+            <button id="btn-erase-comet" class="btn-solarflare">
                 <span>Erase</span>
             </button>
         </div>
 
-        <div id="status" class="status">Speaking...</div>
+        <div id="status" class="status-virat">Speaking...</div>
     </div>
 
     <script>
@@ -240,7 +240,7 @@
             if (currentIndex < wordsArray.length) {
                 const highlightedText = wordsArray.map((word, index) => {
                     if (index === currentIndex) {
-                        return `<span class="highlight">${word}</span>`;
+                        return `<span class="highlight-kohli">${word}</span>`;
                     }
                     return word;
                 }).join(' ');
@@ -250,7 +250,7 @@
         }
 
         // Button to start speaking the text
-        document.getElementById('speak-button').addEventListener('click', () => {
+        document.getElementById('btn-speak-celestial').addEventListener('click', () => {
             const text = document.getElementById('text-input').value.trim();
             if (!text) {
                 alert('Please enter some text to speak.');
@@ -288,7 +288,7 @@
         });
 
         // Button to pause or resume speaking
-        document.getElementById('pause-button').addEventListener('click', () => {
+        document.getElementById('btn-pause-eclipse').addEventListener('click', () => {
             if (!currentUtterance) return;
 
             if (isPaused) {
@@ -301,14 +301,14 @@
         });
 
         // Button to stop speaking
-        document.getElementById('stop-button').addEventListener('click', () => {
+        document.getElementById('btn-stop-blackhole').addEventListener('click', () => {
             speechSynthesis.cancel();
             document.getElementById('status').classList.remove('speaking');
             isPaused = false;
         });
 
         // Button to clear the text in the textarea
-        document.getElementById('erase-button').addEventListener('click', () => {
+        document.getElementById('btn-erase-comet').addEventListener('click', () => {
             document.getElementById('text-input').value = '';
         });
 

@@ -96,7 +96,7 @@ class profileform(forms.ModelForm):
 
         return post_instance
 from django import forms
-from .models import quiz
+from .models import quiz, speechquiz2
 
 class quizform(forms.ModelForm):
     name = forms.CharField(max_length=100, required=False)
@@ -117,6 +117,16 @@ class quizform(forms.ModelForm):
     class Meta:
         model = quiz
         fields = ['name', 'title', 'content', 'image', 'week', 'word_0', 'image_0', 'word_1', 'image_1']
+class speechquizform(forms.ModelForm):
+    title=forms.CharField(max_length=100,required=True)
+    name=forms.CharField(max_length=100,required=True)
+    image=forms.ImageField(required=True)
+    data = forms.CharField(widget=forms.Textarea, required=False) 
+    class Meta:
+        model=speechquiz2
+        fields=['name','image','title']
+        
+
 
 
         

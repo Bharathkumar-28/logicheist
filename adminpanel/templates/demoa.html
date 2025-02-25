@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmpowerLearn - About Us</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: hsl(230, 85%, 60%);
+            --primary-dark: hsl(230, 85%, 50%);
+            --primary-light: hsl(230, 85%, 75%);
+            --accent: hsl(280, 85%, 60%);
+            --background: hsl(220, 20%, 97%);
+            --foreground: hsl(220, 20%, 10%);
+            --card: hsl(220, 20%, 100%);
+            --card-foreground: hsl(220, 20%, 10%);
+            --border: hsl(220, 20%, 90%);
+            --ring: hsla(230, 85%, 60%, 0.5);
+            --success: hsl(142, 76%, 36%);
+            --warning: hsl(48, 96%, 53%);
+            --error: hsl(0, 84%, 60%);
+            --radius: 0.75rem;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --font-spacing: normal;
+            --word-spacing: normal;
+            --line-height: 1.6;
+        }
+
+        .dark {
+            --background: hsl(220, 20%, 10%);
+            --foreground: hsl(220, 20%, 97%);
+            --card: hsl(220, 20%, 15%);
+            --card-foreground: hsl(220, 20%, 97%);
+            --border: hsl(220, 20%, 20%);
+            --ring: hsla(230, 85%, 60%, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--background);
+            color: var(--foreground);
+            line-height: var(--line-height);
+            letter-spacing: var(--font-spacing);
+            word-spacing: var(--word-spacing);
+            transition: background-color 0.3s ease, color 0.3s ease,
+                letter-spacing 0.3s ease, word-spacing 0.3s ease,
+                line-height 0.3s ease;
+            overflow-x: hidden;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4rem;
+            background: rgba(var(--card), 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 50;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--foreground);
+            text-decoration: none;
+            transition: transform 0.2s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 0.5rem;
+            display: grid;
+            place-items: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .nav-item {
+            position: relative;
+            padding: 0.5rem 1rem;
+            color: var(--foreground);
+            text-decoration: none;
+            border-radius: var(--radius);
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-content {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            min-width: 260px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+            transition: all 0.2s ease;
+            z-index: 100;
+        }
+
+        .dropdown:hover .dropdown-content,
+        .dropdown:focus-within .dropdown-content {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--foreground);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .dropdown-item:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: -2px;
+        }
+
+        .hero {
+            min-height: 50vh;
+            padding: 7rem 1.5rem 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                radial-gradient(circle at top left, var(--primary-light), transparent 70%),
+                radial-gradient(circle at bottom right, var(--accent), transparent 70%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2 .895-2 2 .895 2 2 2z' fill='currentColor' fill-opacity='0.05'/%3E%3C/svg%3E");
+            mask-image: radial-gradient(circle at center, transparent 30%, black);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: slideUp 0.5s ease forwards;
+        }
+
+        .hero p {
+            font-size: clamp(1.1rem, 2vw, 1.25rem);
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+            opacity: 0;
+            animation: fadeIn 0.5s ease 0.3s forwards;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            cursor: pointer;
+            font-family: 'Lexend', sans-serif;
+        }
+
+        .button-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .button-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .button-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .button-outline:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .section {
+            padding: 6rem 1.5rem;
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .tools {
+            background: var(--background);
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tool-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 2rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .tool-card h3 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .game-section {
+            background: var(--card);
+            text-align: center;
+        }
+
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--background);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .word-builder {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .letter-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .hint-container {
+            background: var(--primary-light);
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1.5rem;
+        }
+
+        .letter {
+            width: 3rem;
+            height: 3rem;
+            display: grid;
+            place-items: center;
+            background: var(--card);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius);
+            font-size: 1.25rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .letter:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+            background: var(--primary-light);
+        }
+
+        #gameResult {
+            height: 2rem;
+            font-weight: 600;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 3.5rem;
+            height: 3.5rem;
+            background: var(--primary);
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            color: white;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+            font-size: 1.25rem;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            background: var(--primary-dark);
+        }
+
+        .loading {
+            position: fixed;
+            inset: 0;
+            background: var(--background);
+            display: grid;
+            place-items: center;
+            z-index: 1000;
+        }
+
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .reading-ruler {
+            position: fixed;
+            pointer-events: none;
+            background: rgba(255, 255, 0, 0.2);
+            height: 32px;
+            width: 100%;
+            max-width: 800px;
+            border-radius: 16px;
+            box-shadow: 0 0 20px rgba(255, 255, 0, 0.2);
+            display: none;
+            z-index: 1000;
+            transition: opacity 0.2s ease;
+        }
+
+        .color-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 50;
+            mix-blend-mode: multiply;
+            display: none;
+        }
+
+        /* Text Customizer Styles */
+        .text-customizer {
+            background: var(--card);
+            color: var(--card-foreground);
+            padding: 1rem 1.5rem;
+            border-bottom: 3px solid var(--primary);
+            border-radius: 0;
+            margin-top: 1rem;
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .text-customizer h3 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .text-customizer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Align items to the start (left) */
+            text-align: left; /* Align text to the left */
+        }
+
+        .form-group label {
+            font-size: 1rem;
+            color: var(--foreground);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input[type="range"],
+        .form-group input[type="color"] {
+            width: 100%;
+            max-width: 300px; /* Make the inputs wider */
+            margin-bottom: 1rem;
+        }
+
+        /* Add some spacing around the main content */
+        .about-content {
+            padding: 2rem;
+            background-color: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .about-content h3 {
+            font-size: 1.75rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .about-content ul {
+            list-style-type: disc;
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .about-content li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">EL</div>
+                EmpowerLearn
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-item">Home</a>
+                <a href="about.html" class="nav-item active">About Us</a>
+                <a href="#" class="nav-item">Services</a>
+                <a href="#" class="nav-item">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>About EmpowerLearn</h1>
+            <p>Dedicated to empowering individuals with dyslexia through advanced and accessible learning solutions.</p>
+        </div>
+    </section>
+
+    <!-- About Us Section -->
+    <section class="section">
+        <h2 class="section-title">Our Mission</h2>
+        <div class="about-content">
+            <p>Welcome to EmpowerLearn, a website dedicated to providing support and resources for individuals with
+                dyslexia. We understand the unique challenges that those with dyslexia face when it comes to reading,
+                writing, and learning. Our mission is to offer helpful tools, strategies, and a supportive community to
+                make learning easier and more accessible.</p>
+
+            <h3>What is Dyslexia?</h3>
+            <p>Dyslexia is a learning disorder that primarily affects reading, writing, and spelling skills. It is
+                neurological in origin and is not related to intelligence. In fact, many people with dyslexia are highly
+                creative and intelligent, but they may struggle with:</p>
+            <ul>
+                <li>Recognizing and decoding words</li>
+                <li>Spelling accurately</li>
+                <li>Reading fluency</li>
+                <li>Processing written language at the same rate as others</li>
+            </ul>
+            <p>We are here to provide assistance to those who need extra support in navigating these challenges and
+                unlocking their full potential.</p>
+
+            <h3>Our Goals</h3>
+            <p>Our mission is to provide practical resources, support, and guidance for individuals with dyslexia.
+                Whether you are a student, parent, teacher, or someone seeking more information, we offer:</p>
+            <ul>
+                <li>Educational resources for dyslexia, including articles, guides, and tutorials.</li>
+                <li>Tips and techniques for overcoming reading challenges, such as multi-sensory learning strategies.</li>
+                <li>Information on assistive technologies that can aid with reading and writing.</li>
+                <li>A supportive community to share experiences, ask questions, and find encouragement.</li>
+            </ul>
+
+            <h3>Our Team</h3>
+            <p>We are a group of educators, researchers, and advocates dedicated to improving the lives of individuals
+                with dyslexia. We work together to create content that is accessible, informative, and useful for those
+                who need it most. Our team is committed to staying up-to-date with the latest research and best practices
+                in dyslexia education.</p>
+
+            <h3>Contact Us</h3>
+            <p>If you have any questions or would like more information, please feel free to contact us. We are always
+                happy to help!</p>
+        </div>
+    </section>
+
+    <!-- Text Customizer Section -->
+    <section class="text-customizer">
+        <h3 class="section-title">Customize Text Preferences</h3>
+        <div class="text-customizer-grid">
+            <div class="form-group">
+                <label for="fontSize">Font Size:</label>
+                <input type="range" id="fontSize" min="12" max="24" value="16">
+            </div>
+            <div class="form-group">
+                <label for="fontColor">Font Color:</label>
+                <input type="color" id="fontColor" value="#343a40">
+            </div>
+            <div class="form-group">
+                <label for="lineHeight">Line Height:</label>
+                <input type="range" id="lineHeight" min="1" max="2" step="0.1" value="1.6">
+            </div>
+            <div class="form-group">
+                <label for="letterSpacing">Letter Spacing:</label>
+                <input type="range" id="letterSpacing" min="0" max="5" step="0.1" value="0">
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // JavaScript to handle text customization
+        document.getElementById('fontSize').addEventListener('input', function () {
+            document.body.style.fontSize = this.value + 'px';
+        });
+
+        document.getElementById('fontColor').addEventListener('input', function () {
+            document.body.style.color = this.value;
+        });
+
+        document.getElementById('lineHeight').addEventListener('input', function () {
+            document.body.style.lineHeight = this.value;
+        });
+
+        document.getElementById('letterSpacing').addEventListener('input', function () {
+            document.body.style.letterSpacing = this.value + 'px';
+        });
+    </script>
+</body>
+
+</html>

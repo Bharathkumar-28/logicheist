@@ -12,14 +12,14 @@
       max-width: 600px;
       margin: 0 auto;
       padding: 20px;
-      background-color: white;
+      background-color: #333;
       border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
 
     h1 {
       text-align: center;
-      color: #333;
+      color: aqua;
     }
 
     textarea {
@@ -40,6 +40,7 @@
       padding: 10px 15px;
       cursor: pointer;
       border-radius: 5px;
+      margin-right: 10px;
     }
 
     .button:hover {
@@ -56,7 +57,16 @@
     }
 
     .suggestion {
-      color: green;
+      color: aqua;
+    }
+
+    .control-container {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .control-container input {
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -67,7 +77,14 @@
     <textarea id="textInput" placeholder="Enter text here..."></textarea>
     <br>
     <button class="button" onclick="checkSpelling()">Check Spelling</button>
+    <button class="button" onclick="eraseText()">Erase</button>
+    <button class="button" onclick="stopSpeech()">Stop Speech</button>
     <div id="result" class="result"></div>
+
+    <div class="control-container">
+      <label for="pitchControl" style="color: white;">Pitch Control:</label>
+      <input type="range" id="pitchControl" min="0" max="2" step="0.1" value="1" />
+    </div>
   </div>
 
   <!-- CSRF Token passed to JavaScript -->
@@ -77,7 +94,9 @@
 
   <script>
     let speechSynthesisInstance = null; // To keep track of the speech instance
+    let speechPitch = 1;  // Default pitch value
 
+    // Function to check spelling and get suggestions
     async function checkSpelling() {
       const text = document.getElementById("textInput").value.trim();
       const resultElement = document.getElementById("result");
@@ -104,7 +123,7 @@
 
         const data = await response.json();
         if (data.suggestions && data.suggestions.length > 0) {
-          resultContent += `
+          resultContent += ` 
             <div>
               <span class="incorrect">Incorrect: "${word}"</span>
               <br>
@@ -114,7 +133,7 @@
           // Speak the result: word is incorrect
           speakWord(`Incorrect. Your word is "${word}". Suggestions: ${data.suggestions.join(', ')}`);
         } else {
-          resultContent += `
+          resultContent += ` 
             <div>
               <strong>${word}</strong>: <span class="suggestion">Correct</span>
             </div><br>`;
@@ -136,8 +155,27 @@
 
       const speech = new SpeechSynthesisUtterance(text);
       speech.lang = 'en-US';  // Set language for speech
+      speech.pitch = speechPitch;  // Set the pitch for speech
       speechSynthesisInstance = speech;
       window.speechSynthesis.speak(speech);
+    }
+
+    // Stop the ongoing speech synthesis
+    function stopSpeech() {
+      if (speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+      }
+    }
+
+    // Adjust pitch control
+    document.getElementById("pitchControl").addEventListener("input", function() {
+      speechPitch = this.value;
+    });
+
+    // Erase the input text and result
+    function eraseText() {
+      document.getElementById("textInput").value = "";
+      document.getElementById("result").innerHTML = "";
     }
 
     // Listen for the page unload and stop any ongoing speech synthesis

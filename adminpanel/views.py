@@ -1,3 +1,6 @@
+
+from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import permission_required
 from django.shortcuts import get_object_or_404, render,redirect
 from django.http import HttpResponse
 from django.urls import  reverse
@@ -17,7 +20,7 @@ from adminpanel.models import post,profile, words
 import pdb
 import logging
 from django.http import JsonResponse
-from .models import courses, gameresult, quiz,leaderboard, speechquiz2
+from .models import badges, courses, gameresult, quiz,leaderboard, speechquiz2
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
@@ -69,18 +72,22 @@ def attempt(request,postid):
     
 
 def register(request):
-    form=registerform()
-    blogtitle="bjarath" 
-    if request.method =='POST':
-        form=registerform(request.POST)
-        if form.is_valid():
-
-            user=form.save(commit=False)
-            user.set_password(form.cleaned_data['password'])
-            user.save()
-            """  print('registersucess') """
-            messages.success(request,"registration succesfull")
-            return redirect("login")
+    if request.user.is_authenticated:
+        return redirect('')
+    else:
+        form=registerform()
+        blogtitle="bjarath" 
+        if request.method =='POST':
+            form=registerform(request.POST)
+            if form.is_valid():
+                user=form.save(commit=False)
+                user.set_password(form.cleaned_data['password'])
+                user.save()
+                """  print('registersucess') """
+                lowgroupwithoutaddquiz,created=Group.objects.get_or_create(name='lowgroupwithoutaddquiz')
+                user.groups.add(lowgroupwithoutaddquiz)
+                messages.success(request,"registration succesfull")
+                return redirect("login")
          
     
                
@@ -99,6 +106,9 @@ def texttospeech(request):
 def example(request):
     return render(request,'example.html')
 def login(request):
+    if request.user.is_authenticated:
+        return redirect('')
+
     form=loginform()
     if request.method =="POST":
         form=loginform(request.POST)
@@ -111,7 +121,7 @@ def login(request):
            if user is not None:
             auth_login(request,user)
             messages.success(request,'you are successfully logged in')
-            return render(request,'main.html')
+            return redirect('')
             
                 
             
@@ -203,6 +213,26 @@ def index(request):
 @login_required
 def profiles(request):
     posts = profile.objects.filter(user=request.user)
+    secondposts=badges.objects.all()
+    scores=leaderboard.objects.filter(user=request.user)
+  
+    # Check if the user has a leaderboard entry
+    leaderboard_entry = leaderboard.objects.filter(user=request.user).first()
+
+    if leaderboard_entry:
+        total_score = sum(result['is_correct'] for result in leaderboard_entry.data)  # Calculate total score
+    else:
+        total_score = 0  # Default score if no leaderboard entry
+    print('totsal', total_score)     
+    for soii in secondposts:
+        if total_score>=soii.score:
+            a=soii.name
+            print("a",a)
+            b=soii.image
+            print("b",b)
+            break
+
+
     if posts:
     
         # Get the posts related to the authenticated user
@@ -211,9 +241,10 @@ def profiles(request):
         # Print each post's information in the QuerySet
         print('oiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii')
         for post in posts:
-            print(f"Post ID: {post.id}, User: {post.user}, Title: {post.Name}")  # Example: print the id, user, and title of each post
-        
-        return render(request, "profile.html", {'posts': posts})
+            print(f"Post ID: {post.id}, User: {post.user}, Title: {post.Name},id:{post.id}")  # Example: print the id, user, and title of each post
+  
+
+        return render(request, "profile.html", {'posts': posts,'a':a,'b':b})
     else:
         if not posts:
             return redirect('addprofiles')
@@ -248,6 +279,8 @@ def addprofiles(request):
         return redirect('profiles')  # Redirect to a new page or success message
 
     return render(request, 'addprofile.html',{'form':form})
+
+
 
     
 @login_required
@@ -470,12 +503,29 @@ from django.shortcuts import render, redirect
 from .forms import quizform
 from .models import quiz
 import json
-
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 from .forms import quizform
 from .models import quiz
+from django.contrib.auth.decorators import permission_required
+from django.core.exceptions import PermissionDenied
+from django.shortcuts import render
+from .forms import quizform
+from .models import quiz
+from django.contrib import messages
 
+# Permission check and group check combined into the view logic
+@permission_required('adminpanel.add_quiz', raise_exception=True)
 def addquiz(request):
+    print("User groups: ", request.user.groups.all())
+    print( request.user.get_all_permissions())
+
+    # Check if user is in the 'lowgroupwithoutaddquiz' group
+    if not request.user.groups.filter(name='lowgroupwithoutaddquiz').exists():
+ 
+        return redirect('index1')
+
+    # Form handling
     if request.method == 'POST':
         form = quizform(request.POST, request.FILES)
         if form.is_valid():
@@ -505,12 +555,56 @@ def addquiz(request):
             quiz_object.save()  # This will auto-fill the 'createdate' field
 
             # Redirect after saving
-            return render(request,"index1.html")  # Redirect to the quiz list page
+            return render(request, "index1.html")  # Redirect to the quiz list page
 
     else:
         form = quizform()
 
     return render(request, 'addquiz.html', {'form': form})
+from django.shortcuts import render, redirect
+from .forms import speechquizform
+from .models import speechquiz2
+from django.contrib import messages
+from django.core.exceptions import PermissionDenied
+
+
+
+def addspeechquiz(request):
+    # Check if the user belongs to the required group
+    if not request.user.groups.filter(name='lowgroupwithoutaddquiz').exists():
+        raise PermissionDenied("You do not have the required group membership to add a quiz.")
+    
+    if request.method == 'POST':
+        form =speechquizform(request.POST, request.FILES)  # Handle image upload with request.FILES
+        if form.is_valid():
+            # Save the main quiz object (title, name, image)
+            quiz_object = form.save(commit=False)
+
+            # Process the words
+            word_list = []
+            word_index = 1
+            while f'word_{word_index}' in request.POST:
+                word = request.POST.get(f'word_{word_index}')
+                if word:
+                    word_list.append(word)
+                word_index += 1
+
+            # Store the words in the model's data field
+            quiz_object.data = word_list  # Assuming 'data' is a JSONField to store words as a list
+            quiz_object.save()
+
+            messages.success(request, "Quiz added successfully.")
+            return redirect('speechquizcard')  # Redirect to a page that shows the list of quizzes
+        else:
+            messages.error(request, "There was an error with your submission.")
+    else:
+        form = speechquizform()
+
+    return render(request, 'addspeechquiz.html', {'form': form})
+
+
+
+
 from django.shortcuts import render
 from django.http import JsonResponse
 import google.generativeai as genai
@@ -675,6 +769,7 @@ def leaderboarda(request):
             return JsonResponse({'status': 'failure', 'message': f'Error saving result: {str(e)}'})
 
     return JsonResponse({'status': 'failure', 'message': 'Invalid request method.'})
+
 from django.shortcuts import render
 
 
@@ -685,11 +780,11 @@ from django.shortcuts import render
 from .models import leaderboard, profile
 
 from django.shortcuts import render
-from .models import leaderboard, profile
+from .models import leaderboard, profile, badges  # Assuming badges is the model for the badges
 from django.contrib.auth.models import User
 
 def leaderboardview(request):
-    # Retrieve all users
+    # Retrieve all users and profiles
     users = User.objects.all()
     posts = profile.objects.all()
 
@@ -708,13 +803,86 @@ def leaderboardview(request):
         else:
             total_score = 0  # Default score if no leaderboard entry
 
+        # Find the badge based on the total score
+        user_badge_name = None
+        user_badge_image = None
+        
+        # Loop through all badges and assign the one that matches the score
+        for badge in badges.objects.all():
+            if total_score >= badge.score:  # Assign the badge if the score is greater than or equal to the badge score
+                user_badge_name = badge.name
+                user_badge_image = badge.image 
+                break
+              # No need to continue if a badge doesn't match the score
+
+        # Add the user data to the leaderboard_data list
         leaderboard_data.append({
             'user': user.username,
             'score': total_score,
-            'image': user_image  # Add the image to the data
-
+            'image': user_image,  # User's profile image
+            'badge_name': user_badge_name,  # Badge name based on score
+            'badge_image': user_badge_image,  # Badge image
         })
 
-    leaderboard_data.sort(key=lambda x: x['score'], reverse=True)  # Sort by score, highest first
+    # Check current user's profile and leaderboard entry for assigning badge
+    posts = profile.objects.filter(user=request.user)
+    secondposts = badges.objects.all()
+    scores = leaderboard.objects.filter(user=request.user)
+  
+    leaderboard_entry = leaderboard.objects.filter(user=request.user).first()
 
-    return render(request, 'leaderboard.html', {'leaderboard_data': leaderboard_data})
+    if leaderboard_entry:
+        total_score = sum(result['is_correct'] for result in leaderboard_entry.data)  # Calculate total score
+    else:
+        total_score = 0  # Default score if no leaderboard entry
+    print('Total score for current user:', total_score)
+
+    # Assign a badge for the current user
+    a = None
+    b = None
+    for badge in secondposts:
+        if total_score >= badge.score:
+            a = badge.name
+            b = badge.image   # Ensure URL for image
+            break  # Assign the first matching badge
+
+    # Sort the leaderboard data by score in descending order
+    leaderboard_data.sort(key=lambda x: x['score'], reverse=True)
+
+    # Pass the leaderboard data, badge info for the current user, and render the template
+    return render(request, 'leaderboard.html', {
+        'leaderboard_data': leaderboard_data,
+        'a': a,
+        'b': b
+    })
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from .models import notes
+import json
+
+@login_required
+@csrf_exempt
+def takenotes(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            user = request.user
+            wrong_word = data.get('wrong_word')
+
+            # Check if the word already exists in the user's notes
+            if wrong_word:
+                nnotes, created = notes.objects.get_or_create(user=user)
+                if nnotes.data is None:
+                    nnotes.data = []
+
+                nnotes.data.append(wrong_word)
+                nnotes.save()
+
+                return JsonResponse({'status': 'success', 'message': 'Wrong word saved successfully.'})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'No word provided.'}, status=400)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request.'}, status=400)
+

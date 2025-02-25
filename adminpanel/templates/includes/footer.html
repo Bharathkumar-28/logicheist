@@ -1,6 +1,13 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Customizer with Reading Ruler</title>
     <style>
-      
+        /* General Styling */
+     
+
 
         /* Menu bar styling */
         .menu-bar {
@@ -16,9 +23,7 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .menu-bar h3 {
-            margin: 0;
-        }
+        
 
         .menu-bar .customizer-controls {
             display: flex;
@@ -44,6 +49,7 @@
         .content {
             padding: 20px;
             flex-grow: 1;
+            margin-top: 60px; /* To ensure content is not hidden behind the sticky menu */
         }
 
         /* Optional: Basic styles for the text that will change */
@@ -53,7 +59,7 @@
             color: #333;
             margin: 20px 0;
         }
-       
+
         #readingRuler {
             position: absolute;
             width: 200px;
@@ -63,42 +69,26 @@
             z-index: 1000;
             display: none;
         }
-        .content {
-            margin: 2rem;
-            line-height: 1.8;
-            font-size: 16px;
-        }
-        .controls {
-            margin: 2rem;
-            padding: 1rem;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            padding: 8px 16px;
-            margin-bottom: 10px;
-        }
     </style>
 </head>
 <body>
 
     <!-- Menu Bar -->
-    <div class="controls">
-        <button onclick="toggleRuler()">Toggle Reading Ruler</button>
-        <div>
-            <label for="color">Ruler Color:</label>
-            <select id="color" onchange="changeColor()">
-                <option value="yellow">Yellow</option>
-                <option value="lightblue">Blue</option>
-                <option value="lightgreen">Green</option>
-                <option value="pink">Pink</option>
-            </select>
-        </div>
-    </div>
-    <div id="readingRuler"></div>
     <div class="menu-bar">
-        <h3>Text Customizer</h3>
+      
         <div class="customizer-controls">
+            <!-- Ruler Controls -->
+            <button onclick="toggleRuler()">Toggle Reading Ruler</button>
+            <div>
+                <label for="color">Ruler Color:</label>
+                <select id="color" onchange="changeColor()">
+                    <option value="yellow">Yellow</option>
+                    <option value="lightblue">Blue</option>
+                    <option value="lightgreen">Green</option>
+                    <option value="pink">Pink</option>
+                </select>
+            </div>
+
             <!-- Font Size -->
             <div class="control-group">
                 <label for="fontSize">Font Size:</label>
@@ -137,7 +127,10 @@
         </div>
     </div>
 
-   
+    
+
+    <!-- Reading Ruler -->
+    <div id="readingRuler"></div>
 
     <script>
         // Update text styles globally
@@ -160,13 +153,13 @@
             const fontFamily = document.getElementById('fontFamily').value;
             document.body.style.fontFamily = fontFamily;
         }
-    </script>
 
-    <script>
+        // Reading ruler functionality
         const ruler = document.getElementById('readingRuler');
         let isRulerActive = false;
         let currentUtterance = null;
 
+        // Function to toggle the ruler visibility
         function toggleRuler() {
             isRulerActive = !isRulerActive;
             ruler.style.display = isRulerActive ? 'block' : 'none';
@@ -175,12 +168,14 @@
             }
         }
 
+        // Function to change the ruler color
         function changeColor() {
             const color = document.getElementById('color').value;
             ruler.style.backgroundColor = color;
             ruler.style.opacity = '0.4';
         }
 
+        // Function to get words under the ruler
         function getWordsUnderRuler(x, y, rulerWidth) {
             const words = [];
             const range = document.caretRangeFromPoint(x, y);
@@ -189,10 +184,8 @@
                 const textNode = range.startContainer;
                 const text = textNode.textContent;
                 
-                // Get the bounding client rect of the text node
                 const rects = range.getClientRects();
                 if (rects.length > 0) {
-                    // Find all words that fall within the ruler's width
                     const wordMatches = text.match(/\S+/g) || [];
                     let currentPosition = 0;
                     
@@ -203,7 +196,6 @@
                         
                         const wordRect = tempRange.getBoundingClientRect();
                         
-                        // Check if the word is under the ruler
                         if (wordRect.left >= x - rulerWidth/2 && 
                             wordRect.right <= x + rulerWidth/2 &&
                             wordRect.top <= y + 15 &&
@@ -219,6 +211,7 @@
             return words.join(' ');
         }
 
+        // Function to speak the text
         function speak(text) {
             stopSpeaking();
             if (text) {
@@ -228,6 +221,7 @@
             }
         }
 
+        // Stop speaking
         function stopSpeaking() {
             window.speechSynthesis.cancel();
             currentUtterance = null;
@@ -236,10 +230,10 @@
         let lastText = '';
         let speakTimeout = null;
 
+        // Update ruler position and speak text under the ruler on mouse move
         document.addEventListener('mousemove', (e) => {
             if (!isRulerActive) return;
 
-            // Update ruler position
             ruler.style.left = (e.pageX - 100) + 'px';
             ruler.style.top = (e.pageY - 15) + 'px';
 
