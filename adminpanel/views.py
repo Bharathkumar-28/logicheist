@@ -825,8 +825,11 @@ def leaderboardview(request):
     leaderboard_data = []
 
     for user in users:
-        # Get the user's profile image (if available)
+        # Get the user's profile (if available)
         user_profile = posts.filter(user=user).first()  # Get the profile for the current user
+        
+        # Ensure user_profile exists and has a Name field
+        user_name = user_profile.Name if user_profile else None  # Access the Name from profile
         user_image = user_profile.image.url if user_profile and user_profile.image else None  # Get the image URL
 
         # Check if the user has a leaderboard entry
@@ -851,7 +854,7 @@ def leaderboardview(request):
 
         # Add the user data to the leaderboard_data list
         leaderboard_data.append({
-            'user': user.username,
+            'user': user_name,  # Use `user_profile.Name` for the user name
             'score': total_score,
             'image': user_image,  # User's profile image
             'badge_name': user_badge_name,  # Badge name based on score
@@ -889,6 +892,7 @@ def leaderboardview(request):
         'a': a,
         'b': b
     })
+
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
