@@ -1,0 +1,335 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* Solar System Themed Styles */
+    .solar-game-container {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 800px;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Heading Styles */
+    .solar-heading {
+        font-size: 2em;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .solar-subheading {
+        font-size: 1.5em;
+        margin-top: 40px;
+        color: #555;
+    }
+
+    /* Word Container */
+    .planet-container {
+        margin-top: 20px;
+        font-size: 2em;
+        font-weight: bold;
+        color: #333;
+        padding: 10px;
+        background-color: #fafafa;
+        border-radius: 8px;
+    }
+
+    /* Word Card */
+    .sun-card {
+        margin-top: 20px;
+        padding: 20px;
+        background-color: #f4f4f9;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Input Container */
+    .input-asteroid {
+        margin: 20px 0;
+    }
+
+    input[type="text"] {
+        width: 70%;
+        padding: 10px;
+        font-size: 1em;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        margin-right: 10px;
+    }
+
+    input[type="range"] {
+        width: 70%;
+        margin: 10px 0;
+    }
+
+    .planet-button {
+        padding: 10px 20px;
+        font-size: 1em;
+        border: none;
+        background-color: #4CAF50;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: background-color 0.3s ease;
+    }
+
+    .planet-button:hover {
+        background-color: #45a049;
+    }
+
+    .planet-button:disabled {
+        background-color: #ddd;
+        cursor: not-allowed;
+    }
+
+    /* Feedback Text */
+    .feedback {
+        margin-top: 20px;
+        font-size: 1.2em;
+    }
+
+    .correct {
+        color: green;
+    }
+
+    .incorrect {
+        color: red;
+    }
+
+    /* Pagination */
+    .pagination {
+        margin-top: 30px;
+    }
+
+    .pagination .planet-button {
+        padding: 10px 20px;
+        margin: 0 10px;
+        background-color: #007bff;
+        border-radius: 5px;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    .pagination .planet-button:hover {
+        background-color: #0056b3;
+    }
+
+    /* Mistakes List */
+    ul {
+        list-style: none;
+        padding-left: 0;
+        margin-top: 20px;
+        font-size: 1.2em;
+    }
+
+    ul li {
+        padding: 5px 0;
+        border-bottom: 1px solid #ddd;
+    }
+
+    /* Responsive Styles */
+    @media screen and (max-width: 768px) {
+        .solar-game-container {
+            width: 90%;
+        }
+
+        input[type="text"], input[type="range"] {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .pagination .planet-button {
+            width: 100%;
+            margin: 10px 0;
+        }
+    }
+
+</style>
+
+<div class="solar-game-container">
+    <h1 class="solar-heading">Word Scramble Game</h1>
+    <p>Unscramble the letters to form a word.</p>
+
+    <div class="planet-container" id="scrambledWord"></div>
+
+    <div class="sun-card" id="wordCard"></div>
+
+    <div class="input-asteroid">
+        <input type="text" id="userInput" placeholder="Enter your guess" />
+        <button class="planet-button" onclick="checkAnswer()">Submit</button>
+    </div>
+
+    <div class="feedback" id="feedbackText"></div>
+
+    <div class="input-asteroid">
+        <label for="pitch">Pitch:</label>
+        <input type="range" id="pitch" min="0" max="2" step="0.1" value="1">
+        <label for="speed">Speed:</label>
+        <input type="range" id="speed" min="0.5" max="2" step="0.1" value="1">
+        <button class="planet-button" onclick="adjustSpeechSettings()">Set Speech Settings</button>
+    </div>
+
+    <div class="input-asteroid">
+        <button class="planet-button" onclick="startSpeech()">Read Word</button>
+        <button class="planet-button" onclick="startSpeechRecognition()">Speak the Word</button>
+    </div>
+
+    <div class="pagination">
+        <button class="planet-button" id="prevPage" onclick="changePage(-1)">Previous</button>
+        <button class="planet-button" id="nextPage" onclick="changePage(1)">Next</button>
+    </div>
+
+    <div class="input-asteroid">
+        <button class="planet-button" onclick="revealNextCluster()">Reveal Next Cluster</button>
+    </div>
+
+    <!-- Displaying the list of wrong words (stored in 'l') -->
+    <h2 class="solar-subheading">Your Mistakes:</h2>
+    <ul>
+        {% for word in l %}
+            <li>{{ word }}</li>
+        {% empty %}
+            <li>No words recorded yet.</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<script>
+    let wordsData = {{ l|safe }};
+    if (typeof wordsData === 'string') {
+        wordsData = JSON.parse(wordsData);
+    }
+
+    let currentWord = {}; 
+    let pitch = 1;
+    let speed = 1;
+    let currentPage = 0;
+    const wordsPerPage = 5;
+    let words = [];
+
+    wordsData.forEach(post => {
+        words.push({ word: post });
+    });
+
+    function getWordsForPage(page) {
+        const start = page * wordsPerPage;
+        const end = start + wordsPerPage;
+        return words.slice(start, end);
+    }
+
+    function getRandomWord() {
+        const wordSubset = getWordsForPage(currentPage);
+        const randomIndex = Math.floor(Math.random() * wordSubset.length);
+        return wordSubset[randomIndex];
+    }
+
+    function loadNewWord() {
+        const wordObj = getRandomWord();
+        currentWord = wordObj;
+
+        const wordCard = `<div class="card"><h3>${wordObj.word}</h3></div>`;
+        document.getElementById('wordCard').innerHTML = wordCard;
+        document.getElementById('feedbackText').innerHTML = '';
+        document.getElementById('userInput').value = '';
+    }
+
+    function startSpeech() {
+        if (currentWord && currentWord.word) {
+            const letters = currentWord.word.split('');
+            let delay = 0;
+            letters.forEach((letter, index) => {
+                setTimeout(() => {
+                    speakWord(letter);
+                }, delay);
+                delay += 500;
+            });
+            setTimeout(() => {
+                speakWord(currentWord.word); // Speak the full word
+            }, delay);
+        } else {
+            alert("No word loaded yet!");
+        }
+    }
+
+    function speakWord(word) {
+        const wordUtterance = new SpeechSynthesisUtterance(word);
+        wordUtterance.pitch = pitch;
+        wordUtterance.rate = speed;
+        window.speechSynthesis.speak(wordUtterance);
+    }
+
+    function checkAnswer() {
+        const userAnswer = document.getElementById('userInput').value.toLowerCase();
+        const correctAnswer = currentWord.word.toLowerCase();
+
+        if (userAnswer === correctAnswer) {
+            document.getElementById('feedbackText').textContent = "Correct!";
+            document.getElementById('feedbackText').classList.add('correct');
+            document.getElementById('feedbackText').classList.remove('incorrect');
+            speakFeedback("Correct!");
+        } else {
+            document.getElementById('feedbackText').textContent = "Incorrect, try again!";
+            document.getElementById('feedbackText').classList.add('incorrect');
+            document.getElementById('feedbackText').classList.remove('correct');
+            speakFeedback("Incorrect, try again!");
+        }
+    }
+
+    function speakFeedback(feedback) {
+        const feedbackUtterance = new SpeechSynthesisUtterance(feedback);
+        feedbackUtterance.pitch = pitch;
+        feedbackUtterance.rate = speed;
+        window.speechSynthesis.speak(feedbackUtterance);
+    }
+
+    // Speech Recognition (Speech-to-Text)
+    function startSpeechRecognition() {
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("Speech recognition not supported in this browser.");
+            return;
+        }
+
+        const recognition = new webkitSpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = () => {
+            document.getElementById('feedbackText').textContent = "Listening...";
+        };
+
+        recognition.onerror = (event) => {
+            document.getElementById('feedbackText').textContent = "Error occurred while listening.";
+            console.error("Speech recognition error", event);
+        };
+
+        recognition.onresult = (event) => {
+            const recognizedText = event.results[0][0].transcript.trim().toLowerCase();
+            document.getElementById('feedbackText').textContent = `You said: ${recognizedText}`;
+            if (recognizedText === currentWord.word.toLowerCase()) {
+                document.getElementById('feedbackText').textContent += " - Correct!";
+                speakFeedback("Correct!");
+            } else {
+                document.getElementById('feedbackText').textContent += " - Incorrect, try again.";
+                speakFeedback("Incorrect, try again!");
+            }
+        };
+
+        recognition.start();
+    }
+
+    function changePage(direction) {
+        const totalPages = Math.ceil(words.length / wordsPerPage);
+        currentPage += direction;
+        currentPage = Math.max(0, Math.min(currentPage, totalPages - 1));
+        loadNewWord();
+    }
+
+    loadNewWord();
+</script>
+{% endblock %}

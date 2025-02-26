@@ -104,48 +104,24 @@
 </style>
 
 <div class="image-container">
-
-    <div class="badge-container">
-        {% if a and b%}
-        <p><strong>Badge Name:</strong> {{a}}</p>
-        <img src="{{b}}" alt="Badge Image" class="badge-img"> <!-- Added class for badge image -->
-        {%endif%}
-        {%  if total_score %}
-        <p>SCORE:{{total_score}}</p>
-        {%endif%}
-    </div>
+    <a href="/texttospeech" class="image-link">
+     
+        <img src="https://img.freepik.com/free-vector/speech-text-concept-illustration_114360-4235.jpg?semt=ais_hybrid" alt="Text to Speech" class="image-effect">
+        <h3> Text to Speech</h3>
+    </a>
+    <a href="/speechtotext" class="image-link">
+        <img src="https://img.freepik.com/free-vector/speech-text-abstract-concept-illustration_335657-1879.jpg?semt=ais_hybrid" alt="Speech to Text" class="image-effect">
+        <h3>Speech to Text</h3>
+    </a>
     
-    <!-- Other game links -->
-    <a href="/dyslexiatools" class="image-link">
-        <img src="https://tse4.mm.bing.net/th?id=OIP.JbciA7CJaReHwjl_gaf7FAAAAA&pid=Api&P=0&h=180" alt="Dyslexia tools" class="image-effect">
+    <a href="/spell" class="image-link">
+        <img src="https://img.freepik.com/premium-vector/businessman-found-success-word-search-puzzle_47328-500.jpg?semt=ais_hybrid" alt="Spell Checker" class="image-effect">
+        <h3>Spell Checker</h3>
     </a>
-   
-
-    <a href="/game" class="image-link">
-        <img src="https://img.freepik.com/free-vector/background-people-television-contest_23-2147595530.jpg?semt=ais_hybrid" alt="Word Game" class="image-effect">
-        <h3>Word Game</h3>
+    <a href="/wordexplorer" class="image-link">
+        <img src="https://tse3.mm.bing.net/th?id=OIP.Mwe97eL77NwYBhvtjYGjDQHaKu&pid=Api&P=0&h=180" alt="Spell Checker" class="image-effect">
+        <h3>Word Explorer</h3>
     </a>
-
-    <a href="/game2" class="image-link">
-        <img src="https://img.freepik.com/free-vector/people-connecting-puzzle-pieces_23-2148071463.jpg?semt=ais_hybrid" alt="Advanced Word Game" class="image-effect">
-        <h3>quiz2</h3>
-    </a>
-    <a href="/courses" class="image-link">
-        <img src="https://tse4.mm.bing.net/th?id=OIP.mPXdM862IuRSqHZA-ydSTgHaE8&pid=Api&P=0&h=180" alt="Advanced Word Game" class="image-effect">
-        <h3>Couses</h3>
-    </a>
-    <a href="/index1" class="image-link">
-        <img src="https://tse3.mm.bing.net/th?id=OIP.mhldecZZX7wED55dTYmcWAHaEK&pid=Api&P=0&h=180" alt="Advanced Word Game" class="image-effect">
-        <h3>jumbled quiz</h3>
-    </a>
-    <a href="/speechquizcard" class="image-link">
-        <img src="https://tse4.mm.bing.net/th?id=OIP.5LmlK7QpT-2ldRgjqHEZHQHaHZ&pid=Api&P=0&h=180" alt="Advanced Word Game" class="image-effect">
-        <h3>speech quiz</h3>
-    </a>
-
-   
-    </a>
-  
 </div>
 
 {% endblock %}

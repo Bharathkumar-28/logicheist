@@ -37,7 +37,10 @@ urlpatterns = [
            path('profiles/',views.profiles,name='profiles'),
            path('createprofile/<int:postid>/',views.createprofile,name='createprofile'),
            path('addprofiles/',views.addprofiles,name="addprofiles"),
+            path('addquiz/',views.addquiz,name="addquiz"),
            path('addspeechquiz',views.addspeechquiz,name='addspeechquiz'),
+           path('dyslexiatools/',views.dyslexiatools,name='dyslexiatools'),
+           path('wordexplorer/',views.wordexplorer,name='wordexplorer'),
              
 
           path('contact/',views.contact,name='contact'),
@@ -53,7 +56,7 @@ urlpatterns = [
            path('texttospeechtamil',views.texttospeechtamil,name='texttospeechtamil'),
            path('attempt/<int:postid>',views.attempt,name='attempt'),
            path('graph2/', views.graph2, name='graph2'),
-           path('addquiz/',views.addquiz,name="addquiz"),
+          
            path('home/',views.home,name='home'),
            path('chat/', views.chat, name='chat'),
            path('avinash/<int:postid>',views.avinash,name="avinash"),
@@ -62,7 +65,9 @@ urlpatterns = [
            path('attemptcourses/<int:postid>',views.attemptcourses,name="attemptcourses"),
            path('leaderboarda/',views.leaderboarda,name='leaderboard'),
            path('leaderboardview/',views.leaderboardview,name='leaderboardview'),
-           path('takenotes/',views.takenotes,name='takenotes')
+           path('takenotes/',views.takenotes,name='takenotes'),
+           path('mymistakes/<int:postid>',views.mynotes,name='mymistakes'),
+           path('teachers/',views.teacher,name='teachers'),
            
 
 

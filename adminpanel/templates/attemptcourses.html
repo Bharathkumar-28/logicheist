@@ -6,7 +6,7 @@
     /* Game Container */
     .game-container {
         margin: 50px auto;
-        max-width: 90%%;
+        max-width: 90%;
         padding: 30px;
         background-color: #ffffff;
         border-radius: 15px;
@@ -196,16 +196,19 @@
     <div class="input-container">
         <button onclick="revealNextCluster()">Reveal Next Cluster</button>
     </div>
+
+    <!-- Speech-to-Text Button -->
+    <div class="input-container">
+        <button onclick="startSpeechRecognition()">Speak the Word</button>
+    </div>
 </div>
 
 <script>
     // Global variables
     let currentWord = {}; 
-    let currentClusters = [];
-    let clusterIndex = 0;
     let pitch = 1;
     let speed = 1;
-    let currentPage = 0;  // Initialize current page to 0
+    let currentPage = 0;
     const wordsData = JSON.parse('{{ list_data|safe|escapejs }}');
     const wordsPerPage = 5;
     let words = [];
@@ -232,69 +235,10 @@
         return wordSubset[randomIndex];
     }
 
-    // Function to break word into clusters (letter-by-letter)
-    function processWord() {
-        let word = document.getElementById("userInput").value.trim().toLowerCase();
-        if (!word) return;
-
-        const commonPrefixes = ['pre', 'un', 'dis', 'in', 're', 'mis'];
-        const commonSuffixes = ['ly', 'ing', 'ed', 'ness', 'ful', 'able'];
-
-        // Function to break word into clusters
-        let clusters = [];
-
-        // Check for prefixes
-        for (let prefix of commonPrefixes) {
-            if (word.startsWith(prefix)) {
-                clusters.push(`<span class="cluster prefix">${prefix}</span>`);
-                word = word.substring(prefix.length); // Remove prefix from the word
-                break;  // Stop once a prefix is found
-            }
-        }
-
-        // Check for suffixes
-        for (let suffix of commonSuffixes) {
-            if (word.endsWith(suffix)) {
-                clusters.push(`<span class="cluster suffix">${word.slice(0, -suffix.length)}</span>`);
-                clusters.push(`<span class="cluster suffix">${suffix}</span>`);
-                displayClusters(clusters);
-                speakClusters(clusters); // Speak each cluster one by one
-                return;
-            }
-        }
-
-        // Default if no prefix/suffix is found: display the word as is, with simple chunks
-        clusters.push(word.split('').join('-')); // Simple chunking by characters (e.g., "L-i-o-n")
-        displayClusters(clusters);
-        speakClusters(clusters); // Speak each cluster one by one
-    }
-
-    // Display clusters
-    function displayClusters(clusters) {
-        document.getElementById('scrambledWord').innerHTML = clusters.join('');
-    }
-
-    // Speak clusters
-    function speakClusters(clusters) {
-        clusters.forEach((cluster, index) => {
-            setTimeout(() => {
-                const clusterText = cluster.replace(/<\/?span.*?>/g, ''); // Remove HTML tags
-                speakWord(clusterText); // Speak the cluster (letter or word part)
-            }, index * 1000); // Delay between each cluster
-        });
-    }
-
-    // Split word into clusters (letter-by-letter)
-    function getWordClusters(word) {
-        return word.split(''); // Break word into individual letters (e.g., 'L', 'i', 'o', 'n')
-    }
-
     // Load a new word
     function loadNewWord() {
         const wordObj = getRandomWord();
         currentWord = wordObj;
-        currentClusters = getWordClusters(wordObj.word);
-        clusterIndex = 0;
 
         // Display word card
         const wordCard = `
@@ -312,21 +256,16 @@
     // Start speech for the word (letter by letter)
     function startSpeech() {
         if (currentWord && currentWord.word) {
-            // Break the word into letters
             const letters = currentWord.word.split('');
-            
-            // First, speak each letter
             let delay = 0;
             letters.forEach((letter, index) => {
                 setTimeout(() => {
-                    speakWord(letter); // Speak the letter
+                    speakWord(letter);
                 }, delay);
-                delay += 500; // Delay of 500ms between each letter
+                delay += 500;
             });
-
-            // After the letters, speak the full word
             setTimeout(() => {
-                speakWord(currentWord.word); // Speak the full word
+                speakWord(currentWord.word);
             }, delay);
         } else {
             alert("No word loaded yet!");
@@ -355,6 +294,43 @@
             document.getElementById('feedbackText').classList.add('incorrect');
             document.getElementById('feedbackText').classList.remove('correct');
         }
+    }
+
+    // Handle speech recognition
+    function startSpeechRecognition() {
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("Speech recognition is not supported in this browser.");
+            return;
+        }
+
+        const recognition = new webkitSpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = function() {
+            document.getElementById('feedbackText').textContent = "Listening...";
+        };
+
+        recognition.onerror = function(event) {
+            document.getElementById('feedbackText').textContent = "Error occurred while listening.";
+            console.error("Speech recognition error", event);
+        };
+
+        recognition.onresult = function(event) {
+            const recognizedText = event.results[0][0].transcript.trim().toLowerCase();
+            document.getElementById('feedbackText').textContent = `You said: ${recognizedText}`;
+            
+            if (recognizedText === currentWord.word.toLowerCase()) {
+                document.getElementById('feedbackText').textContent += " - Correct!";
+                speakWord("Correct!");
+            } else {
+                document.getElementById('feedbackText').textContent += " - Incorrect, try again!";
+                speakWord("Incorrect, try again!");
+            }
+        };
+
+        recognition.start();
     }
 
     // Handle page change (previous/next)

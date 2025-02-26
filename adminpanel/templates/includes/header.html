@@ -165,8 +165,10 @@
                 <!-- Light/Dark Mode Toggle Button -->
                 <button class="mode-toggle1" onclick="toggleMode()">🌞</button>
                 <a class="text-light text-decoration-none" href="/">Home</a>
-                <a class="text-light text-decoration-none" href="/about">About</a>
-                <a class="text-light text-decoration-none" href="/contact">Contact</a>
+                
+                
+              
+               
                 <select id="levelSelect" onchange="window.location.href = this.value;" name="practice">
                     <option value="/game2">Practice 1</option>
                     <option value="/avinash">Practice 2</option>
@@ -175,6 +177,7 @@
                 <a class="text-light text-decoration-none" href="/leaderboardview">Leaderboard</a>
 
                 {% if user.is_authenticated %}
+                <a class="text-light text-decoration-none"  href="{% url 'mymistakes' postid=request.user.id %}">mymistakes</a>
                     <a class="text-light text-decoration-none" href="/logout">Logout</a>
                 {% else %}
                     <a class="text-light text-decoration-none" href="/register">Register</a>
@@ -187,10 +190,14 @@
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <button class="close-icon" onclick="toggleSidebar()">×</button>
-        <a href="/" ></a>
+        
         <a href="{% url 'profiles' %}" >Profile</a>
+        <a class="text-light text-decoration-none" href="/about">About</a>
+        <a href="/teachers">Teachers</a>
         <a href="/contact">Contact</a>
-        <a href="/logout">Logout</a>
+      
+       
+       
     </div>
 
     <!-- Custom Cursor -->

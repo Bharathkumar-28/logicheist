@@ -28,16 +28,40 @@ def main(request):
     gameresult2.objects.all().delete() 
     logger=logging.getLogger("testing")
     blogtitle="bharath"
+    secondposts=badges.objects.all()
+    scores=leaderboard.objects.filter(user=request.user)
+  
+    # Check if the user has a leaderboard entry
+    leaderboard_entry = leaderboard.objects.filter(user=request.user).first()
+
+    if leaderboard_entry:
+        total_score = sum(result['is_correct'] for result in leaderboard_entry.data)  # Calculate total score
+    else:
+        total_score = 0  # Default score if no leaderboard entry
+    print('totsal', total_score)
+    if  total_score == 0:
+         return render(request,"main.html",{ 'blogtitle':blogtitle,})
+      
+    else:
+        for soii in secondposts:
+            if total_score>=soii.score:
+                a=soii.name
+                print("a",a)
+                b=soii.image
+                print("b",b)
+                break
+        return render(request,"main.html",{ 'blogtitle':blogtitle,'a':a,'b':b,'total_score':total_score})
    
-    logger.debug("Blog title: %s", blogtitle)
-    print(blogtitle)
+      
    
     
     
 
 
-    
-    return render(request,"main.html",{ 'blogtitle':blogtitle})
+
+       
+  
+
 def index1(request):
     blogtitle="bjarath"
     posts=quiz.objects.all()
@@ -523,7 +547,7 @@ def addquiz(request):
     # Check if user is in the 'lowgroupwithoutaddquiz' group
     if not request.user.groups.filter(name='lowgroupwithoutaddquiz').exists():
  
-        return redirect('index1')
+        return redirect('')
 
     # Form handling
     if request.method == 'POST':
@@ -567,12 +591,13 @@ from .models import speechquiz2
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 
-
+@permission_required('adminpanel.add_speechquiz', raise_exception=True)
 
 def addspeechquiz(request):
-    # Check if the user belongs to the required group
+   # Check if user is in the 'lowgroupwithoutaddquiz' group
     if not request.user.groups.filter(name='lowgroupwithoutaddquiz').exists():
-        raise PermissionDenied("You do not have the required group membership to add a quiz.")
+ 
+        return redirect('')
     
     if request.method == 'POST':
         form =speechquizform(request.POST, request.FILES)  # Handle image upload with request.FILES
@@ -861,28 +886,62 @@ from django.contrib.auth.decorators import login_required
 from .models import notes
 import json
 
+
+
+
+
 @login_required
 @csrf_exempt
 def takenotes(request):
     if request.method == 'POST':
         try:
-            data = json.loads(request.body)
-            user = request.user
-            wrong_word = data.get('wrong_word')
+            data = json.loads(request.body)  # Parse the incoming JSON data
+            user = request.user  # Directly use the User object
+            wrong_word = data.get('wrong_word')  # Get the wrong word from the request data
 
-            # Check if the word already exists in the user's notes
+            # Ensure a word was provided
             if wrong_word:
+                # Get or create the user's notes object
                 nnotes, created = notes.objects.get_or_create(user=user)
+
+                # If the 'data' field is None (shouldn't happen if using JSONField with a default), initialize it
                 if nnotes.data is None:
                     nnotes.data = []
 
-                nnotes.data.append(wrong_word)
-                nnotes.save()
+                # Only add the word if it's not already in the list
+                if wrong_word not in nnotes.data:
+                    nnotes.data.append(wrong_word)
+                    nnotes.save()
 
                 return JsonResponse({'status': 'success', 'message': 'Wrong word saved successfully.'})
+
             else:
                 return JsonResponse({'status': 'error', 'message': 'No word provided.'}, status=400)
+
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-    return JsonResponse({'status': 'error', 'message': 'Invalid request.'}, status=400)
 
+    return JsonResponse({'status': 'error', 'message': 'Invalid request.'}, status=400)
+from django.shortcuts import render
+from .models import notes
+
+def mynotes(request, postid):
+    # Retrieve the Notes object for the user with the given postid
+    posts = notes.objects.filter(user_id=postid)
+    l = []
+    
+    # Iterate over the posts to extract the data (wrong words)
+    for post in posts:
+        l.extend(post.data)  # Assuming 'data' is a list of words (wrong words)
+
+    # Render the 'mymistakes.html' template, passing 'l' to display the words
+    return render(request, 'mymistakes.html', {'l': l})
+
+def dyslexiatools(request):
+    return render(request,'dyslexiafinal.html')
+def wordexplorer(request):
+    return render(request,'wordexplorer.html')
+def teacher(request):
+    return render(request,'teacher.html')
+
+   
