@@ -52,30 +52,32 @@ class resetpasswordform(forms.Form):
         confirmpassword=cleaneddata.get('confirmpassword')
         if newpassword and confirmpassword and newpassword != confirmpassword:
             raise forms.ValidationError('passoword do not match')                          
+from django import forms
+from .models import profile
+
 class profileform(forms.ModelForm):
-    Name = forms.CharField(label='name', max_length=200, required=True)
-    age= forms.CharField(label='aboutme')
-    content= forms.CharField(label='location', required=True)
-    address=forms.CharField(label='address', required=True)
-    image = forms.ImageField(label='image', required=False)
-    email=forms.EmailField(label='email',required=True)
-  
+    Name = forms.CharField(label='Name', max_length=200, required=True)
+    age = forms.CharField(label='Age')
+    content = forms.CharField(label='Location', required=True)
+    address = forms.CharField(label='Address', required=True)
+    image = forms.ImageField(label='Image', required=False)
+    email = forms.EmailField(label='Email', required=True)
 
     class Meta:
-        model = profile
-        fields = ['Name', 'age', 'content', 'image','address']
+        model = profile  # Ensure this model exists with the correct fields
+        fields = ['Name', 'age', 'content', 'image', 'address']
 
     # Field-level validation (cleaning each field)
-    def clean_title(self):
+    def clean_Name(self):
         name = self.cleaned_data.get('Name')
         if name and len(name) < 5:
-            raise forms.ValidationError('title must be at least 5 characters long.')
+            raise forms.ValidationError('Name must be at least 5 characters long.')
         return name
 
     def clean_content(self):
         content = self.cleaned_data.get('content')
         if content and len(content) < 10:
-            raise forms.ValidationError('content must be at least 10 characters long.')
+            raise forms.ValidationError('Location must be at least 10 characters long.')
         return content
 
     def save(self, commit=True):
@@ -89,12 +91,14 @@ class profileform(forms.ModelForm):
         if not image:
             post_instance.image = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/450px-No_image_available.svg.png"
         else:
-            post_instance.image = image  # Use the uploaded image if present
+            post_instance.image = image
 
+        # Save to database
         if commit:
-            post_instance.save()  # Save the post to the database
+            post_instance.save()
 
         return post_instance
+
 from django import forms
 from .models import quiz, speechquiz2
 

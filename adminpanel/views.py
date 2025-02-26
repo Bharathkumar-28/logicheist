@@ -249,16 +249,18 @@ def profiles(request):
     else:
         total_score = 0  # Default score if no leaderboard entry
     print('totsal', total_score)     
-    for soii in secondposts:
-        if total_score>=soii.score:
-            a=soii.name
-            print("a",a)
-            b=soii.image
-            print("b",b)
-            break
+    
 
-
+    a=0
+    b=0
     if posts:
+        for soii in secondposts:
+            if total_score>=soii.score:
+                a=soii.name
+                print("a",a)
+                b=soii.image
+                print("b",b)
+                break
     
         # Get the posts related to the authenticated user
         posts = profile.objects.filter(user=request.user)
@@ -268,8 +270,13 @@ def profiles(request):
         for post in posts:
             print(f"Post ID: {post.id}, User: {post.user}, Title: {post.Name},id:{post.id}")  # Example: print the id, user, and title of each post
   
+        if a!=0 and b!=0:
+            return render(request, "profile.html", {'posts': posts,'a':a,'b':b})
+        else:
+            return render(request, "profile.html",{"posts":posts})
 
-        return render(request, "profile.html", {'posts': posts,'a':a,'b':b})
+   
+
     else:
         if not posts:
             return redirect('addprofiles')
@@ -285,25 +292,26 @@ def profiles(request):
 from django.shortcuts import render, redirect
 
 from django.contrib.auth.models import User
-  # You can create a ModelForm to make this easier
 
 def addprofiles(request):
+    if not request.user.is_authenticated:
+        return redirect('login')  # Redirect to login if the user is not logged in
+
     print('manishkumar')
-    form=profileform()
-    if request.method=="POST":
-        print("doiiiiiiiiiiiiiiiii hdhjdjnhcdhbhdcbchb")
-        form=profileform(request.POST,request.FILES)
-        print("oii",form.is_valid()) 
-        if form .is_valid():
-            post=form.save(commit=False)
-            post.user=request.user
+    form = profileform()
+
+    if request.method == "POST":
+        print("Form submitted")
+        form = profileform(request.POST, request.FILES)
+
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.user = request.user  # Associate the form with the logged-in user
             post.save()
-        # Get the data from the form
-      
+            return redirect('profiles')  # Redirect to the profile list or profile page
 
-        return redirect('profiles')  # Redirect to a new page or success message
+    return render(request, 'addprofile.html', {'form': form})
 
-    return render(request, 'addprofile.html',{'form':form})
 
 
 
