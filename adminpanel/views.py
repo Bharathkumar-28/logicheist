@@ -24,6 +24,7 @@ from .models import badges, courses, gameresult, quiz,leaderboard, speechquiz2
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
+@login_required
 def main(request):
     gameresult2.objects.all().delete() 
     logger=logging.getLogger("testing")
@@ -807,7 +808,7 @@ from .models import leaderboard, profile
 from django.shortcuts import render
 from .models import leaderboard, profile, badges  # Assuming badges is the model for the badges
 from django.contrib.auth.models import User
-
+@login_required
 def leaderboardview(request):
     # Retrieve all users and profiles
     users = User.objects.all()
