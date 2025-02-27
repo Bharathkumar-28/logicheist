@@ -19,6 +19,7 @@ from django.urls import path
 from adminpanel import views
 from django.conf import settings
 from django.conf.urls.static import static
+from adminpanel.views import simplify_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -39,8 +40,10 @@ urlpatterns = [
            path('addprofiles/',views.addprofiles,name="addprofiles"),
             path('addquiz/',views.addquiz,name="addquiz"),
            path('addspeechquiz',views.addspeechquiz,name='addspeechquiz'),
+              path('addcourse/', views.addcourse, name='addcourse'),
            path('dyslexiatools/',views.dyslexiatools,name='dyslexiatools'),
            path('wordexplorer/',views.wordexplorer,name='wordexplorer'),
+       
              
 
           path('contact/',views.contact,name='contact'),
@@ -68,6 +71,14 @@ urlpatterns = [
            path('takenotes/',views.takenotes,name='takenotes'),
            path('mymistakes/<int:postid>',views.mynotes,name='mymistakes'),
            path('teachers/',views.teacher,name='teachers'),
+           path('dineshstory/',views.dineshstorys,name='dineshstory'),
+             path('image/',views.images,name='image'),
+       
+
+
+
+    path("simplify/", views.simplify_view, name="simplify"),
+
            
 
 

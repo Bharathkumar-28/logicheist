@@ -6,6 +6,28 @@
     <title>Story Levels Game</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: hsl(230, 85%, 60%);
+            --primary-dark: hsl(230, 85%, 50%);
+            --primary-light: hsl(230, 85%, 75%);
+            --accent: hsl(280, 85%, 60%);
+            --background: hsl(220, 20%, 97%);
+            --foreground: hsl(220, 20%, 10%);
+            --card: hsl(220, 20%, 100%);
+            --card-foreground: hsl(220, 20%, 10%);
+            --border: hsl(220, 20%, 90%);
+            --ring: hsla(230, 85%, 60%, 0.5);
+            --success: hsl(142, 76%, 36%);
+            --error: hsl(0, 84%, 60%);
+            --radius: 0.75rem;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.1);
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --font-spacing: normal;
+            --word-spacing: normal;
+            --line-height: 1.6;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -15,22 +37,29 @@
 
         body {
             min-height: 100vh;
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradient 15s ease infinite;
             padding: 2rem;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start; /* Changed from center to allow scrolling */
+            background:
+                radial-gradient(circle at top left, var(--primary-light), transparent 70%),
+                radial-gradient(circle at bottom right, var(--accent), transparent 70%);
+            position: relative;
+            overflow-y: auto; /* Changed from hidden to auto for swiping/scrolling */
+            overscroll-behavior: contain; /* Prevents overscroll bounce issues */
         }
 
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        body::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm-63-31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='currentColor' fill-opacity='0.05'/%3E%3C/svg%3E");
+            mask-image: radial-gradient(circle at center, transparent 30%, black);
+            pointer-events: none;
+            z-index: -1;
         }
 
-        .container {
+        .gear-container {
             max-width: 1200px;
             width: 100%;
             background: rgba(255, 255, 255, 0.95);
@@ -41,9 +70,11 @@
             transform-style: preserve-3d;
             perspective: 1000px;
             border: 2px solid rgba(255, 255, 255, 0.5);
+            position: relative;
+            z-index: 1;
         }
 
-        .header {
+        .circuit-header {
             padding: 3rem;
             background: linear-gradient(135deg, #6366f1, #a855f7);
             color: white;
@@ -52,7 +83,7 @@
             text-align: center;
         }
 
-        .header::before {
+        .circuit-header::before {
             content: '';
             position: absolute;
             top: 0;
@@ -63,7 +94,7 @@
             pointer-events: none;
         }
 
-        .title {
+        .engine-h1 {
             font-size: 3.5rem;
             font-weight: 800;
             margin-bottom: 1rem;
@@ -71,7 +102,7 @@
             animation: slideIn 0.8s ease-out;
         }
 
-        .subtitle {
+        .processor-p {
             font-size: 1.5rem;
             opacity: 0.9;
             font-weight: 600;
@@ -84,7 +115,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .level-box {
+        .module-box {
             display: flex;
             justify-content: center;
             gap: 1rem;
@@ -92,7 +123,7 @@
             animation: slideIn 0.8s ease-out 0.4s backwards;
         }
 
-        .level-btn {
+        .widget-btn {
             position: relative;
             padding: 1rem 2rem;
             border: none;
@@ -106,19 +137,19 @@
             box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
         }
 
-        .level-btn:hover:not(.locked) {
+        .widget-btn:hover:not(.locked) {
             transform: translateY(-4px) scale(1.05);
             box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5), 0 0 15px rgba(255, 255, 255, 0.2);
         }
 
-        .level-btn.locked {
+        .widget-btn.locked {
             background: #d1d5db;
             color: #9ca3af;
             cursor: not-allowed;
             box-shadow: none;
         }
 
-        .level-btn.completed::after {
+        .widget-btn.completed::after {
             content: '✓';
             position: absolute;
             top: -0.5rem;
@@ -136,7 +167,7 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
-        .level-btn.locked::after {
+        .widget-btn.locked::after {
             content: '🔒';
             position: absolute;
             top: -0.5rem;
@@ -152,19 +183,19 @@
             font-size: 0.8rem;
         }
 
-        .story-container {
+        .server-container {
             padding: 2rem;
             background: rgba(255, 255, 255, 0.8);
         }
 
-        .image-grid {
+        .frame-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
-        .image-card {
+        .panel-card {
             position: relative;
             border-radius: 1rem;
             overflow: hidden;
@@ -174,28 +205,28 @@
             border: 2px solid rgba(99, 102, 241, 0.2);
         }
 
-        .image-card:hover:not(.disabled) {
+        .panel-card:hover:not(.disabled) {
             transform: translateY(-6px) scale(1.02);
             box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2), 0 0 15px rgba(99, 102, 241, 0.3);
         }
 
-        .image-card.selected {
+        .panel-card.selected {
             border: 4px solid #6366f1;
             box-shadow: 0 0 10px #6366f1;
         }
 
-        .image-card img {
+        .panel-card img {
             width: 100%;
             height: 200px;
             object-fit: cover;
             transition: transform 0.3s ease;
         }
 
-        .image-card:hover:not(.disabled) img {
+        .panel-card:hover:not(.disabled) img {
             transform: scale(1.08);
         }
 
-        .order-number {
+        .relay-number {
             position: absolute;
             top: 0.5rem;
             left: 0.5rem;
@@ -218,7 +249,7 @@
             100% { transform: scale(1); }
         }
 
-        .feedback {
+        .router-feedback {
             margin-top: 1rem;
             padding: 1rem;
             border-radius: 0.5rem;
@@ -230,18 +261,18 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
-        .feedback.show {
+        .router-feedback.show {
             opacity: 1;
             transform: translateY(0);
         }
 
-        .feedback.success {
+        .router-feedback.success {
             background: #dcfce7;
             color: #166534;
             border: 2px solid #22c55e;
         }
 
-        .feedback.error {
+        .router-feedback.error {
             background: #fee2e2;
             color: #991b1b;
             border: 2px solid #ef4444;
@@ -249,21 +280,21 @@
 
         @media (max-width: 768px) {
             body { padding: 1rem; }
-            .container { border-radius: 1rem; }
-            .title { font-size: 2rem; }
-            .level-box { flex-wrap: wrap; }
-            .level-btn { width: calc(50% - 0.5rem); }
-            .image-grid { grid-template-columns: 1fr; }
+            .gear-container { border-radius: 1rem; }
+            .engine-h1 { font-size: 2rem; }
+            .module-box { flex-wrap: wrap; }
+            .widget-btn { width: calc(50% - 0.5rem); }
+            .frame-grid { grid-template-columns: 1fr; }
         }
 
-        .buttons {
+        .switch-buttons {
             display: flex;
             gap: 1rem;
             margin-bottom: 2rem;
             justify-content: center;
         }
 
-        .btn {
+        .bolt-btn {
             padding: 1rem 2rem;
             border: none;
             border-radius: 0.5rem;
@@ -273,29 +304,29 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
 
-        .btn-start {
+        .bolt-btn-start {
             background: linear-gradient(45deg, #6366f1, #8b5cf6);
             color: white;
         }
 
-        .btn-start:hover {
+        .bolt-btn-start:hover {
             background: linear-gradient(45deg, #4f46e5, #7c3aed);
             transform: translateY(-3px);
             box-shadow: 0 6px 15px rgba(99, 102, 241, 0.4);
         }
 
-        .btn-check {
+        .bolt-btn-check {
             background: linear-gradient(45deg, #22c55e, #34d399);
             color: white;
         }
 
-        .btn-check:hover {
+        .bolt-btn-check:hover {
             background: linear-gradient(45deg, #16a34a, #22c55e);
             transform: translateY(-3px);
             box-shadow: 0 6px 15px rgba(34, 197, 94, 0.4);
         }
 
-        .celebration {
+        .hub-celebration {
             position: fixed;
             top: 0;
             left: 0;
@@ -310,7 +341,7 @@
             100% { transform: translateY(100vh) rotate(720deg); }
         }
 
-        .confetti {
+        .spark-confetti {
             position: absolute;
             top: -10px;
             width: 10px;
@@ -318,39 +349,241 @@
             border-radius: 2px;
         }
 
-        .image-card.disabled {
+        .panel-card.disabled {
             opacity: 0.6;
             cursor: not-allowed;
             box-shadow: none;
         }
 
-        .image-card.disabled:hover {
+        .panel-card.disabled:hover {
             transform: none;
+        }
+
+        .motherboard-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 50;
+        }
+
+        .chipset-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+        }
+
+        .terminal-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--foreground);
+            text-decoration: none;
+            transition: transform 0.2s ease;
+        }
+
+        .terminal-logo:hover {
+            transform: scale(1.05);
+        }
+
+        .socket-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 0.5rem;
+            display: grid;
+            place-items: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .cable-links {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .port-item {
+            padding: 0.5rem 1rem;
+            color: var(--foreground);
+            text-decoration: none;
+            border-radius: var(--radius);
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .port-item:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .router-dropdown {
+            position: relative;
+        }
+
+        .adapter-content {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            min-width: 260px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+            transition: all 0.2s ease;
+            z-index: 100;
+        }
+
+        .router-dropdown:hover .adapter-content,
+        .router-dropdown:focus-within .adapter-content {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .link-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--foreground);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .link-item:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .lever-toggle {
+            display: none;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            color: var(--foreground);
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .cable-links {
+                display: none;
+                position: absolute;
+                top: 4rem;
+                left: 0;
+                right: 0;
+                background: var(--card);
+                flex-direction: column;
+                padding: 1rem;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .cable-links.active {
+                display: flex;
+            }
+
+            .adapter-content {
+                position: static;
+                width: 100%;
+                opacity: 1;
+                pointer-events: auto;
+                transform: none;
+                box-shadow: none;
+                border: none;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+            }
+
+            .router-dropdown.active .adapter-content {
+                max-height: 500px;
+            }
+
+            .lever-toggle {
+                display: block;
+            }
+        }
+
+        .node-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1 class="title">Story Levels Game</h1>
-            <div class="level-box">
-                <button class="level-btn" data-level="0" onclick="showLevel(0)">Level 1: School Boy</button>
-                <button class="level-btn" data-level="1" onclick="showLevel(1)">Level 2: Cow's Day</button>
-                <button class="level-btn" data-level="2" onclick="showLevel(2)">Level 3: Lion</button>
-                <button class="level-btn" data-level="3" onclick="showLevel(3)">Level 4: Rabbit</button>
+    <!-- Canvas for Cursor Effect -->
+    <canvas id="canvas" class="node-canvas"></canvas>
+
+    <!-- Navigation with Machine Names -->
+    <nav class="motherboard-nav">
+        <div class="chipset-content">
+            <a href="/" class="terminal-logo">
+                <div class="socket-icon">EL</div>
+                <span>EmpowerLearn</span>
+            </a>
+            <button class="lever-toggle cardinal-button" id="mobileToggle" aria-label="Toggle menu">☰</button>
+            <div class="cable-links" id="navLinks">
+                <a href="/" class="port-item">Home</a>
+                <div class="router-dropdown" id="toolsDropdown">
+                    <a href="#" class="port-item" id="toolsToggle" aria-expanded="false">Tools</a>
+                    <div class="adapter-content">
+                        <a href="#" class="link-item" onclick="alert('Text-to-Speech is integrated in the game!')"><span>🔊</span> Text to Speech</a>
+                        <a href="#" class="link-item" onclick="alert('Reading Ruler not implemented')"><span>📏</span> Reading Ruler</a>
+                        <a href="#" class="link-item" onclick="alert('Color Overlay not implemented')"><span>🎨</span> Color Overlay</a>
+                        <a href="#text-customizer" class="link-item"><span>🔤</span> Text Customizer</a>
+                    </div>
+                </div>
+                <div class="router-dropdown" id="settingsDropdown">
+                    <a href="#" class="port-item" id="settingsToggle" aria-expanded="false">Settings</a>
+                    <div class="adapter-content">
+                        <a href="#" class="link-item" onclick="toggleDarkMode()"><span id="theme-icon">🌓</span> Theme</a>
+                        <a href="#" class="link-item" onclick="toggleDyslexiaFont()"><span>👁</span> Dyslexia Font</a>
+                    </div>
+                </div>
             </div>
         </div>
-        <div id="storyContainer" class="story-container">
-            <div class="buttons">
-                <button class="btn btn-start" onclick="startStory()">Start Story</button>
-                <button class="btn btn-check" onclick="checkOrder()">Check Order</button>
+    </nav>
+
+    <!-- Story Levels Game Section -->
+    <div class="gear-container">
+        <div class="circuit-header">
+            <h1 class="engine-h1">Story Levels Game</h1>
+            <div class="module-box">
+                <button class="widget-btn" data-level="0" onclick="showLevel(0)">Level 1: School Boy</button>
+                <button class="widget-btn" data-level="1" onclick="showLevel(1)">Level 2: Cow's Day</button>
+                <button class="widget-btn" data-level="2" onclick="showLevel(2)">Level 3: Lion</button>
+                <button class="widget-btn" data-level="3" onclick="showLevel(3)">Level 4: Rabbit</button>
             </div>
-            <div class="image-grid" id="imageGrid"></div>
         </div>
-        <div class="feedback" id="feedback"></div>
+        <div id="storyContainer" class="server-container">
+            <div class="switch-buttons">
+                <button class="bolt-btn bolt-btn-start" onclick="startStory()">Start Story</button>
+                <button class="bolt-btn bolt-btn-check" onclick="checkOrder()">Check Order</button>
+            </div>
+            <div class="frame-grid" id="imageGrid"></div>
+        </div>
+        <div class="router-feedback" id="feedback"></div>
     </div>
 
-    <div class="celebration" id="celebration"></div>
+    <div class="hub-celebration" id="celebration"></div>
 
     <script>
         const levels = [
@@ -455,14 +688,14 @@
             isStoryComplete = false;
             
             const level = levels[levelIndex];
-            document.querySelector('.title').textContent = level.title;
+            document.querySelector('.engine-h1').textContent = level.title;
             
             if (level.subtitle) {
-                let subtitle = document.querySelector('.subtitle');
+                let subtitle = document.querySelector('.processor-p');
                 if (!subtitle) {
                     subtitle = document.createElement('p');
-                    subtitle.className = 'subtitle';
-                    document.querySelector('.title').after(subtitle);
+                    subtitle.className = 'processor-p';
+                    document.querySelector('.engine-h1').after(subtitle);
                 }
                 subtitle.textContent = level.subtitle;
             }
@@ -478,12 +711,12 @@
             const currentLevelImages = levels[currentLevel].images;
             currentLevelImages.forEach(image => {
                 const card = document.createElement('div');
-                card.className = image-card ${!isStoryComplete ? 'disabled' : ''};
+                card.className = panel-card ${!isStoryComplete ? 'disabled' : ''};
                 card.onclick = () => handleImageClick(image.id);
 
                 card.innerHTML = `
                     <img src="${image.src}" alt="${image.alt}">
-                    ${image.order > 0 ? <div class="order-number">${image.order}</div> : ''}
+                    ${image.order > 0 ? <div class="relay-number">${image.order}</div> : ''}
                 `;
 
                 imageGrid.appendChild(card);
@@ -491,10 +724,10 @@
         }
 
         function startStory() {
-            if (isStoryComplete) return; // Prevent restarting if already complete
+            if (isStoryComplete) return;
             isStoryComplete = false;
             const level = levels[currentLevel];
-            const sentences = level.story.split('. ').map(s => s.trim() + '.'); // Split into sentences
+            const sentences = level.story.split('. ').map(s => s.trim() + '.');
             speakSentences(sentences, () => {
                 isStoryComplete = true;
                 renderImages();
@@ -503,8 +736,15 @@
 
         function speakSentences(sentences, callback) {
             let index = 0;
-            const voices = window.speechSynthesis.getVoices();
-            const femaleVoice = voices.find(voice => voice.lang.startsWith('en') && voice.name.toLowerCase().includes('female'));
+            let voices = window.speechSynthesis.getVoices();
+            if (voices.length === 0) {
+                window.speechSynthesis.onvoiceschanged = () => {
+                    voices = window.speechSynthesis.getVoices();
+                    speakNext();
+                };
+            } else {
+                speakNext();
+            }
 
             function speakNext() {
                 if (index >= sentences.length) {
@@ -515,6 +755,7 @@
                 const utterance = new SpeechSynthesisUtterance(sentences[index]);
                 utterance.rate = 0.9;
                 utterance.pitch = 1;
+                const femaleVoice = voices.find(voice => voice.lang.startsWith('en') && voice.name.toLowerCase().includes('female'));
                 if (femaleVoice) utterance.voice = femaleVoice;
 
                 utterance.onend = () => {
@@ -525,14 +766,13 @@
                 utterance.onerror = (event) => {
                     console.error('Speech error:', event);
                     index++;
-                    speakNext(); // Continue even if an error occurs
+                    speakNext();
                 };
 
                 window.speechSynthesis.speak(utterance);
             }
 
-            window.speechSynthesis.cancel(); // Clear any previous speech
-            speakNext();
+            window.speechSynthesis.cancel();
         }
 
         function handleImageClick(clickedId) {
@@ -541,7 +781,6 @@
             const level = levels[currentLevel];
             const clickedImage = level.images.find(img => img.id === clickedId);
 
-            // Only assign order if not already ordered (no reordering allowed)
             if (clickedImage.order === 0) {
                 clickedImage.order = ++clickCount;
                 renderImages();
@@ -574,7 +813,7 @@
         }
 
         function updateLevelButtons() {
-            document.querySelectorAll('.level-btn').forEach((btn, index) => {
+            document.querySelectorAll('.widget-btn').forEach((btn, index) => {
                 btn.classList.remove('locked', 'completed');
                 
                 if (completedLevels.includes(index)) {
@@ -588,7 +827,7 @@
         function showFeedback(message, type) {
             const feedback = document.getElementById('feedback');
             feedback.textContent = message;
-            feedback.className = feedback ${type} show;
+            feedback.className = router-feedback ${type} show;
             setTimeout(() => feedback.classList.remove('show'), 3000);
         }
 
@@ -603,7 +842,7 @@
 
             for (let i = 0; i < 100; i++) {
                 const confetti = document.createElement('div');
-                confetti.className = 'confetti';
+                confetti.className = 'spark-confetti';
 
                 const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
                 const color = colors[Math.floor(Math.random() * colors.length)];
@@ -623,6 +862,133 @@
 
             setTimeout(() => celebration.innerHTML = '', 6000);
         }
+
+        // Navbar Functions with Machine Names
+        function toggleDarkMode() {
+            document.body.classList.toggle('eagle');
+            document.getElementById('theme-icon').textContent = document.body.classList.contains('eagle') ? '🌞' : '🌓';
+        }
+
+        function toggleDyslexiaFont() {
+            document.body.classList.toggle('sparrow-font');
+        }
+
+        const mobileToggle = document.getElementById('mobileToggle');
+        const navLinks = document.getElementById('navLinks');
+        mobileToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        document.querySelectorAll('.router-dropdown').forEach(dropdown => {
+            const toggle = dropdown.querySelector('.port-item');
+            dropdown.addEventListener('click', () => {
+                dropdown.classList.toggle('active');
+                toggle.setAttribute('aria-expanded', dropdown.classList.contains('active'));
+            });
+        });
+
+        // Cursor Effect with Machine Names
+        const ctx = document.getElementById('canvas').getContext('2d');
+        let pos = { x: 0, y: 0 };
+        let lines = [];
+        const E = { trails: 20, size: 50, friction: 0.5, dampening: 0.25, tension: 0.98 };
+
+        function resizeCanvas() {
+            ctx.canvas.width = window.innerWidth;
+            ctx.canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function Noise(e) {
+            this.phase = e.phase || 0;
+            this.offset = e.offset || 0;
+            this.frequency = e.frequency || 0.001;
+            this.amplitude = e.amplitude || 1;
+            this.update = () => {
+                this.phase += this.frequency;
+                return this.offset + Math.sin(this.phase) * this.amplitude;
+            };
+        }
+
+        function Node() {
+            this.x = pos.x;
+            this.y = pos.y;
+            this.vx = 0;
+            this.vy = 0;
+        }
+
+        function Line(e) {
+            this.spring = e.spring + 0.1 * Math.random() - 0.02;
+            this.friction = E.friction + 0.01 * Math.random() - 0.002;
+            this.nodes = Array.from({ length: E.size }, () => new Node());
+            this.update = () => {
+                let spring = this.spring;
+                let node = this.nodes[0];
+                node.vx += (pos.x - node.x) * spring;
+                node.vy += (pos.y - node.y) * spring;
+                for (let i = 0; i < this.nodes.length; i++) {
+                    node = this.nodes[i];
+                    if (i > 0) {
+                        const prev = this.nodes[i - 1];
+                        node.vx += (prev.x - node.x) * spring;
+                        node.vy += (prev.y - node.y) * spring;
+                        node.vx += prev.vx * E.dampening;
+                        node.vy += prev.vy * E.dampening;
+                    }
+                    node.vx *= this.friction;
+                    node.vy *= this.friction;
+                    node.x += node.vx;
+                    node.y += node.vy;
+                    spring *= E.tension;
+                }
+            };
+            this.draw = () => {
+                ctx.beginPath();
+                ctx.moveTo(this.nodes[0].x, this.nodes[0].y);
+                for (let i = 1; i < this.nodes.length - 2; i++) {
+                    const a = this.nodes[i];
+                    const b = this.nodes[i + 1];
+                    const midX = 0.5 * (a.x + b.x);
+                    const midY = 0.5 * (a.y + b.y);
+                    ctx.quadraticCurveTo(a.x, a.y, midX, midY);
+                }
+                const last = this.nodes[this.nodes.length - 1];
+                ctx.quadraticCurveTo(this.nodes[this.nodes.length - 2].x, this.nodes[this.nodes.length - 2].y, last.x, last.y);
+                ctx.stroke();
+                ctx.closePath();
+            };
+        }
+
+        const noise = new Noise({ phase: Math.random() * 2 * Math.PI, amplitude: 85, frequency: 0.0015, offset: 285 });
+
+        function onMousemove(e) {
+            pos.x = e.clientX || e.touches?.[0]?.pageX || 0;
+            pos.y = e.clientY || e.touches?.[0]?.pageY || 0;
+            if (!lines.length) {
+                for (let i = 0; i < E.trails; i++) {
+                    lines.push(new Line({ spring: 0.4 + (i / E.trails) * 0.025 }));
+                }
+            }
+        }
+
+        function render() {
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.strokeStyle = hsla(${Math.round(noise.update())}, 50%, 50%, 0.2);
+            ctx.lineWidth = 1;
+            lines.forEach(line => {
+                line.update();
+                line.draw();
+            });
+            requestAnimationFrame(render);
+        }
+
+        document.addEventListener('mousemove', onMousemove);
+        document.addEventListener('touchstart', onMousemove);
+        document.addEventListener('touchmove', onMousemove);
+        requestAnimationFrame(render);
 
         // Initialize the first level
         showLevel(0);

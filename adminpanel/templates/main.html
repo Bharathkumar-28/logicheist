@@ -1,151 +1,1272 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<style>
-    /* Overall layout and container */
-    .image-container {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr); /* Two images per row */
-        gap: 30px; /* Space between images */
-        padding: 30px;
-        justify-items: center; /* Center images */
-    }
-    
-    h3 {
-        color: black;
-    }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmpowerLearn - Advanced Accessible Learning Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Open+Dyslexic&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: hsl(230, 85%, 60%);
+            --primary-dark: hsl(230, 85%, 50%);
+            --primary-light: hsl(230, 85%, 75%);
+            --accent: hsl(280, 85%, 60%);
+            --background: hsl(220, 20%, 97%);
+            --foreground: hsl(220, 20%, 10%);
+            --card: hsl(220, 20%, 100%);
+            --card-foreground: hsl(220, 20%, 10%);
+            --border: hsl(220, 20%, 90%);
+            --ring: hsla(230, 85%, 60%, 0.5);
+            --success: hsl(142, 76%, 36%);
+            --warning: hsl(48, 96%, 53%);
+            --error: hsl(0, 84%, 60%);
+            --radius: 0.75rem;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.1);
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --font-spacing: normal;
+            --word-spacing: normal;
+            --line-height: 1.6;
+        }
 
-    /* Styling for each link */
-    .image-link {
-        display: inline-block;
-        text-decoration: none; /* Remove underline */
-        position: relative;
-        overflow: hidden;
-        border-radius: 16px; /* Rounded corners */
-        width: 220px; /* Increased width for larger images */
-        height: 220px; /* Maintain square aspect ratio */
-        transition: transform 0.3s ease;
-    }
+        .dark {
+            --background: hsl(220, 20%, 10%);
+            --foreground: hsl(220, 20%, 97%);
+            --card: hsl(220, 20%, 15%);
+            --card-foreground: hsl(220, 20%, 97%);
+            --border: hsl(220, 20%, 20%);
+            --ring: hsla(230, 85%, 60%, 0.3);
+        }
 
-    /* Styling for each image */
-    .image-effect {
-        width: 100%;
-        height: 100%;
-        object-fit: cover; /* Ensures images fill container without distortion */
-        border-radius: 16px; /* Rounded corners */
-        transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
-    }
+        .dyslexia-font {
+            font-family: 'Open Dyslexic', sans-serif !important;
+        }
 
-    /* Hover effect for images */
-    .image-link:hover .image-effect {
-        transform: scale(1.05); /* Slightly enlarge image */
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Deeper shadow */
-        opacity: 0.95; /* Subtle transparency */
-    }
+     
 
-    /* Active effect for clicked image */
-    .image-link:active .image-effect {
-        transform: scale(0.98); /* Slightly shrink when clicked */
-    }
 
-    /* Titles under each image */
-    .image-link h3 {
-        position: absolute;
-        bottom: 10px;
-        left: 10px;
-        font-size: 18px;
-        font-weight: bold;
-        color: #fff;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); /* Shadow for better readability */
-        margin: 0;
-    }
+        h1, h2, h3, h4, h5, h6 {
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
 
-    /* Styling for the badge (to make it more attractive) */
-    .badge-container {
-        position: relative;
-        display: flex;
-        justify-content: flex-end; /* Align badge to the top-right corner */
-        margin-top: 20px;
-        margin-left:200px;
-    }
+        p {
+            margin-bottom: 1rem;
+        }
 
-    .badge-img {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%; /* Circular shape */
-        object-fit: cover;
-        border: 5px solid #fff; /* White border for a badge effect */
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Subtle shadow around badge */
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4rem;
+            background: rgba(var(--card), 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 50;
+        }
 
-    .badge-img:hover {
-        transform: scale(1.1); /* Slightly enlarge when hovered */
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); /* Increase shadow on hover */
-    }
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+        }
 
-    /* Responsiveness */
-    @media (max-width: 768px) {
-        .image-link {
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--foreground);
+            text-decoration: none;
+            transition: transform 0.2s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 0.5rem;
+            display: grid;
+            place-items: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .nav-item {
+            padding: 0.5rem 1rem;
+            color: var(--foreground);
+            text-decoration: none;
+            border-radius: var(--radius);
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-content {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            min-width: 260px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+            transition: all 0.2s ease;
+            z-index: 100;
+        }
+
+        .dropdown:hover .dropdown-content,
+        .dropdown:focus-within .dropdown-content {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--foreground);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .hero {
+            min-height: 100vh;
+            padding: 7rem 1.5rem 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                radial-gradient(circle at top left, var(--primary-light), transparent 70%),
+                radial-gradient(circle at bottom right, var(--accent), transparent 70%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm-63-31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='currentColor' fill-opacity='0.05'/%3E%3C/svg%3E");
+            mask-image: radial-gradient(circle at center, transparent 30%, black);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 1200px;
             width: 100%;
-            height: 180px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
         }
 
-        .image-container {
-            grid-template-columns: repeat(1, 1fr); /* One image per row on mobile */
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: slideUp 0.5s ease forwards;
         }
-        
-        .badge-img {
-            width: 80px;
-            height: 80px;
+
+        .hero p {
+            font-size: clamp(1.1rem, 2vw, 1.25rem);
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+            opacity: 0;
+            animation: fadeIn 0.5s ease 0.3s forwards;
         }
-    }
 
-</style>
+        .button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
 
-<div class="image-container">
+        .button-primary {
+            background: var(--primary);
+            color: white;
+        }
 
-    <div class="badge-container">
-        {% if a and b%}
-        <p><strong>Badge Name:</strong> {{a}}</p>
-        <img src="{{b}}" alt="Badge Image" class="badge-img"> <!-- Added class for badge image -->
-        {%endif%}
-        {%  if total_score %}
-        <p>SCORE:{{total_score}}</p>
-        {%endif%}
+        .button-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .button-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .button-outline:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .section {
+            padding: 6rem 1.5rem;
+            position: relative;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .features {
+            background: var(--card);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--background);
+            border-radius: var(--radius);
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .feature-icon {
+            width: 4rem;
+            height: 4rem;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 1rem;
+            display: grid;
+            place-items: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tool-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 2rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .tool-card h3 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .game-section {
+            background: var(--card);
+            text-align: center;
+        }
+
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--background);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .word-builder {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .letter-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .hint-container {
+            background: var(--primary-light);
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1.5rem;
+        }
+
+        .letter {
+            width: 3rem;
+            height: 3rem;
+            display: grid;
+            place-items: center;
+            background: var(--card);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius);
+            font-size: 1.25rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .letter:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+            background: var(--primary-light);
+        }
+
+        #gameResult {
+            height: 2rem;
+            font-weight: 600;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 3.5rem;
+            height: 3.5rem;
+            background: var(--primary);
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            color: white;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+            font-size: 1.25rem;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            background: var(--primary-dark);
+        }
+
+        .loading {
+            position: fixed;
+            inset: 0;
+            background: var(--background);
+            display: grid;
+            place-items: center;
+            z-index: 1000;
+        }
+
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .reading-ruler {
+            position: fixed;
+            pointer-events: none;
+            background: rgba(255, 255, 0, 0.2);
+            height: 32px;
+            width: 100%;
+            max-width: 800px;
+            border-radius: 16px;
+            box-shadow: 0 0 20px rgba(255,255,0,0.2);
+            display: none;
+            z-index: 1000;
+            transition: opacity 0.2s ease;
+        }
+
+        .color-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 50;
+            mix-blend-mode: multiply;
+            display: none;
+        }
+
+        .text-customizer {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .customizer-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-group label {
+            font-weight: 500;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+        }
+
+        .footer {
+            background: var(--card);
+            padding: 4rem 1.5rem;
+            text-align: center;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: var(--foreground);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--primary);
+        }
+
+        .mobile-toggle {
+            display: none;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            color: var(--foreground);
+            cursor: pointer;
+        }
+
+        .lesson-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 2rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .progress-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .progress-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 1rem;
+            background: var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.5s ease;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 4rem;
+                left: 0;
+                right: 0;
+                background: var(--card);
+                flex-direction: column;
+                padding: 1rem;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .dropdown-content {
+                position: static;
+                width: 100%;
+                opacity: 1;
+                pointer-events: auto;
+                transform: none;
+                box-shadow: none;
+                border: none;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+            }
+
+            .dropdown.active .dropdown-content {
+                max-height: 500px;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+
+            .hero {
+                padding: 7rem 1rem 3rem;
+            }
+
+            .features-grid,
+            .tools-grid,
+            .progress-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+                width: 100%;
+                max-width: 300px;
+                margin: 0 auto;
+            }
+
+            .button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading" id="loading">
+        <div class="loader"></div>
     </div>
+
+    <!-- Accessibility Tools -->
+    <div id="readingRuler" class="reading-ruler"></div>
+    <div id="colorOverlay" class="color-overlay"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="#" class="logo">
+                <div class="logo-icon">EL</div>
+                <span>EmpowerLearn</span>
+            </a>
+
+            <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">☰</button>
+
+            <div class="nav-links" id="navLinks">
+                <div class="dropdown" id="learnDropdown">
+                    <a href="#" class="nav-item" id="learnToggle" aria-expanded="false">Learn</a>
+                    <div class="dropdown-content">
+                        <a href="#lessons" class="dropdown-item"><span>📚</span> Lessons</a>
+                        <a href="#games" class="dropdown-item"><span>🎮</span> Games</a>
+                        <a href="#practice" class="dropdown-item"><span>✏</span> Practice</a>
+                    </div>
+                </div>
+
+                <div class="dropdown" id="toolsDropdown">
+                    <a href="#" class="nav-item" id="toolsToggle" aria-expanded="false">Tools</a>
+                    <div class="dropdown-content">
+                        <a href="#" class="dropdown-item" onclick="toggleTextToSpeech()"><span>🔊</span> Text to Speech</a>
+                        <a href="#" class="dropdown-item" onclick="toggleReadingRuler()"><span>📏</span> Reading Ruler</a>
+                        <a href="#" class="dropdown-item" onclick="toggleColorOverlay()"><span>🎨</span> Color Overlay</a>
+                        <a href="#text-customizer" class="dropdown-item"><span>🔤</span> Text Customizer</a>
+                    </div>
+                </div>
+
+                <a href="#progress" class="nav-item">Progress</a>
+
+                <div class="dropdown" id="settingsDropdown">
+                    <a href="#" class="nav-item" id="settingsToggle" aria-expanded="false">Settings</a>
+                    <div class="dropdown-content">
+                        <a href="#" class="dropdown-item" onclick="toggleDarkMode()"><span id="theme-icon">🌓</span> Theme</a>
+                        <a href="#" class="dropdown-item" onclick="toggleDyslexiaFont()"><span>👁</span> Dyslexia Font</a>
+                        <a href="#accessibility" class="dropdown-item"><span>♿</span> Accessibility</a>
+                    </div>
+                </div>
+                <a href="/login" class="nav-item">Login</a>
+                <a href="/register" class="nav-item">Register</a>
+
+                <a href="/deepakabout" class="nav-item">About</a>
+
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Learning Made Accessible For Everyone</h1>
+            <p>Welcome to EmpowerLearn - an adaptive learning platform designed to support students with dyslexia and other learning differences.</p>
+            <div class="button-group">
+                <a href="#lessons" class="button button-primary">Start Learning</a>
+                <a href="#tools" class="button button-outline">Explore Tools</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section features" id="features">
+        <h2 class="section-title">Why Choose EmpowerLearn?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+             
+                <a href='/dineshstory' style='text-decoration: none;'><h3>Story Telling</h3></a>
+                <a href='/dineshstory' style='text-decoration: none;'><p>Adaptive lessons d</p></a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+             
+                <a href='/speechquizcard' style='text-decoration: none;'><h3>Personalized Learning</h3></a>
+                <a href='/speechquizcard' style='text-decoration: none;'><p>Adaptive lessons that match your pace and learning style with AI-powered recommendations.</p></a>
+            </div>
+          
+            <div class="feature-card">
+              
+                <div class="feature-icon">🛠</div>
+                <a href='/dyslexiatools' style='text-decoration: none;'> 
+                    <h3>Accessibility Tools</h3>
+               
+                  
+                  <a href='/dyslexiatools' style='text-decoration: none;ccolor:black'>    <p>Custom text formatting, reading rulers, color overlays, and text-to-speech to support your needs.</p>   </a>
+          
+            </div>
+      
+            <div class="feature-card">
+                <div class="feature-icon">🏆</div>
+                <a href='/courses' style='text-decoration: none;ccolor:black'><h3>Courses</h3></a>
+                <a href='/courses' style='text-decoration: none;ccolor:black'><p>Monitor your achievements and learning journey with detailed visual reports.</p></a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎮</div>
+                <a href='/index1' style='text-decoration: none;'><h3>Interactive Games</h3></a>
+                    <a href='/index1' style='text-decoration: none;'><p>Learn through engaging educational games designed to strengthen key skills.</p></a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3 style="color:blacke">Cognitive Training</h3>
+                <p style='color:blue'>Build working memory, processing speed, and attention through specialized exercises.</p>
+            </div>
+         
+
+
+           
+        </div>
+    </section>
+
+    <!-- Lessons Section -->
+    <section class="section" id="lessons">
+        <h2 class="section-title">Explore Lessons</h2>
+        <div class="tools-grid">
+            <div class="lesson-card">
+                <h3>Phonics Basics</h3>
+                <p>Master letter sounds and blending with interactive exercises.</p>
+                <button class="button button-primary" onclick="startLesson('phonics')">Start Lesson</button>
+            </div>
+            <div class="lesson-card">
+                <h3>Reading Comprehension</h3>
+                <p>Improve understanding with guided reading and questions.</p>
+                <button class="button button-primary" onclick="startLesson('comprehension')">Start Lesson</button>
+            </div>
+            <div class="lesson-card">
+                <h3>Spelling Practice</h3>
+                <p>Learn common patterns and tricky words through repetition.</p>
+                <button class="button button-primary" onclick="startLesson('spelling')">Start Lesson</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tools Section -->
+    <section class="section tools" id="tools">
+        <h2 class="section-title">Empowering Tools</h2>
+        <div class="tools-grid">
+            <div class="tool-card">
+                <h3>Text to Speech</h3>
+                <p>Listen to any text read aloud to improve comprehension.</p>
+                <textarea id="speechText" placeholder="Enter text to read aloud..." rows="4" style="width: 100%; margin: 1rem 0; padding: 0.5rem; border-radius: var(--radius);"></textarea>
+                <select id="voiceSelect" style="width: 100%; margin: 0.5rem 0; padding: 0.5rem;"></select>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="button button-primary" onclick="speak()">Play</button>
+                    <button class="button button-outline" onclick="pauseSpeech()">Pause</button>
+                    <button class="button button-outline" onclick="stopSpeech()">Stop</button>
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <h3>Reading Ruler</h3>
+                <p>Focus on text with a guide that follows your cursor.</p>
+                <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+                    <button class="button button-primary" onclick="toggleReadingRuler()">Toggle Ruler</button>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <label for="rulerOpacity">Opacity:</label>
+                        <input type="range" id="rulerOpacity" min="0.1" max="0.4" step="0.05" value="0.2" onchange="updateRulerOpacity()">
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <label for="rulerColor">Color:</label>
+                        <select id="rulerColor" onchange="updateRulerColor()">
+                            <option value="rgba(255, 255, 0, 0.2)">Yellow</option>
+                            <option value="rgba(0, 255, 255, 0.2)">Blue</option>
+                            <option value="rgba(0, 255, 0, 0.2)">Green</option>
+                            <option value="rgba(255, 192, 203, 0.2)">Pink</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <h3>Color Overlay</h3>
+                <p>Adjust screen color for better readability.</p>
+                <select id="overlayColor" onchange="updateOverlay()" style="width: 100%; margin: 1rem 0; padding: 0.5rem; border-radius: var(--radius);">
+                    <option value="none">None</option>
+                    <option value="rgba(255, 255, 0, 0.2)">Yellow</option>
+                    <option value="rgba(0, 255, 255, 0.2)">Blue</option>
+                    <option value="rgba(0, 255, 0, 0.2)">Green</option>
+                    <option value="rgba(255, 192, 203, 0.2)">Pink</option>
+                </select>
+            </div>
+
+            <div class="tool-card">
+                <h3>Text Customizer</h3>
+                <p>Adjust text settings to suit your reading preferences.</p>
+                <div class="text-customizer">
+                    <div class="customizer-controls">
+                        <div class="control-group">
+                            <label for="fontSize">Font Size:</label>
+                            <input type="range" id="fontSize" min="14" max="24" step="1" value="16" onchange="updateFontSize()">
+                        </div>
+                        <div class="control-group">
+                            <label for="lineHeight">Line Height:</label>
+                            <input type="range" id="lineHeight" min="1.2" max="2.4" step="0.1" value="1.6" onchange="updateLineHeight()">
+                        </div>
+                        <div class="control-group">
+                            <label for="letterSpacing">Letter Spacing:</label>
+                            <input type="range" id="letterSpacing" min="0" max="2" step="0.1" value="0" onchange="updateLetterSpacing()">
+                        </div>
+                        <div class="control-group">
+                            <label for="wordSpacing">Word Spacing:</label>
+                            <input type="range" id="wordSpacing" min="0" max="2" step="0.1" value="0" onchange="updateWordSpacing()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Games Section -->
+    <section class="section game-section" id="games">
+        <h2 class="section-title">Interactive Learning Games</h2>
+        <div class="game-container">
+            <div class="word-builder">
+                <div class="hint-container" id="wordHint"></div>
+                <div class="game-area">
+                    <div class="letter-container" id="selectedLetters"></div>
+                    <div class="letter-container" id="availableLetters"></div>
+                    <div class="button-group">
+                        <button class="button button-primary" onclick="checkWord()">Submit</button>
+                        <button class="button button-outline" onclick="resetGame()">Reset</button>
+                    </div>
+                    <div id="gameResult"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Progress Section -->
+    <section class="section" id="progress">
+        <h2 class="section-title">Your Progress</h2>
+        <div class="progress-grid">
+            <div class="progress-card">
+                <h3>Phonics</h3>
+                <div class="progress-bar"><div class="progress-fill" style="width: 75%;"></div></div>
+                <p>75% Complete</p>
+            </div>
+            <div class="progress-card">
+                <h3>Reading</h3>
+                <div class="progress-bar"><div class="progress-fill" style="width: 50%;"></div></div>
+                <p>50% Complete</p>
+            </div>
+            <div class="progress-card">
+                <h3>Spelling</h3>
+                <div class="progress-bar"><div class="progress-fill" style="width: 30%;"></div></div>
+                <p>30% Complete</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Floating Action Button -->
+    <div class="fab" onclick="toggleTools()" aria-label="Open accessibility tools">🛠</div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms of Service</a>
+                <a href="#" class="footer-link">Contact Us</a>
+            </div>
+            <p>© 2025 EmpowerLearn. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Canvas for Cursor Effect -->
+    <canvas id="canvas" style="position: fixed; top: 0; left: 0; pointer-events: none; z-index: -1;"></canvas>
+
+    <script>
+        // Remove loading screen
+        window.addEventListener('load', () => {
+            document.getElementById('loading').style.display = 'none';
+        });
     
-    <!-- Other game links -->
-    <a href="/dyslexiatools" class="image-link">
-        <img src="https://tse4.mm.bing.net/th?id=OIP.JbciA7CJaReHwjl_gaf7FAAAAA&pid=Api&P=0&h=180" alt="Dyslexia tools" class="image-effect">
-    </a>
-   
-
-    <a href="/game" class="image-link">
-        <img src="https://img.freepik.com/free-vector/background-people-television-contest_23-2147595530.jpg?semt=ais_hybrid" alt="Word Game" class="image-effect">
-        <h3>Word Game</h3>
-    </a>
-
-    <a href="/game2" class="image-link">
-        <img src="https://img.freepik.com/free-vector/people-connecting-puzzle-pieces_23-2148071463.jpg?semt=ais_hybrid" alt="Advanced Word Game" class="image-effect">
-        <h3>quiz2</h3>
-    </a>
-    <a href="/courses" class="image-link">
-        <img src="https://tse4.mm.bing.net/th?id=OIP.mPXdM862IuRSqHZA-ydSTgHaE8&pid=Api&P=0&h=180" alt="Advanced Word Game" class="image-effect">
-        <h3>Couses</h3>
-    </a>
-    <a href="/index1" class="image-link">
-        <img src="https://tse3.mm.bing.net/th?id=OIP.mhldecZZX7wED55dTYmcWAHaEK&pid=Api&P=0&h=180" alt="Advanced Word Game" class="image-effect">
-        <h3>jumbled quiz</h3>
-    </a>
-    <a href="/speechquizcard" class="image-link">
-        <img src="https://tse4.mm.bing.net/th?id=OIP.5LmlK7QpT-2ldRgjqHEZHQHaHZ&pid=Api&P=0&h=180" alt="Advanced Word Game" class="image-effect">
-        <h3>speech quiz</h3>
-    </a>
-
-   
-    </a>
-  
-</div>
+        // Theme Management
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark');
+            document.getElementById('theme-icon').textContent = document.body.classList.contains('dark') ? '🌞' : '🌓';
+        }
+    
+        function toggleDyslexiaFont() {
+            document.body.classList.toggle('dyslexia-font');
+        }
+    
+        // Smooth Scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    
+        // Text to Speech
+        let utterance = new SpeechSynthesisUtterance();
+        utterance.rate = 1;
+        utterance.pitch = 1;
+    
+        function populateVoices() {
+            const voices = speechSynthesis.getVoices();
+            const voiceSelect = document.getElementById('voiceSelect');
+            voiceSelect.innerHTML = '';
+            voices.forEach(voice => {
+                const option = document.createElement('option');
+                option.textContent = `${voice.name} (${voice.lang})`;
+                option.value = voice.name;
+                voiceSelect.appendChild(option);
+            });
+            utterance.voice = voices[0];
+            voiceSelect.onchange = () => {
+                utterance.voice = voices.find(v => v.name === voiceSelect.value);
+            };
+        }
+        speechSynthesis.onvoiceschanged = populateVoices;
+    
+        function speak() {
+            utterance.text = document.getElementById('speechText').value;
+            window.speechSynthesis.speak(utterance);
+        }
+    
+        function pauseSpeech() {
+            window.speechSynthesis.pause();
+        }
+    
+        function stopSpeech() {
+            window.speechSynthesis.cancel();
+        }
+    
+        function toggleTextToSpeech() {
+            document.getElementById('tools').scrollIntoView({ behavior: 'smooth' });
+        }
+    
+        // Reading Ruler
+        let rulerActive = false;
+        const ruler = document.getElementById('readingRuler');
+    
+        function toggleReadingRuler() {
+            rulerActive = !rulerActive;
+            ruler.style.display = rulerActive ? 'block' : 'none';
+        }
+    
+        document.addEventListener('mousemove', (e) => {
+            if (rulerActive) {
+                ruler.style.left = `${e.clientX - ruler.offsetWidth / 2}px`;
+                ruler.style.top = `${e.clientY - 15}px`;
+            }
+        });
+    
+        function updateRulerOpacity() {
+            const opacity = document.getElementById('rulerOpacity').value;
+            ruler.style.backgroundColor = `rgba(255, 255, 0, ${opacity})`;
+        }
+    
+        function updateRulerColor() {
+            ruler.style.backgroundColor = document.getElementById('rulerColor').value;
+        }
+    
+        // Color Overlay
+        function toggleColorOverlay() {
+            document.getElementById('tools').scrollIntoView({ behavior: 'smooth' });
+        }
+    
+        function updateOverlay() {
+            const overlay = document.getElementById('colorOverlay');
+            const color = document.getElementById('overlayColor').value;
+            overlay.style.display = color === 'none' ? 'none' : 'block';
+            overlay.style.backgroundColor = color;
+        }
+    
+        // Text Customizer
+        function updateFontSize() {
+            document.body.style.fontSize = `${document.getElementById('fontSize').value}px`;
+        }
+    
+        function updateLineHeight() {
+            document.body.style.lineHeight = document.getElementById('lineHeight').value;
+        }
+    
+        function updateLetterSpacing() {
+            document.body.style.letterSpacing = `${document.getElementById('letterSpacing').value}px`;
+        }
+    
+        function updateWordSpacing() {
+            document.body.style.wordSpacing = `${document.getElementById('wordSpacing').value}px`;
+        }
+    
+        // Mobile Menu Toggle
+        const mobileToggle = document.getElementById('mobileToggle');
+        const navLinks = document.getElementById('navLinks');
+        mobileToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    
+        // Dropdown Toggle
+        document.querySelectorAll('.dropdown').forEach(dropdown => {
+            const toggle = dropdown.querySelector('.nav-item');
+            dropdown.addEventListener('click', () => {
+                dropdown.classList.toggle('active');
+                toggle.setAttribute('aria-expanded', dropdown.classList.contains('active'));
+            });
+        });
+    
+        // Tools Panel
+        function toggleTools() {
+            document.getElementById('tools').scrollIntoView({ behavior: 'smooth' });
+        }
+    
+        // Lessons
+        function startLesson(type) {
+            alert(`Starting ${type} lesson! (This is a placeholder)`);
+            // Future: Redirect to lesson page or load content dynamically
+        }
+    
+        // Word Builder Game
+        const words = [
+            { word: 'LEARN', hint: 'To gain knowledge' },
+            { word: 'READ', hint: 'To look at and comprehend text' },
+            { word: 'WRITE', hint: 'To form letters on a surface' },
+            { word: 'SPELL', hint: 'To name the letters forming a word' },
+            { word: 'FOCUS', hint: 'To concentrate attention' }
+        ];
+    
+        let currentWordIndex = 0;
+        let selectedLetters = [];
+        let availableLetters = [];
+    
+        function initializeGame() {
+            selectedLetters = [];
+            availableLetters = words[currentWordIndex].word.split('').sort(() => Math.random() - 0.5);
+            document.getElementById('wordHint').textContent = `Hint: ${words[currentWordIndex].hint}`;
+            updateLettersDisplay();
+        }
+    
+        function updateLettersDisplay() {
+            document.getElementById('selectedLetters').innerHTML = selectedLetters.map(letter =>
+                `<div class="letter" onclick="deselectLetter('${letter}')">${letter}</div>`).join('');
+            document.getElementById('availableLetters').innerHTML = availableLetters.map(letter =>
+                `<div class="letter" onclick="selectLetter('${letter}')">${letter}</div>`).join('');
+        }
+    
+        function selectLetter(letter) {
+            const index = availableLetters.indexOf(letter);
+            if (index !== -1) {
+                availableLetters.splice(index, 1);
+                selectedLetters.push(letter);
+                updateLettersDisplay();
+            }
+        }
+    
+        function deselectLetter(letter) {
+            const index = selectedLetters.indexOf(letter);
+            if (index !== -1) {
+                selectedLetters.splice(index, 1);
+                availableLetters.push(letter);
+                updateLettersDisplay();
+            }
+        }
+    
+        function checkWord() {
+            const attempt = selectedLetters.join('');
+            const result = document.getElementById('gameResult');
+            if (attempt === words[currentWordIndex].word) {
+                result.textContent = '🎉 Correct! Well done!';
+                result.style.color = 'var(--success)';
+                setTimeout(() => {
+                    currentWordIndex = (currentWordIndex + 1) % words.length;
+                    initializeGame();
+                    result.textContent = '';
+                }, 2000);
+            } else {
+                result.textContent = 'Try again!';
+                result.style.color = 'var(--error)';
+                setTimeout(() => {
+                    selectedLetters = [];
+                    availableLetters = words[currentWordIndex].word.split('').sort(() => Math.random() - 0.5);
+                    updateLettersDisplay();
+                    result.textContent = '';
+                }, 1500);
+            }
+        }
+    
+        function resetGame() {
+            initializeGame();
+            document.getElementById('gameResult').textContent = '';
+        }
+    
+        initializeGame();
+    
+        // Cursor Effect
+        let pos = { x: 0, y: 0 };
+        const ctx = document.getElementById('canvas').getContext('2d');
+        let lines = [];
+        const E = { trails: 10, size: 50, friction: 0.5, dampening: 0.25, tension: 0.98 };
+    
+        function n(e) { this.init(e || {}); }
+        n.prototype = {
+            init: function(e) { this.phase = e.phase || 0; this.offset = e.offset || 0; this.frequency = e.frequency || 0.001; this.amplitude = e.amplitude || 1; },
+            update: function() { this.phase += this.frequency; return this.offset + Math.sin(this.phase) * this.amplitude; },
+            value: function() { return this.offset + Math.sin(this.phase) * this.amplitude; }
+        };
+    
+        function Node() { this.x = 0; this.y = 0; this.vx = 0; this.vy = 0; }
+    
+        function Line(e) { this.init(e || {}); }
+        Line.prototype = {
+            init: function(e) {
+                this.spring = e.spring + 0.1 * Math.random() - 0.02;
+                this.friction = E.friction + 0.01 * Math.random() - 0.002;
+                this.nodes = [];
+                for (let i = 0; i < E.size; i++) {
+                    const t = new Node();
+                    t.x = pos.x;
+                    t.y = pos.y;
+                    this.nodes.push(t);
+                }
+            },
+            update: function() {
+                let e = this.spring, t = this.nodes[0];
+                t.vx += (pos.x - t.x) * e; t.vy += (pos.y - t.y) * e;
+                for (let i = 0; i < this.nodes.length; i++) {
+                    t = this.nodes[i];
+                    if (i > 0) {
+                        const n = this.nodes[i - 1];
+                        t.vx += (n.x - t.x) * e; t.vy += (n.y - t.y) * e;
+                        t.vx += n.vx * E.dampening; t.vy += n.vy * E.dampening;
+                    }
+                    t.vx *= this.friction; t.vy *= this.friction;
+                    t.x += t.vx; t.y += t.vy;
+                    e *= E.tension;
+                }
+            },
+            draw: function() {
+                let e, t, n = this.nodes[0].x, i = this.nodes[0].y;
+                ctx.beginPath();
+                ctx.moveTo(n, i);
+                for (let a = 1; a < this.nodes.length - 2; a++) {
+                    e = this.nodes[a]; t = this.nodes[a + 1];
+                    n = 0.5 * (e.x + t.x); i = 0.5 * (e.y + t.y);
+                    ctx.quadraticCurveTo(e.x, e.y, n, i);
+                }
+                e = this.nodes[this.nodes.length - 2];
+                t = this.nodes[this.nodes.length - 1];
+                ctx.quadraticCurveTo(e.x, e.y, t.x, t.y);
+                ctx.stroke();
+                ctx.closePath();
+            }
+        };
+    
+        const f = new n({ phase: Math.random() * 2 * Math.PI, amplitude: 85, frequency: 0.0015, offset: 285 });
+    
+        function onMousemove(e) {
+            pos.x = e.clientX || e.touches?.[0].pageX;
+            pos.y = e.clientY || e.touches?.[0].pageY;
+            if (!lines.length) {
+                for (let i = 0; i < E.trails; i++) lines.push(new Line({ spring: 0.4 + (i / E.trails) * 0.025 }));
+            }
+            e.preventDefault();
+        }
+    
+        function render() {
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.strokeStyle = `hsla(${Math.round(f.update())}, 50%, 50%, 0.2)`;
+            ctx.lineWidth = 1;
+            lines.forEach(line => { line.update(); line.draw(); });
+            requestAnimationFrame(render);
+        }
+    
+        function resizeCanvas() {
+            ctx.canvas.width = window.innerWidth - 20;
+            ctx.canvas.height = window.innerHeight;
+        }
+    
+        document.addEventListener('mousemove', onMousemove);
+        document.addEventListener('touchstart', onMousemove);
+        document.addEventListener('touchmove', onMousemove);
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        render();
+    </script>
+    
+</body>
+</html>
 
 {% endblock %}

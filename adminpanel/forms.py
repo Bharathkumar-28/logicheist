@@ -129,7 +129,24 @@ class speechquizform(forms.ModelForm):
     class Meta:
         model=speechquiz2
         fields=['name','image','title']
-        
+from django import forms
+from .models import courses
+
+class courseform(forms.ModelForm):
+    class Meta:
+        model = courses
+        fields = ['name', 'title', 'image', 'data']
+
+    # Optionally, you can add any custom validation or cleaning methods here
+from django import forms
+from .models import UploadedImage
+
+class ImageUploadForm(forms.ModelForm):
+    class Meta:
+        model = UploadedImage
+        fields = ['image']  # Only include the image field in the form
+
+
 
 
 

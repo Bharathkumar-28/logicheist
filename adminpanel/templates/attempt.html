@@ -111,7 +111,7 @@
     }
 </style>
 
-<a class="result" href='/finalresult'>VIEW THE RESULT</a>
+<a class="result" href='/finalresult' id="viewResultBtn" style="display:none;">VIEW THE RESULT</a>
 <div class="game-container">
     <h1 class='new'>Word Scramble Game</h1>
     <p class='new'>Unscramble the letters to form a word.</p>
@@ -148,20 +148,31 @@
         });
     });
 
+    let usedWords = [];
     let currentWord;
 
     function getRandomWord() {
-        const randomIndex = Math.floor(Math.random() * words.length);
-        currentWord = words[randomIndex];
+        // Filter out used words to prevent repetition
+        const unusedWords = words.filter(word => !usedWords.includes(word.word));
+        if (unusedWords.length === 0) {
+            // All words have been used
+            endGame();
+            return null;
+        }
+        const randomIndex = Math.floor(Math.random() * unusedWords.length);
+        currentWord = unusedWords[randomIndex];
+        usedWords.push(currentWord.word);
         return currentWord;
     }
 
     function shuffleWord(word) {
-        return word.split('').sort(() => 0.3 - Math.random()).join('');
+        return word.split('').sort(() => 0.7 - Math.random()).join('');
     }
 
     function loadNewWord() {
         const wordObj = getRandomWord();
+        if (wordObj === null) return; // End game if all words are used
+
         const scrambled = shuffleWord(wordObj.word);
         document.getElementById('scrambledWord').textContent = scrambled;
         document.getElementById('feedbackText').innerHTML = '';
@@ -265,7 +276,7 @@
             if (data.status === 'success') {
                 console.log('Game result saved successfully.');
             } else {
-                console.log('Error saving result:', data.message);
+                console.log('Error saving leaderboard result:', data.message);
             }
         })
         .catch(error => console.error('Error:', error));
@@ -273,6 +284,13 @@
 
     function getCSRFToken() {
         return document.querySelector('[name=csrfmiddlewaretoken]').value;
+    }
+
+    function endGame() {
+        // Disable input and show the result link after all words are completed
+        document.getElementById('userInput').disabled = true;
+        document.querySelector('button').disabled = true;
+        document.getElementById('viewResultBtn').style.display = 'block'; // Show result link
     }
 
     // Initial call to load the first word

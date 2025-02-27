@@ -175,4 +175,5 @@ LOGGING = {
 }
 LOGIN_URL = '/login/'
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
+TESSERACT_CMD = r'C:\Program Files\Tesseract-OCR\tesseract.exe'  # Adjust if your path is different
 

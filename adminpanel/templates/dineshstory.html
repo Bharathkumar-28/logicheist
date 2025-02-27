@@ -1,0 +1,982 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Story Levels Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: hsl(230, 85%, 60%);
+            --primary-dark: hsl(230, 85%, 50%);
+            --primary-light: hsl(230, 85%, 75%);
+            --accent: hsl(280, 85%, 60%);
+            --background: hsl(220, 20%, 97%);
+            --foreground: hsl(220, 20%, 10%);
+            --card: hsl(220, 20%, 100%);
+            --card-foreground: hsl(220, 20%, 10%);
+            --border: hsl(220, 20%, 90%);
+            --ring: hsla(230, 85%, 60%, 0.5);
+            --success: hsl(142, 76%, 36%);
+            --error: hsl(0, 84%, 60%);
+            --radius: 0.75rem;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.1);
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --font-spacing: normal;
+            --word-spacing: normal;
+            --line-height: 1.6;
+        }
+
+
+        body::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm-63-31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='currentColor' fill-opacity='0.05'/%3E%3C/svg%3E");
+            mask-image: radial-gradient(circle at center, transparent 30%, black);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3), 0 0 20px rgba(99, 102, 241, 0.2);
+            overflow: hidden;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            padding: 3rem;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            color: white;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.25) 100%);
+            pointer-events: none;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3), 0 0 10px rgba(255, 255, 255, 0.5);
+            animation: slideIn 0.8s ease-out;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            opacity: 0.9;
+            font-weight: 600;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.8s ease-out 0.2s backwards;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .level-box {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            animation: slideIn 0.8s ease-out 0.4s backwards;
+        }
+
+        .level-btn {
+            position: relative;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 1rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: white;
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+        }
+
+        .level-btn:hover:not(.locked) {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5), 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .level-btn.locked {
+            background: #d1d5db;
+            color: #9ca3af;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .level-btn.completed::after {
+            content: '✓';
+            position: absolute;
+            top: -0.5rem;
+            right: -0.5rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            background: #22c55e;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            animation: bounceIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .level-btn.locked::after {
+            content: '🔒';
+            position: absolute;
+            top: -0.5rem;
+            right: -0.5rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            background: #9ca3af;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .story-container {
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .image-card {
+            position: relative;
+            border-radius: 1rem;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            border: 2px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .image-card:hover:not(.disabled) {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2), 0 0 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .image-card.selected {
+            border: 4px solid #6366f1;
+            box-shadow: 0 0 10px #6366f1;
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .image-card:hover:not(.disabled) img {
+            transform: scale(1.08);
+        }
+
+        .order-number {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            width: 2rem;
+            height: 2rem;
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            animation: bounceIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(1rem);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .feedback.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .feedback.success {
+            background: #dcfce7;
+            color: #166534;
+            border: 2px solid #22c55e;
+        }
+
+        .feedback.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #ef4444;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .container { border-radius: 1rem; }
+            .title { font-size: 2rem; }
+            .level-box { flex-wrap: wrap; }
+            .level-btn { width: calc(50% - 0.5rem); }
+            .image-grid { grid-template-columns: 1fr; }
+        }
+
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-start {
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+
+        .btn-start:hover {
+            background: linear-gradient(45deg, #4f46e5, #7c3aed);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-check {
+            background: linear-gradient(45deg, #22c55e, #34d399);
+            color: white;
+        }
+
+        .btn-check:hover {
+            background: linear-gradient(45deg, #16a34a, #22c55e);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(34, 197, 94, 0.4);
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        @keyframes confettiRain {
+            0% { transform: translateY(-100vh) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(720deg); }
+        }
+
+        .confetti {
+            position: absolute;
+            top: -10px;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+        }
+
+        .image-card.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .image-card.disabled:hover {
+            transform: none;
+        }
+
+        /* Navbar styles from Text to Speech */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 50;
+        }
+
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--foreground);
+            text-decoration: none;
+            transition: transform 0.2s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 0.5rem;
+            display: grid;
+            place-items: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .nav-item {
+            padding: 0.5rem 1rem;
+            color: var(--foreground);
+            text-decoration: none;
+            border-radius: var(--radius);
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-content {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            min-width: 260px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+            transition: all 0.2s ease;
+            z-index: 100;
+        }
+
+        .dropdown:hover .dropdown-content,
+        .dropdown:focus-within .dropdown-content {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--foreground);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .mobile-toggle {
+            display: none;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            color: var(--foreground);
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 4rem;
+                left: 0;
+                right: 0;
+                background: var(--card);
+                flex-direction: column;
+                padding: 1rem;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .dropdown-content {
+                position: static;
+                width: 100%;
+                opacity: 1;
+                pointer-events: auto;
+                transform: none;
+                box-shadow: none;
+                border: none;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+            }
+
+            .dropdown.active .dropdown-content {
+                max-height: 500px;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0; /* Adjusted to sit between background and content */
+        }
+    </style>
+</head>
+<body>
+    <!-- Canvas for Cursor Effect -->
+    <canvas id="canvas"></canvas>
+
+    <!-- Navigation from Text to Speech -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/" class="logo">
+                <div class="logo-icon">EL</div>
+                <span>EmpowerLearn</span>
+            </a>
+            <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">☰</button>
+            <div class="nav-links" id="navLinks">
+                <a href="/" class="nav-item">Home</a>
+                <div class="dropdown" id="toolsDropdown">
+                    <a href="#" class="nav-item" id="toolsToggle" aria-expanded="false">Tools</a>
+                    <div class="dropdown-content">
+                        <a href="#" class="dropdown-item" onclick="alert('Text-to-Speech is integrated in the game!')"><span>🔊</span> Text to Speech</a>
+                        <a href="#" class="dropdown-item" onclick="alert('Reading Ruler not implemented')"><span>📏</span> Reading Ruler</a>
+                        <a href="#" class="dropdown-item" onclick="alert('Color Overlay not implemented')"><span>🎨</span> Color Overlay</a>
+                        <a href="#text-customizer" class="dropdown-item"><span>🔤</span> Text Customizer</a>
+                    </div>
+                </div>
+                <div class="dropdown" id="settingsDropdown">
+                    <a href="#" class="nav-item" id="settingsToggle" aria-expanded="false">Settings</a>
+                    <div class="dropdown-content">
+                        <a href="#" class="dropdown-item" onclick="toggleDarkMode()"><span id="theme-icon">🌓</span> Theme</a>
+                        <a href="#" class="dropdown-item" onclick="toggleDyslexiaFont()"><span>👁</span> Dyslexia Font</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Story Levels Game Section -->
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Story Levels Game</h1>
+            <div class="level-box">
+                <button class="level-btn" data-level="0" onclick="showLevel(0)">Level 1: School Boy</button>
+                <button class="level-btn" data-level="1" onclick="showLevel(1)">Level 2: Cow's Day</button>
+                <button class="level-btn" data-level="2" onclick="showLevel(2)">Level 3: Lion</button>
+                <button class="level-btn" data-level="3" onclick="showLevel(3)">Level 4: Rabbit</button>
+            </div>
+        </div>
+        <div id="storyContainer" class="story-container">
+            <div class="buttons">
+                <button class="btn btn-start" onclick="startStory()">Start Story</button>
+                <button class="btn btn-check" onclick="checkOrder()">Check Order</button>
+            </div>
+            <div class="image-grid" id="imageGrid"></div>
+        </div>
+        <div class="feedback" id="feedback"></div>
+    </div>
+
+    <div class="celebration" id="celebration"></div>
+
+    <script>
+        const levels = [
+            {
+                id: 'schoolboy',
+                title: "The School Boy's Adventure",
+                subtitle: "Join Arun on his exciting journey through a day at school!",
+                story: "Let me tell you about Arun's exciting day at school. Early in the morning, Arun's mother helped him get ready for school, making sure his backpack was packed with everything he needed. With a warm hug and a bright smile, he waved goodbye to her. As he arrived at school, he was delighted to see his friends playing in the schoolyard, their laughter filling the morning air. During class, Arun's eyes sparkled with wonder as his teacher taught them about the vast universe, showing pictures of planets and stars. At lunchtime, Arun shared his favorite sandwich with his best friend, remembering what his mother always said about sharing being caring. When the school day ended, Arun couldn't contain his excitement as he rushed home, eager to tell his mother about all the amazing things he had learned and experienced during his wonderful day at school.",
+                images: [
+                    { id: 'image1', src: 'https://media.istockphoto.com/id/2164339136/photo/happy-black-mother-preparing-child-boy-with-backpack-for-school.jpg?s=612x612&w=0&k=20&c=H6mzkCwIiq1Re-5qTX9TCRUZIiphhPJFw-87is4Vfys=', alt: 'Arun saying goodbye to mom', order: 0 },
+                    { id: 'image2', src: 'https://media.istockphoto.com/id/1220169565/photo/excited-schoolchildren-leaving-school.jpg?s=612x612&w=0&k=20&c=CyeCseaX-aUW0j1uBnwMuH6_UL3kUQANP6NyVNvWmpg=', alt: 'Arun with friends', order: 0 },
+                    { id: 'image3', src: 'https://media.istockphoto.com/id/1175528220/photo/learning-about-planets.jpg?s=612x612&w=0&k=20&c=N4lphrOcp6IVpRcgX2jBCuPjl3RxtrW96JXmFRPwMYI=', alt: 'Learning about space', order: 0 },
+                    { id: 'image4', src: 'https://media.istockphoto.com/id/1409981287/photo/kindergarten-kids-learning-to-share-their-lunch-food.jpg?s=612x612&w=0&k=20&c=v17jBlxXepZiChuf3blpdXBg9e_muMDXRDD6EznsmlI=', alt: 'Sharing lunch', order: 0 },
+                    { id: 'image5', src: 'https://media.istockphoto.com/id/1279103636/photo/smiling-children-skipping-on-jumping-rope.jpg?s=612x612&w=0&k=20&c=Xji60Hlc-1kiSEFKPwkF688YnCpzAfBkPLHscme97fA=', alt: 'Running home excited', order: 0 }
+                ],
+                correctOrder: ['image1', 'image2', 'image3', 'image4', 'image5'],
+                hints: [
+                    "Think about how Arun's day begins at home.",
+                    "Remember what happens when Arun first arrives at school.",
+                    "What exciting thing did Arun learn about in class?",
+                    "During lunch break, Arun showed kindness to his friend.",
+                    "How did Arun feel at the end of his school day?"
+                ]
+            },
+            {
+                id: 'cow',
+                title: "The Cow's Day",
+                subtitle: "Follow the cow through her peaceful day in the meadow!",
+                story: "Once upon a time, a cow woke up in a sunny barn, ready to start her day. She stepped out into a green, dewy field, enjoying the fresh morning air. As the day went on, she munched happily on fresh, juicy grass, savoring every bite. Later, she drank cool water from a sparkling stream, quenching her thirst. As the sun began to set, painting the sky with warm hues, the cow trotted back to her cozy barn, content and ready for a good night's rest.",
+                images: [
+                    { id: 'image1', src: 'https://media.istockphoto.com/id/1153233954/photo/milk-cows.jpg?s=612x612&w=0&k=20&c=Yy_ZfetGbMPCFwCrB7bjuDjLM1H0msMFxt_Godg09SY=', alt: 'Cow in Barn', order: 0 },
+                    { id: 'image2', src: 'https://media.istockphoto.com/id/1003390342/photo/cow-in-the-pasture.jpg?s=612x612&w=0&k=20&c=OmLuYAoMHiyrvWJpGZzlkC-rL4RWZf0GlkCgvlQ2xsY=', alt: 'Cow at Sunset', order: 0 },
+                    { id: 'image3', src: 'https://media.istockphoto.com/id/1287819558/photo/black-and-white-holstein-friesian-cow-grazing-on-a-lush-green-meadow.jpg?s=612x612&w=0&k=20&c=nmAuPc0dL7wFQGajBytycR_yUBW3OOFkHcHOBr28N6w=', alt: 'Cow Eating Grass', order: 0 },
+                    { id: 'image4', src: 'https://media.istockphoto.com/id/2182225698/photo/cow-eating-watercress-in-the-creek.jpg?s=612x612&w=0&k=20&c=mQiK1LR0CtPQAgc-gQraLDVmB5EwE_O-DriT2fUiG0Y=', alt: 'Cow Drinking Water', order: 0 },
+                    { id: 'image5', src: 'https://media.istockphoto.com/id/1249865789/photo/holstein-friesian-on-the-foggy-morning.jpg?s=612x612&w=0&k=20&c=5g7_r-Yxl7vhTlQJS22bDKy_ZDuBQtJxGoFs-O_X140=', alt: 'Cow in Field', order: 0 }
+                ],
+                correctOrder: ['image1', 'image5', 'image3', 'image4', 'image2'],
+                hints: [
+                    "The first image should show where the cow starts her day.",
+                    "The second image should show the cow's morning activity.",
+                    "The third image should show the cow enjoying her meal.",
+                    "The fourth image should show the cow quenching her thirst.",
+                    "The last image should show where the cow ends her day."
+                ]
+            },
+            {
+                id: 'lion',
+                title: "The Lion and the Elephant",
+                subtitle: "A story about self-acceptance and uniqueness",
+                story: "The lion was the king of the jungle. One day, he saw the elephant and thought, 'The elephant is so big and strong.' The lion felt small and started comparing himself to the elephant. Other animals saw this and began to think the elephant should be king. The lion realized he was special in his own way. Moral: Don't compare yourself to others. Everyone is unique!",
+                images: [
+                    { id: 'image1', src: 'https://media.istockphoto.com/id/1350421747/photo/confrontation.jpg', alt: 'Lion and Elephant', order: 0 },
+                    { id: 'image2', src: 'https://images.unsplash.com/photo-1496368047060-2225dc0a96b4', alt: 'Lion in the Jungle', order: 0 },
+                    { id: 'image3', src: 'https://img.freepik.com/premium-photo/young-lion-cub.jpg', alt: 'Lion Cub and Elephant', order: 0 },
+                    { id: 'image4', src: 'https://images.unsplash.com/photo-1614069922766-f0bf4ea17275', alt: 'Lion Realizing Its Uniqueness', order: 0 },
+                    { id: 'image5', src: 'https://www.worldatlas.com/upload/27/5e/39/elephant-savanna.jpg', alt: 'Lion and Elephant in the Savanna', order: 0 }
+                ],
+                correctOrder: ['image2', 'image1', 'image3', 'image5', 'image4'],
+                hints: [
+                    "The first image should show the lion as the king of the jungle.",
+                    "The second image should show the lion seeing the elephant.",
+                    "The third image should show the lion feeling small.",
+                    "The fourth image should show other animals' reactions.",
+                    "The last image should show the lion's realization."
+                ]
+            },
+            {
+                id: 'rabbit',
+                title: "The Rabbit's Adventure",
+                subtitle: "Join the rabbit on its exciting journey through a day in the meadow!",
+                story: "Let me tell you about the rabbit's exciting day. Early in the morning, the rabbit woke up in its cozy burrow as the sun rose. It hopped out into the dewy meadow, feeling the fresh air. The rabbit nibbled on a fresh, crunchy carrot, enjoying its breakfast. Along the path, it met a friendly squirrel and they chatted for a while. At sunset, the rabbit returned home, tired but happy after a fulfilling day.",
+                images: [
+                    { id: 'image1', src: 'https://media.istockphoto.com/id/864653722/photo/white-rabbit-walking-on-grass-on-a-sunny-day.jpg?s=612x612&w=0&k=20&c=m62e4pCLNsWiECU1L2GBSKSeC_d4Jwg7z8usONtM690=', alt: 'Rabbit hopping out into the dewy meadow', order: 0 },
+                    { id: 'image2', src: 'https://media.istockphoto.com/id/1199672231/photo/rabbit.jpg?s=612x612&w=0&k=20&c=w7d_img5B-D3fOTGCbvq177RGkx2LjgM_4sjYGbmcMQ=', alt: 'Rabbit waking up in its cozy burrow', order: 0 },
+                    { id: 'image3', src: 'https://media.istockphoto.com/id/2181511339/photo/white-rabbits-on-a-farm-in-the-morning-fog-standing-on-green-grass-morning-fog-in-autumn-in.jpg?s=612x612&w=0&k=20&c=-C5MsrPdamq7MJg7pVEdYr_bq9OHAgI8UxXJ4Anuguo=', alt: 'Rabbit nibbling on a fresh, crunchy carrot', order: 0 },
+                    { id: 'image4', src: 'https://media.istockphoto.com/id/918247726/photo/cute-rabbit-with-big-ears-outdoors-in-sunset.jpg?s=612x612&w=0&k=20&c=3dmlBG766wAPF9147XWLyoZ0dWvT4cWmiJrY2_7bSRQ=', alt: 'Rabbit returning home at sunset', order: 0 },
+                    { id: 'image5', src: 'https://media.istockphoto.com/id/1279103636/photo/smiling-children-skipping-on-jumping-rope.jpg?s=612x612&w=0&k=20&c=Xji60Hlc-1kiSEFKPwkF688YnCpzAfBkPLHscme97fA=', alt: 'Rabbit meeting a friendly squirrel', order: 0 }
+                ],
+                correctOrder: ['image2', 'image1', 'image3', 'image5', 'image4'],
+                hints: [
+                    "Think about how the rabbit's day begins in its burrow.",
+                    "Remember what the rabbit does when it goes out into the meadow.",
+                    "What does the rabbit enjoy for breakfast?",
+                    "Who does the rabbit meet along the path?",
+                    "How does the rabbit feel at the end of the day?"
+                ]
+            }
+        ];
+
+        let currentLevel = 0;
+        let selectedImages = [];
+        let completedLevels = [];
+        let isStoryComplete = false;
+        let clickCount = 0;
+
+        function showLevel(levelIndex) {
+            if (levelIndex > Math.max(...completedLevels, -1) + 1) return;
+            
+            currentLevel = levelIndex;
+            selectedImages = [];
+            clickCount = 0;
+            isStoryComplete = false;
+            
+            const level = levels[levelIndex];
+            document.querySelector('.title').textContent = level.title;
+            
+            if (level.subtitle) {
+                let subtitle = document.querySelector('.subtitle');
+                if (!subtitle) {
+                    subtitle = document.createElement('p');
+                    subtitle.className = 'subtitle';
+                    document.querySelector('.title').after(subtitle);
+                }
+                subtitle.textContent = level.subtitle;
+            }
+
+            renderImages();
+            updateLevelButtons();
+        }
+
+        function renderImages() {
+            const imageGrid = document.getElementById('imageGrid');
+            imageGrid.innerHTML = '';
+
+            const currentLevelImages = levels[currentLevel].images;
+            currentLevelImages.forEach(image => {
+                const card = document.createElement('div');
+                card.className = `image-card ${!isStoryComplete ? 'disabled' : ''}`;
+                card.onclick = () => handleImageClick(image.id);
+
+                card.innerHTML = `
+                    <img src="${image.src}" alt="${image.alt}">
+                    ${image.order > 0 ? `<div class="order-number">${image.order}</div>` : ''}
+                `;
+
+                imageGrid.appendChild(card);
+            });
+        }
+
+        function startStory() {
+            if (isStoryComplete) return;
+            isStoryComplete = false;
+            const level = levels[currentLevel];
+            const sentences = level.story.split('. ').map(s => s.trim() + '.');
+            speakSentences(sentences, () => {
+                isStoryComplete = true;
+                renderImages();
+            });
+        }
+
+        function speakSentences(sentences, callback) {
+            let index = 0;
+            let voices = window.speechSynthesis.getVoices();
+            if (voices.length === 0) {
+                window.speechSynthesis.onvoiceschanged = () => {
+                    voices = window.speechSynthesis.getVoices();
+                    speakNext();
+                };
+            } else {
+                speakNext();
+            }
+
+            function speakNext() {
+                if (index >= sentences.length) {
+                    if (callback) callback();
+                    return;
+                }
+
+                const utterance = new SpeechSynthesisUtterance(sentences[index]);
+                utterance.rate = 0.9;
+                utterance.pitch = 1;
+                const femaleVoice = voices.find(voice => voice.lang.startsWith('en') && voice.name.toLowerCase().includes('female'));
+                if (femaleVoice) utterance.voice = femaleVoice;
+
+                utterance.onend = () => {
+                    index++;
+                    speakNext();
+                };
+
+                utterance.onerror = (event) => {
+                    console.error('Speech error:', event);
+                    index++;
+                    speakNext();
+                };
+
+                window.speechSynthesis.speak(utterance);
+            }
+
+            window.speechSynthesis.cancel();
+        }
+
+        function handleImageClick(clickedId) {
+            if (!isStoryComplete) return;
+
+            const level = levels[currentLevel];
+            const clickedImage = level.images.find(img => img.id === clickedId);
+
+            if (clickedImage.order === 0) {
+                clickedImage.order = ++clickCount;
+                renderImages();
+            }
+        }
+
+        function checkOrder() {
+            const level = levels[currentLevel];
+            const userOrder = level.images
+                .filter(img => img.order > 0)
+                .sort((a, b) => a.order - b.order)
+                .map(img => img.id);
+
+            const isCorrect = JSON.stringify(userOrder) === JSON.stringify(level.correctOrder);
+
+            if (isCorrect) {
+                showFeedback('🎉 Wonderful! You arranged the story perfectly! 🌟', 'success');
+                speak('Excellent job! You have arranged the story perfectly!');
+                createConfetti();
+                if (!completedLevels.includes(currentLevel)) {
+                    completedLevels.push(currentLevel);
+                    updateLevelButtons();
+                }
+            } else {
+                const incorrectIndex = userOrder.findIndex((id, index) => id !== level.correctOrder[index]);
+                const hint = incorrectIndex >= 0 ? level.hints[incorrectIndex] : "Something’s not quite right!";
+                showFeedback(`Hint: ${hint}`, 'error');
+                speak(hint);
+            }
+        }
+
+        function updateLevelButtons() {
+            document.querySelectorAll('.level-btn').forEach((btn, index) => {
+                btn.classList.remove('locked', 'completed');
+                
+                if (completedLevels.includes(index)) {
+                    btn.classList.add('completed');
+                } else if (index > Math.max(...completedLevels, -1) + 1) {
+                    btn.classList.add('locked');
+                }
+            });
+        }
+
+        function showFeedback(message, type) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = message;
+            feedback.className = `feedback ${type} show`;
+            setTimeout(() => feedback.classList.remove('show'), 3000);
+        }
+
+        function speak(text) {
+            const sentences = text.split('. ').map(s => s.trim() + '.');
+            speakSentences(sentences);
+        }
+
+        function createConfetti() {
+            const celebration = document.getElementById('celebration');
+            celebration.innerHTML = '';
+
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+
+                const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const left = Math.random() * 100 + 'vw';
+                const animationDuration = (Math.random() * 3 + 2) + 's';
+                const size = (Math.random() * 10 + 5) + 'px';
+
+                confetti.style.background = color;
+                confetti.style.left = left;
+                confetti.style.width = size;
+                confetti.style.height = size;
+                confetti.style.animation = `confettiRain ${animationDuration} ease-out forwards`;
+                confetti.style.animationDelay = (Math.random() * 3) + 's';
+
+                celebration.appendChild(confetti);
+            }
+
+            setTimeout(() => celebration.innerHTML = '', 6000);
+        }
+
+        // Navbar Functions from Text to Speech
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark');
+            document.getElementById('theme-icon').textContent = document.body.classList.contains('dark') ? '🌞' : '🌓';
+        }
+
+        function toggleDyslexiaFont() {
+            document.body.classList.toggle('dyslexia-font');
+        }
+
+        const mobileToggle = document.getElementById('mobileToggle');
+        const navLinks = document.getElementById('navLinks');
+        mobileToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        document.querySelectorAll('.dropdown').forEach(dropdown => {
+            const toggle = dropdown.querySelector('.nav-item');
+            dropdown.addEventListener('click', () => {
+                dropdown.classList.toggle('active');
+                toggle.setAttribute('aria-expanded', dropdown.classList.contains('active'));
+            });
+        });
+
+        // Cursor Effect from Text to Speech
+        const ctx = document.getElementById('canvas').getContext('2d');
+        let pos = { x: 0, y: 0 };
+        let lines = [];
+        const E = { trails: 20, size: 50, friction: 0.5, dampening: 0.25, tension: 0.98 };
+
+        function resizeCanvas() {
+            ctx.canvas.width = window.innerWidth;
+            ctx.canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function Noise(e) {
+            this.phase = e.phase || 0;
+            this.offset = e.offset || 0;
+            this.frequency = e.frequency || 0.001;
+            this.amplitude = e.amplitude || 1;
+            this.update = () => {
+                this.phase += this.frequency;
+                return this.offset + Math.sin(this.phase) * this.amplitude;
+            };
+        }
+
+        function Node() {
+            this.x = pos.x;
+            this.y = pos.y;
+            this.vx = 0;
+            this.vy = 0;
+        }
+
+        function Line(e) {
+            this.spring = e.spring + 0.1 * Math.random() - 0.02;
+            this.friction = E.friction + 0.01 * Math.random() - 0.002;
+            this.nodes = Array.from({ length: E.size }, () => new Node());
+            this.update = () => {
+                let spring = this.spring;
+                let node = this.nodes[0];
+                node.vx += (pos.x - node.x) * spring;
+                node.vy += (pos.y - node.y) * spring;
+                for (let i = 0; i < this.nodes.length; i++) {
+                    node = this.nodes[i];
+                    if (i > 0) {
+                        const prev = this.nodes[i - 1];
+                        node.vx += (prev.x - node.x) * spring;
+                        node.vy += (prev.y - node.y) * spring;
+                        node.vx += prev.vx * E.dampening;
+                        node.vy += prev.vy * E.dampening;
+                    }
+                    node.vx *= this.friction;
+                    node.vy *= this.friction;
+                    node.x += node.vx;
+                    node.y += node.vy;
+                    spring *= E.tension;
+                }
+            };
+            this.draw = () => {
+                ctx.beginPath();
+                ctx.moveTo(this.nodes[0].x, this.nodes[0].y);
+                for (let i = 1; i < this.nodes.length - 2; i++) {
+                    const a = this.nodes[i];
+                    const b = this.nodes[i + 1];
+                    const midX = 0.5 * (a.x + b.x);
+                    const midY = 0.5 * (a.y + b.y);
+                    ctx.quadraticCurveTo(a.x, a.y, midX, midY);
+                }
+                const last = this.nodes[this.nodes.length - 1];
+                ctx.quadraticCurveTo(this.nodes[this.nodes.length - 2].x, this.nodes[this.nodes.length - 2].y, last.x, last.y);
+                ctx.stroke();
+                ctx.closePath();
+            };
+        }
+
+        const noise = new Noise({ phase: Math.random() * 2 * Math.PI, amplitude: 85, frequency: 0.0015, offset: 285 });
+
+        function onMousemove(e) {
+            pos.x = e.clientX || e.touches?.[0]?.pageX || 0;
+            pos.y = e.clientY || e.touches?.[0]?.pageY || 0;
+            if (!lines.length) {
+                for (let i = 0; i < E.trails; i++) {
+                    lines.push(new Line({ spring: 0.4 + (i / E.trails) * 0.025 }));
+                }
+            }
+        }
+
+        function render() {
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.strokeStyle = `hsla(${Math.round(noise.update())}, 50%, 50%, 0.2)`;
+            ctx.lineWidth = 1;
+            lines.forEach(line => {
+                line.update();
+                line.draw();
+            });
+            requestAnimationFrame(render);
+        }
+
+        document.addEventListener('mousemove', onMousemove);
+        document.addEventListener('touchstart', onMousemove);
+        document.addEventListener('touchmove', onMousemove);
+        requestAnimationFrame(render);
+
+        // Initialize the first level
+        showLevel(0);
+    </script>
+</body>
+</html>
+{%endblock%}

@@ -87,15 +87,24 @@ class quiz(models.Model):
     def formattedimgurl(self):
         url=self.image if self.image.__str__().startswith(('http','https://')) else self.image.url
         return url
+from django.db import models
+import json
+
 class courses(models.Model):
-    name=models.CharField(max_length=100,null=True)
-    title=models.CharField(max_length=100,null=True)
-    image=models.ImageField(null=True,upload_to='posts/images',blank=True)
-    data=models.JSONField(null=True,blank=True)
-    @property        
+    name = models.CharField(max_length=255,null=True)
+    title = models.CharField(max_length=255,null=True)
+    image = models.ImageField(upload_to='courses/', null=True, blank=True)
+    data = models.JSONField(null=True, blank=True)  # Assuming you're storing word-image pairs in JSON format
+
     def formattedimgurl(self):
-        url=self.image if self.image.__str__().startswith(('http','https://')) else self.image.url
-        return url
+        if self.image and hasattr(self.image, 'url'):
+            if self.image.url.startswith(('http', 'https://')):
+                return self.image.url
+            else:
+                return self.image.url
+        return None
+
+
 class  leaderboard(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE,null=True)
     data=models.JSONField(null=True,blank=True)
@@ -133,6 +142,14 @@ class badges(models.Model):
         url=self.image if self.image.__str__().startswith(('http','https://')) else self.image.url
         return url
 
+from django.db import models
+
+class UploadedImage(models.Model):
+    image = models.ImageField(upload_to='images/')  # Store the image file in the 'images' directory
+    extracted_text = models.TextField(blank=True, null=True)  # Store the extracted text
+
+    def __str__(self):
+        return f"Image {self.id} - Extracted Text"  # For easy identification in the admin interface
 
 
         

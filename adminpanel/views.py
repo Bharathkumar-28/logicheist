@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404, render,redirect
 from django.http import HttpResponse
 from django.urls import  reverse
 from django.contrib import messages
-from .forms import contactform, registerform,resetpasswordform,loginform,forgotpasswordform,profileform
+from .forms import ImageUploadForm, contactform, registerform,resetpasswordform,loginform,forgotpasswordform,profileform
 from django.contrib.auth import authenticate,login as auth_login,logout as auth_logout
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
@@ -20,7 +20,7 @@ from adminpanel.models import post,profile, words
 import pdb
 import logging
 from django.http import JsonResponse
-from .models import badges, courses, gameresult, quiz,leaderboard, speechquiz2
+from .models import UploadedImage, badges, courses, gameresult, quiz,leaderboard, speechquiz2
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
@@ -593,7 +593,13 @@ def addquiz(request):
     else:
         form = quizform()
 
+
     return render(request, 'addquiz.html', {'form': form})
+
+
+
+
+
 from django.shortcuts import render, redirect
 from .forms import speechquizform
 from .models import speechquiz2
@@ -724,6 +730,11 @@ def avinash(request, postid):
 def coursesda(request):
     posts=courses.objects.all()
     return render(request,"coursesda.html",{"posts":posts})
+import json
+
+import json
+from django.shortcuts import render
+from .models import courses
 def attemptcourses(request,postid):
     quiz_instance = courses.objects.get(id=postid)
    
@@ -741,6 +752,8 @@ def attemptcourses(request,postid):
     serialized_data = json.dumps(list_data)
 
     return render(request, "attemptcourses.html", {"list_data": serialized_data})
+
+
 from django.http import JsonResponse
 
 
@@ -956,5 +969,124 @@ def wordexplorer(request):
     return render(request,'wordexplorer.html')
 def teacher(request):
     return render(request,'teacher.html')
+from django.shortcuts import render, redirect
+from .forms import courseform
 
-   
+
+from django.shortcuts import render, redirect
+from .models import courses
+import json
+
+def addcourse(request):
+    if request.method == 'POST':
+        # Extract basic course data from the form
+        name = request.POST.get('name')
+        title = request.POST.get('title')
+        image = request.FILES.get('image')  # For the course image
+
+        # Create the Course object with basic details
+        course = courses.objects.create(
+            name=name,
+            title=title,
+            image=image
+        )
+
+        # Extract word-image pairs (dynamic fields)
+        word_image_pairs = []
+        word_image_count = len(request.POST) // 2  # Every word/image pair has two inputs
+
+        for i in range(word_image_count):
+            word = request.POST.get(f'word_{i}')
+            uploaded_image = request.FILES.get(f'image_{i}')
+            if word and uploaded_image:  # Ensure both word and image are provided
+                # Check if the image has been uploaded and access its URL safely
+                image_url = uploaded_image.url if hasattr(uploaded_image, 'url') else None
+
+                word_image_pairs.append({
+                    'word': word,
+                    'image': image_url  # Store the image URL, not the file object
+                })
+
+        # If there are word-image pairs, store them as JSON in the `data` field
+        if word_image_pairs:
+            course.data = json.dumps(word_image_pairs)  # Store the pairs as JSON
+        course.save()
+
+        # Redirect to the course list or another page after saving
+        return redirect('courses')  # Modify the redirect destination as needed
+
+    return render(request, 'addcourses.html')  # Render the course addition form page
+def dineshstorys(request):
+    return render(request,'dineshstory.html')
+from django.shortcuts import render
+from .simplifier import simplify_text  # Import text simplification function
+
+from django.shortcuts import render
+from .simplifier import simplify_text  
+
+def simplify_view(request):
+    simplified_text = None
+
+    if request.method == "POST":
+        text = request.POST.get("text", "")
+        if text:
+            simplified_text = simplify_text(text)
+            print("Original:", text)  # Debugging
+            print("Simplified:", simplified_text)  # Debugging
+
+    return render(request, "textsimplifier.html", {"simplified_text": simplified_text})
+
+def images(request):
+   return render(request,'image.html')
+from django.shortcuts import render, redirect
+from .forms import courseform  # Assuming you have a CourseForm for the 'courses' model
+from .models import courses
+from django.contrib.auth.decorators import permission_required
+
+
+def addcourse(request):
+    print("User groups: ", request.user.groups.all())
+    print(request.user.get_all_permissions())
+
+    # Check if user is in the 'lowgroupwithoutaddquiz' group (if needed)
+    if not request.user.groups.filter(name='lowgroupwithoutaddquiz').exists():
+        return redirect('')  # Redirect if not authorized
+
+    # Form handling
+    if request.method == 'POST':
+        form = courseform(request.POST, request.FILES)
+        if form.is_valid():
+            # Process word-image pairs (if applicable)
+            course_data = {}
+            word_image_pairs = [key for key in request.POST if key.startswith('word_')]
+
+            for word_key in word_image_pairs:
+                word_index = word_key.split('_')[1]
+                word = request.POST.get(f'word_{word_index}')
+                image = request.FILES.get(f'image_{word_index}')
+                
+                if word and image:
+                    # Save the image temporarily to generate a URL
+                    temp_course = courses(image=image)
+                    temp_course.save()  # Save the image to the database to generate a URL
+                    
+                    # Now get the image URL after saving the image
+                    course_data[word] = temp_course.image.url  # Save the image URL associated with the word
+                    
+                    # Delete the temporary course object after saving its image URL
+                    temp_course.delete()
+
+            # Save the other fields and the word-image pairs as JSON
+            course_object = form.save(commit=False)
+            course_object.data = course_data  # Save the word-image pairs as JSON
+            course_object.save()  # This will auto-fill the 'createdate' field
+
+            # Redirect after saving
+            return redirect('courses')  # Replace with your course listing URL
+
+    else:
+        form = courseform()
+
+    return render(request, 'addcourses.html', {'form': form})
+
+

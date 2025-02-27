@@ -2,95 +2,124 @@
 
 {% block content %}
 <style>
+    /* Define the same root variables as the previous code */
+    :root {
+        --primary: hsl(230, 85%, 60%);         /* Base blue color */
+        --primary-dark: hsl(230, 85%, 50%);    /* Darker blue */
+        --primary-light: hsl(230, 85%, 75%);   /* Lighter blue */
+        --accent: hsl(280, 85%, 60%);          /* Purple accent */
+        --background: hsl(220, 20%, 97%);      /* Light gray background */
+        --foreground: hsl(220, 20%, 10%);      /* Dark text color */
+        --card: hsl(220, 20%, 100%);           /* White card background */
+        --card-foreground: hsl(220, 20%, 10%); /* Dark text on cards */
+        --border: hsl(220, 20%, 90%);          /* Light gray border */
+        --ring: hsla(230, 85%, 60%, 0.5);      /* Semi-transparent blue ring */
+        --success: hsl(142, 76%, 36%);         /* Green for success */
+        --error: hsl(0, 84%, 60%);             /* Red for errors */
+        --radius: 0.75rem;                     /* Rounded corners */
+        --shadow-sm: 0 1px 2px rgba(0,0,0,0.1);
+        --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+        --font-spacing: normal;
+        --word-spacing: normal;
+        --line-height: 1.6;
+    }
+
     /* Container Styles */
-    .leaderboard-container {
-        background-color: #333;
+    .places-leaderboard-container {
+        background-color: var(--card); /* Changed from #333 to match previous */
         padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        border-radius: var(--radius); /* Updated to use variable */
+        box-shadow: var(--shadow-lg); /* Updated to use variable */
         width: 90%;
         max-width: 900px;
         margin: 30px auto;
         text-align: center;
         transition: all 0.3s ease;
+        border: 1px solid var(--border); /* Added from previous */
     }
 
-   
-
     /* Title */
-    .leaderboard-title {
+    .places-leaderboard-title {
+        font-family: 'Lexend', sans-serif; /* Same font as previous */
         font-size: 2.5rem;
-        color: #4CAF50;
+        color: transparent; /* Gradient text effect */
+        background: linear-gradient(135deg, var(--primary), var(--accent)); /* From previous */
+        -webkit-background-clip: text;
+        background-clip: text;
         margin-bottom: 25px;
         text-transform: uppercase;
         letter-spacing: 1px;
-        font-weight: bold;
+        font-weight: 800; /* Updated to match previous h1 weight */
+        line-height: 1.1; /* From previous */
     }
 
     /* Table Styles */
-    .leaderboard-table {
+    .places-leaderboard-table {
         width: 100%;
         border-collapse: collapse;
         margin-top: 20px;
+        font-family: 'Lexend', sans-serif; /* Same font as previous */
+        font-size: 1.1rem;
     }
 
-    .leaderboard-table th, .leaderboard-table td {
+    .places-leaderboard-table th, .places-leaderboard-table td {
         padding: 15px 20px;
         text-align: center;
         font-size: 1.1rem;
-        border: 1px solid #ddd;
+        border: 1px solid var(--border); /* Updated from #ddd */
         transition: background-color 0.3s ease;
     }
 
-    .leaderboard-table th {
-        background-color: #4CAF50;
-        color: white;
+    .places-leaderboard-table th {
+        background-color: var(--primary-light); /* Updated from #4CAF50 */
+        color: var(--primary-dark); /* Updated from white */
+        font-weight: 600; /* Updated to match previous */
+    }
+
+    .places-leaderboard-table tr:nth-child(even) {
+        background-color: var(--card); /* Updated from #333 */
+    }
+
+    .places-leaderboard-table tr:hover {
+        background-color: var(--primary-light); /* Updated from #333 for hover effect */
+    }
+
+    .places-leaderboard-table td {
         font-weight: bold;
+        color: var(--card-foreground); /* Updated from #333 */
     }
 
-    .leaderboard-table tr:nth-child(even) {
-        background-color: #333;
-    }
-
-    .leaderboard-table tr:hover {
-        background-color: #333;
-    }
-
-    .leaderboard-table td {
-        font-weight: bold;
-        color: #333;
-    }
-
-    .leaderboard-table td:nth-child(1) {
+    .places-leaderboard-table td:nth-child(1) {
         font-size: 1.3rem;
-        color: #ff9800; /* Gold color for rank */
+        color: var(--accent); /* Updated from #ff9800 to use accent */
     }
 
-    .leaderboard-table td:nth-child(2) {
-        color: #2196F3; /* Blue for user name */
+    .places-leaderboard-table td:nth-child(2) {
+        color: var(--primary); /* Updated from #2196F3 */
         font-size: 1.1rem;
     }
 
-    .leaderboard-table td:nth-child(3) {
-        color: #8BC34A; /* Green for score */
+    .places-leaderboard-table td:nth-child(3) {
+        color: var(--success); /* Updated from #8BC34A */
     }
 
     /* Image Styles */
-    .user-image {
+    .places-user-image {
         width: 40px;
         height: 40px;
         border-radius: 50%;
         object-fit: cover;
         margin-right: 10px;
-        border: 2px solid #4CAF50;
+        border: 2px solid var(--primary); /* Updated from #4CAF50 */
         transition: transform 0.3s ease;
     }
 
-    .user-image:hover {
+    .places-user-image:hover {
         transform: scale(1.1); /* Image zoom on hover */
     }
 
-    .badge-image {
+    .places-badge-image {
         width: 30px;
         height: 30px;
         border-radius: 50%;
@@ -98,63 +127,64 @@
         transition: transform 0.3s ease;
     }
 
-    .badge-image:hover {
+    .places-badge-image:hover {
         transform: scale(1.1); /* Badge image zoom on hover */
     }
 
     /* Default Image for No Profile Image */
-    .default-image {
+    .places-default-image {
         width: 40px;
         height: 40px;
         border-radius: 50%;
         background-image: url('https://tse2.mm.bing.net/th?id=OIP.DwCrm6CqdEFxMyAz_-94jQAAAA&pid=Api&P=0&h=180');
         background-size: cover;
         background-position: center;
-        border: 2px solid #ddd;
+        border: 2px solid var(--border); /* Updated from #ddd */
     }
 
     /* Your Badge Section */
-    .your-badge-container {
-        background-color: #333;
-        border-radius: 8px;
+    .places-your-badge-container {
+        background-color: var(--card); /* Updated from #333 */
+        border-radius: var(--radius); /* Updated from 8px */
         padding: 20px;
         margin-top: 30px;
         text-align: center;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--shadow); /* Updated from 0 4px 8px */
     }
 
-    .your-badge-container h2 {
-        color: red;
+    .places-your-badge-container h2 {
+        font-family: 'Lexend', sans-serif; /* Same font as previous */
+        color: var(--error); /* Updated from red */
         margin-bottom: 15px;
         font-size: 1.8rem;
         font-weight: bold;
     }
 
-    .your-badge-container p {
+    .places-your-badge-container p {
+        font-family: 'Lexend', sans-serif; /* Same font as previous */
         font-size: 1.1rem;
-        color: #555;
+        color: var(--foreground); /* Updated from #555 */
         margin-top: 15px;
     }
 
     /* Styling for "No Badge" message */
-    .no-badge-message {
+    .places-no-badge-message {
+        font-family: 'Lexend', sans-serif; /* Same font as previous */
         font-size: 1.2rem;
-        color: #FF5722;
+        color: var(--error); /* Updated from #FF5722 */
         font-weight: bold;
     }
-
 </style>
 
-<div class="leaderboard-container">
-    <h1 class="leaderboard-title">Game Leaderboard</h1>
+<div class="places-leaderboard-container">
+    <h1 class="places-leaderboard-title">Game Leaderboard</h1>
 
-    <table class="leaderboard-table">
+    <table class="places-leaderboard-table">
         <thead>
             <tr>
                 <th>Rank</th>
                 <th>Name</th>
                 <th>Score</th>
-              
                 <th>Badge</th>
             </tr>
         </thead>
@@ -164,17 +194,16 @@
                     <td>{{ forloop.counter }}</td>
                     <td>
                         {% if entry.image %}
-                            <img src="{{ entry.image }}" class="user-image" alt="{{ entry.user }}'s profile image">
+                            <img src="{{ entry.image }}" class="places-user-image" alt="{{ entry.user }}'s profile image">
                         {% else %}
-                            <div class="default-image"></div>  <!-- Default image for missing profile image -->
+                            <div class="places-default-image"></div>  <!-- Default image for missing profile image -->
                         {% endif %}
                         {{ entry.user }}
                     </td>
                     <td>{{ entry.score }}</td>
-                   
                     <td>
                         {% if entry.badge_image %}
-                            <img src="{{ entry.badge_image }}" class="badge-image" alt="Badge for {{ entry.user }}">
+                            <img src="{{ entry.badge_image }}" class="places-badge-image" alt="Badge for {{ entry.user }}">
                             <p style='color:aqua'>{{ entry.badge_name }}</p>
                         {% else %}
                             <p style='color:aqua'>No badge</p>
@@ -191,14 +220,14 @@
 </div>
 
 {% if a and b %}
-    <div class="your-badge-container">
+    <div class="places-your-badge-container">
         <h2>Your Badge:</h2>
-        <img src="{{ b }}" class="badge-image" alt="Your Badge">
+        <img src="{{ b }}" class="places-badge-image" alt="Your Badge">
         <p style='color:aqua'>Badge: {{ a }}</p>
     </div>
 {% else %}
-    <div class="your-badge-container">
-        <p class="no-badge-message">No badge earned yet.</p>
+    <div class="places-your-badge-container">
+        <p class="places-no-badge-message">No badge earned yet.</p>
     </div>
 {% endif %}
 
