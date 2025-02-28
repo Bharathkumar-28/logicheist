@@ -1,6 +1,4 @@
-{% extends 'base.html' %}
 
-{% block content %}
     {% comment %} <div class="container-fluid">
         <div class="row d-flex justify-content-center mt-5">
             <div class="col-4">
@@ -44,208 +42,232 @@
             </div>
         </div>
     </div> {% endcomment %}
-    <style>
-        /* General body styling */
-      
+  {% comment %}   <div class="">
+        {% include 'includes/errors.html'  %}
 
-        /* Centering the login form */
-        .form-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-           
-        }
-
-        .form-wrapper {
-         
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 40px;
-            width: 100%;
-            max-width: 400px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        /* Hover effect for the entire form */
-        .form-wrapper:hover {
-            transform: scale(1.02); /* Slight zoom effect */
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 24px;
-            color: red;
-            transition: color 0.3s ease;
-        }
-
-        h2:hover {
-            color: #5a67d8; /* Hover effect on heading */
-        }
-
-        /* Form input fields */
-        input[type="text"], input[type="password"] {
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        /* Hover effect for form fields */
-        input[type="text"]:hover, input[type="password"]:hover {
-            border-color: #5a67d8;
-            box-shadow: 0 0 5px rgba(90, 103, 216, 0.5);
-            transform: scale(1.05); /* Slight scale effect on hover */
-        }
-
-        input[type="text"]:focus, input[type="password"]:focus {
-            border-color: #5a67d8;
-            outline: none;
-        }
-
-        /* Submit button styling */
-        button[type="submit"] {
-            background-color: #5a67d8;
-            color: white;
-            border: none;
-            padding: 15px;
-            width: 100%;
-            font-size: 18px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
-
-        /* Hover effect for submit button */
-        button[type="submit"]:hover {
-            background-color: #4c51bf;
-            transform: translateY(-2px); /* Button lift effect on hover */
-        }
-
-        /* Error message styling */
-       
-
-        /* Responsive styling */
-        @media (max-width: 768px) {
-            .form-wrapper {
-                padding: 30px;
-                width: 90%;
-            }
-        }
-    </style>
-    <div class="form-container">
-        <div class="form-wrapper">
-            <h2>Login</h2>
-            <div class="">
-                {% include 'includes/errors.html'  %}
-
-            </div>
-            <form id="loginForm" method="POST">
-                {% csrf_token %}
-                <!-- Username Field -->
-                <div class="form-group">
-                    <input type="text" id="username" name="username" placeholder="username" value="{{form.username.value|default:""}}" required>
-      
-                </div>
-
-                <!-- Password Field -->
-                <div class="form-group">
-                    <input type="password" id="password" name="password" placeholder="Password" required>
-             
-                </div>
-
-                <!-- Submit Button -->
-                <button type="submit">Login</button>
-                <a href="{% url 'forgotpassword' %}">Forgot Password </a>
-            </form>
-        </div>
     </div>
-    <div class="cursor-dotda" id="cursor-dot"></div>
-    <div class="cursor-outlineda" id="cursor-outline"></div>
-    <script>
-        // Get references to the custom cursor elements
-        const cursorDot = document.getElementById('cursor-dot');
-        const cursorOutline = document.getElementById('cursor-outline');
-        let isMoonCursorActive = true;
-    
-        // Function to update cursor position based on mouse movements
-        window.addEventListener('mousemove', function(e) {
-            const posX = e.clientX;
-            const posY = e.clientY;
-    
-            // Update position for the cursor dot
-            cursorDot.style.left = `${posX}px`;
-            cursorDot.style.top = `${posY}px`;
-    
-            // Update position for the cursor outline
-            cursorOutline.style.left = `${posX}px`;
-            cursorOutline.style.top = `${posY}px`;
-    
-            // Animate the cursor outline to smoothly follow the mouse
-            cursorOutline.animate(
-                [
-                    { left: `${posX}px`, top: `${posY}px` }
-                ],
-                {
-                  duration:500,  // Animation duration in milliseconds
-                    fill: "forwards" // Ensures the animation stays at the final state
-                }
-            );
-        });
-    </script>
-    <script>
-        // Function to toggle light/dark mode
-        function toggleMode() {
-            const body = document.body;
-            const modeToggle = document.querySelector('.mode-toggle');
-      
-            // Toggle dark mode class on body
-            body.classList.toggle('dark-mode');
-      
-            // Change the icon to reflect the current mode
-            if (body.classList.contains('dark-mode')) {
-                modeToggle.textContent = '🌙'; // Change to moon icon for dark mode
-            } else {
-                modeToggle.textContent = '🌞'; // Change to sun icon for light mode
-            }
-        }
-      
-        // Optional: Persist the user's mode preference in local storage
-        window.onload = function () {
-            if (localStorage.getItem('dark-mode') === 'true') {
-                document.body.classList.add('dark-mode');
-                document.querySelector('.mode-toggle').textContent = '🌙';
-            }
-        };
-      
-        // Save the user's mode preference
-        window.onbeforeunload = function () {
-            if (document.body.classList.contains('dark-mode')) {
-                localStorage.setItem('dark-mode', 'true');
-            } else {
-                localStorage.setItem('dark-mode', 'false');
-            }
-        };
-      </script>
-    
-    
+    <form id="loginForm" method="POST">
+        {% csrf_token %}
+        <!-- Username Field -->
+        <div class="form-group">
+            <input type="text" id="username" name="username" placeholder="username" value="{{form.username.value|default:""}}" required>
+
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group">
+            <input type="password" id="password" name="password" placeholder="Password" required>
+     
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit">Login</button>
+        <a href="{% url 'forgotpassword' %}">Forgot Password </a>
+    </form> {% endcomment %}
    
-    {% endblock%}
-
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>EmpowerLearn - Login</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Open+Dyslexic&display=swap" rel="stylesheet">
+        <style>
+            :root {
+                --primary: hsl(230, 85%, 60%);
+                --primary-dark: hsl(230, 85%, 50%);
+                --background: hsl(220, 20%, 97%);
+                --foreground: hsl(220, 20%, 10%);
+                --card: hsl(220, 20%, 100%);
+                --radius: 0.75rem;
+                --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+                --border: hsl(220, 20%, 90%);
+                --ring: hsla(230, 85%, 60%, 0.5);
+            }
     
-
-
-
-   
-
-
-
-  
-  
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
     
-  
+            body {
+                font-family: 'Lexend', sans-serif;
+                background-color: var(--background);
+                color: var(--foreground);
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+    
+            .navbar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4rem;
+                background: rgba(var(--card), 0.8);
+                backdrop-filter: blur(12px);
+                border-bottom: 1px solid var(--border);
+                z-index: 50;
+            }
+    
+            .navbar-content {
+                max-width: 1400px;
+                margin: 0 auto;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 1.5rem;
+            }
+    
+            .logo {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: var(--foreground);
+                text-decoration: none;
+            }
+    
+            .login-container {
+                max-width: 400px;
+                width: 100%;
+                background: var(--card);
+                padding: 2rem;
+                border-radius: var(--radius);
+                box-shadow: var(--shadow-lg);
+                border: 1px solid var(--border);
+                text-align: center;
+                margin: 2rem;
+            }
+    
+            .login-container h1 {
+                font-size: 2rem;
+                font-weight: 700;
+                margin-bottom: 1.5rem;
+                background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+            }
+    
+            .form-group {
+                margin-bottom: 1.5rem;
+                text-align: left;
+            }
+    
+            .form-group label {
+                display: block;
+                font-weight: 500;
+                margin-bottom: 0.5rem;
+            }
+    
+            .form-group input {
+                width: 100%;
+                padding: 0.75rem;
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                font-size: 1rem;
+                background: var(--background);
+                color: var(--foreground);
+            }
+    
+            .form-group input:focus {
+                outline: none;
+                border-color: var(--primary);
+                box-shadow: 0 0 0 3px var(--ring);
+            }
+    
+            .button {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+                padding: 0.75rem 1.5rem;
+                border-radius: var(--radius);
+                font-weight: 500;
+                cursor: pointer;
+                width: 100%;
+                background: var(--primary);
+                color: white;
+                border: none;
+            }
+    
+            .button:hover {
+                background: var(--primary-dark);
+                transform: translateY(-2px);
+            }
+    
+            .error-message {
+                color: hsl(0, 84%, 60%);
+                font-size: 0.9rem;
+                margin-top: 0.5rem;
+                display: none;
+            }
+    
+            .signup-link {
+                margin-top: 1rem;
+                font-size: 0.9rem;
+            }
+    
+            .signup-link a {
+                color: var(--primary);
+                text-decoration: none;
+            }
+    
+            .signup-link a:hover {
+                text-decoration: underline;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Loading Screen -->
+        <div class="loading" id="loading">
+            <div class="loader"></div>
+        </div>
+    
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="navbar-content">
+                <a href="index.html" class="logo">
+                    <div class="logo-icon">EL</div>
+                    <span>EmpowerLearn</span>
+                </a>
+            </div>
+        </nav>
+    
+        <!-- Login Form -->
+        <div class="login-container">
+            <div class="error-message">
+                {% include 'includes/errors.html' %}
+            </div>
+            <h1>Login</h1>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="username">Username or Email</label>
+                    <input type="text" id="username" name="username" placeholder="Username" value="{{form.username.value|default:''}}" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Password" required>
+                </div>
+                <div class="form-group">
+                    <a href="{% url 'forgotpassword' %}">Forgot Password?</a>
+                </div>
+                <button type="submit" class="button">Login</button>
+            </form>
+            <div class="signup-link">
+                Don't have an account? <a href="/register">Sign Up</a>
+            </div>
+        </div>
+    </body>
+    </html>
+    

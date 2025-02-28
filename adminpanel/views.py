@@ -62,7 +62,7 @@ def main(request):
 
        
   
-
+@login_required
 def index1(request):
     blogtitle="bjarath"
     posts=quiz.objects.all()
@@ -72,7 +72,7 @@ from django.shortcuts import render
 from django.shortcuts import render
 from .models import quiz
 import json
-
+@login_required
 def attempt(request,postid):
     quiz_instance = quiz.objects.get(id=postid)
     gameresult2.objects.all().delete() 
@@ -117,7 +117,7 @@ def register(request):
     
                
     return render (request,"register.html",{'form':form,'blogtitle':blogtitle})
-
+@login_required
 def about(request):
     print('abougannnnnnn')
     gameresult2.objects.all().delete() 
@@ -128,6 +128,7 @@ def dyslexia(request):
 @login_required
 def texttospeech(request):
     return render(request,'texttospeech.html')
+@login_required
 def example(request):
     return render(request,'example.html')
 def login(request):
@@ -213,7 +214,7 @@ def game(request):
 
 from spellchecker import SpellChecker
 from django.http import JsonResponse
-
+@login_required
 def spell(request):
     if request.method == 'POST':
         word = request.POST.get('word', '').strip()
@@ -232,7 +233,7 @@ def spell(request):
     return render(request,"spell.html")
 
 
-
+@login_required
 def index(request):
     return render(request,"index.html")
 @login_required
@@ -292,7 +293,7 @@ def profiles(request):
 from django.shortcuts import render, redirect
 
 from django.contrib.auth.models import User
-
+@login_required
 def addprofiles(request):
     if not request.user.is_authenticated:
         return redirect('login')  # Redirect to login if the user is not logged in
@@ -386,7 +387,7 @@ def result(request):
 
 from django.shortcuts import render
 from .models import gameresult2  # Ensure you're importing your model
-
+@login_required
 def finalresult(request):
     # Retrieve all game results, limit to the first 5 results
     oii = gameresult2.objects.all() # Limit to the first 5 results
@@ -470,7 +471,7 @@ from .models import gameresult2
 
 
 
-
+@login_required
 def graph2(request):
     if request.method == "POST":
         word = request.POST.get("word")
@@ -674,11 +675,11 @@ history = [
     {"role": "user", "parts": ["hi"]},
     {"role": "model", "parts": ["Hello! How can I assist you today? today you will some words and spell the words"]},
 ]
-
+@login_required
 def home(request):
     """Renders the homepage with the chatbot interface."""
     return render(request, 'chatbot.html')
-
+@login_required
 def chat(request):
     """Handles chat messages sent from the frontend."""
     if request.method == 'POST':
@@ -701,14 +702,16 @@ def chat(request):
         # Return the model's response as JSON
         return JsonResponse({"reply": model_response})
 
+ 
     return JsonResponse({"reply": "Invalid request."}, status=400)
+@login_required
 def speechquizes(request):
     posts=speechquiz2.objects.all()
     gameresult2.objects.all().delete()
     return render(request,'speechquizcard.html',{"posts":posts})
 from django.shortcuts import render
 import json
-
+@login_required
 def avinash(request, postid):
     oii = speechquiz2.objects.get(id=postid)  # Fetch the object using the post ID
     soii = oii.data  # Get the 'data' field (presumably a list of words)
@@ -726,7 +729,7 @@ def avinash(request, postid):
 
 
 
-   
+@login_required  
 def coursesda(request):
     posts=courses.objects.all()
     return render(request,"coursesda.html",{"posts":posts})
@@ -735,6 +738,7 @@ import json
 import json
 from django.shortcuts import render
 from .models import courses
+@login_required
 def attemptcourses(request,postid):
     quiz_instance = courses.objects.get(id=postid)
    
@@ -767,7 +771,7 @@ from django.contrib.auth.models import User
 
 # Set up logging
 logger = logging.getLogger(__name__)
-
+@login_required
 def leaderboarda(request):
     if request.method == "POST":
         word = request.POST.get("word")
@@ -950,7 +954,7 @@ def takenotes(request):
     return JsonResponse({'status': 'error', 'message': 'Invalid request.'}, status=400)
 from django.shortcuts import render
 from .models import notes
-
+@login_required
 def mynotes(request, postid):
     # Retrieve the Notes object for the user with the given postid
     posts = notes.objects.filter(user_id=postid)
@@ -962,11 +966,13 @@ def mynotes(request, postid):
 
     # Render the 'mymistakes.html' template, passing 'l' to display the words
     return render(request, 'mymistakes.html', {'l': l})
-
+@login_required
 def dyslexiatools(request):
     return render(request,'dyslexiafinal.html')
+@login_required
 def wordexplorer(request):
     return render(request,'wordexplorer.html')
+@login_required
 def teacher(request):
     return render(request,'teacher.html')
 from django.shortcuts import render, redirect
@@ -976,7 +982,7 @@ from .forms import courseform
 from django.shortcuts import render, redirect
 from .models import courses
 import json
-
+@login_required
 def addcourse(request):
     if request.method == 'POST':
         # Extract basic course data from the form
@@ -1015,7 +1021,9 @@ def addcourse(request):
         # Redirect to the course list or another page after saving
         return redirect('courses')  # Modify the redirect destination as needed
 
-    return render(request, 'addcourses.html')  # Render the course addition form page
+    return render(request, 'addcourses.html') 
+ # Render the course addition form page
+@login_required
 def dineshstorys(request):
     return render(request,'dineshstory.html')
 from django.shortcuts import render
@@ -1023,7 +1031,7 @@ from .simplifier import simplify_text  # Import text simplification function
 
 from django.shortcuts import render
 from .simplifier import simplify_text  
-
+@login_required
 def simplify_view(request):
     simplified_text = None
 
@@ -1035,7 +1043,7 @@ def simplify_view(request):
             print("Simplified:", simplified_text)  # Debugging
 
     return render(request, "textsimplifier.html", {"simplified_text": simplified_text})
-
+@login_required
 def images(request):
    return render(request,'image.html')
 from django.shortcuts import render, redirect
@@ -1043,7 +1051,7 @@ from .forms import courseform  # Assuming you have a CourseForm for the 'courses
 from .models import courses
 from django.contrib.auth.decorators import permission_required
 
-
+@login_required
 def addcourse(request):
     print("User groups: ", request.user.groups.all())
     print(request.user.get_all_permissions())

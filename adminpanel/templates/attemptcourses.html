@@ -3,7 +3,6 @@
 {% block content %}
 <style>
     /* Global Styles */
-    /* Game Container */
     .game-container {
         margin: 50px auto;
         max-width: 90%;
@@ -26,7 +25,6 @@
         color: #777;
     }
 
-    /* Word Container */
     .word-container {
         font-size: 2.5em;
         font-weight: bold;
@@ -34,7 +32,6 @@
         margin: 30px 0;
     }
 
-    /* Word Card */
     .word-card {
         margin-top: 20px;
         background-color: #f9f9f9;
@@ -54,7 +51,6 @@
         margin-top: 10px;
     }
 
-    /* Input and Button Styles */
     .input-container {
         margin: 20px 0;
     }
@@ -90,7 +86,6 @@
         transform: translateY(-3px);
     }
 
-    /* Feedback Text */
     .feedback {
         font-size: 1.5em;
         margin-top: 20px;
@@ -104,7 +99,6 @@
         color: #f44336;
     }
 
-    /* Result Link */
     .result {
         position: relative;
         margin-top: 30px;
@@ -123,17 +117,6 @@
         transform: translateY(-3px);
     }
 
-    /* Slider Styles */
-    .input-container label {
-        font-size: 1.1em;
-        margin-right: 10px;
-    }
-
-    .input-container input[type="range"] {
-        width: 150px;
-    }
-
-    /* Pagination Styles */
     .pagination {
         margin-top: 20px;
     }
@@ -154,7 +137,6 @@
         background-color: #ff9800;
     }
 
-    /* Animation */
     @keyframes fadeIn {
         0% { opacity: 0; }
         100% { opacity: 1; }
@@ -177,9 +159,9 @@
     <div class="feedback" id="feedbackText"></div>
 
     <div class="input-container">
-        <label for="pitch">Pitch:</label>
+        <label for="pitch" style='color:hsl(280, 85%, 60%)'>Pitch:</label>
         <input type="range" id="pitch" min="0" max="2" step="0.1" value="1">
-        <label for="speed">Speed:</label>
+        <label for="speed" style='color:hsl(280, 85%, 60%)'>Speed:</label>
         <input type="range" id="speed" min="0.5" max="2" step="0.1" value="1">
         <button onclick="adjustSpeechSettings()">Set Speech Settings</button>
     </div>
@@ -193,18 +175,14 @@
         <button id="nextPage" onclick="changePage(1)">Next</button>
     </div>
 
-    <div class="input-container">
-        <button onclick="revealNextCluster()">Reveal Next Cluster</button>
-    </div>
+   
 
-    <!-- Speech-to-Text Button -->
     <div class="input-container">
         <button onclick="startSpeechRecognition()">Speak the Word</button>
     </div>
 </div>
 
 <script>
-    // Global variables
     let currentWord = {}; 
     let pitch = 1;
     let speed = 1;
@@ -213,7 +191,6 @@
     const wordsPerPage = 5;
     let words = [];
 
-    // Prepare words list
     wordsData.forEach(post => {
         words.push({
             word: post.word,
@@ -221,26 +198,22 @@
         });
     });
 
-    // Get words for the current page
     function getWordsForPage(page) {
         const start = page * wordsPerPage;
         const end = start + wordsPerPage;
         return words.slice(start, end);
     }
 
-    // Get random word from current page
     function getRandomWord() {
         const wordSubset = getWordsForPage(currentPage);
         const randomIndex = Math.floor(Math.random() * wordSubset.length);
         return wordSubset[randomIndex];
     }
 
-    // Load a new word
     function loadNewWord() {
         const wordObj = getRandomWord();
         currentWord = wordObj;
 
-        // Display word card
         const wordCard = `
             <div class="card">
                 <h3>${wordObj.word}</h3>
@@ -250,10 +223,14 @@
         document.getElementById('wordCard').innerHTML = wordCard;
         document.getElementById('feedbackText').innerHTML = '';
         document.getElementById('userInput').value = '';
-        displayClusters([wordObj.word.split('').join('-')]); // Display the word with hyphen separators
+        displayClusters([wordObj.word.split('').join('-')]); // Display as clusters with dashes
     }
 
-    // Start speech for the word (letter by letter)
+    function displayClusters(clusters) {
+        const wordContainer = document.getElementById('scrambledWord');
+        wordContainer.innerHTML = clusters.join(' ');
+    }
+
     function startSpeech() {
         if (currentWord && currentWord.word) {
             const letters = currentWord.word.split('');
@@ -272,7 +249,6 @@
         }
     }
 
-    // Speak the word/letter using the Speech API
     function speakWord(word) {
         const wordUtterance = new SpeechSynthesisUtterance(word);
         wordUtterance.pitch = pitch;
@@ -280,7 +256,6 @@
         window.speechSynthesis.speak(wordUtterance);
     }
 
-    // Check user's answer
     function checkAnswer() {
         const userAnswer = document.getElementById('userInput').value.toLowerCase();
         const correctAnswer = currentWord.word.toLowerCase();
@@ -296,7 +271,6 @@
         }
     }
 
-    // Handle speech recognition
     function startSpeechRecognition() {
         if (!('webkitSpeechRecognition' in window)) {
             alert("Speech recognition is not supported in this browser.");
@@ -333,7 +307,6 @@
         recognition.start();
     }
 
-    // Handle page change (previous/next)
     function changePage(direction) {
         const totalPages = Math.ceil(words.length / wordsPerPage);
         currentPage += direction;
@@ -341,7 +314,6 @@
         loadNewWord();
     }
 
-    // Initial load
     loadNewWord();
 </script>
 {% endblock %}

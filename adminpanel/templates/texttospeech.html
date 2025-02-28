@@ -1,6 +1,3 @@
-{% extends 'base.html' %}
-
-{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,8 +43,22 @@
             font-family: 'Open Dyslexic', sans-serif !important;
         }
 
-       
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--background);
+            color: var(--foreground);
+            line-height: var(--line-height);
+            letter-spacing: var(--font-spacing);
+            word-spacing: var(--word-spacing);
+            transition: all 0.3s ease;
+            overflow-x: hidden;
+        }
 
         h1 {
             font-size: 2.5rem;
@@ -437,17 +448,20 @@
                 <div class="dropdown" id="toolsDropdown">
                     <a href="#" class="nav-item" id="toolsToggle" aria-expanded="false">Tools</a>
                     <div class="dropdown-content">
-                        <a href="#" class="dropdown-item" onclick="toggleTextToSpeech()"><span>🔊</span> Text to Speech</a>
-                        <a href="#" class="dropdown-item" onclick="toggleReadingRuler()"><span>📏</span> Reading Ruler</a>
-                        <a href="#" class="dropdown-item" onclick="toggleColorOverlay()"><span>🎨</span> Color Overlay</a>
-                        <a href="#text-customizer" class="dropdown-item"><span>🔤</span> Text Customizer</a>
+                        <a href="/texttospeech" class="dropdown-item" ><span>🔊</span> Text to Speech</a>
+                        <a href="/speechtotext" class="dropdown-item"><span>📏</span> speech to text</a>
+                        <a href="/image" class="dropdown-item" onclick="toggleColorOverlay()"><span>🎨</span> Image to text</a>
+                        <a href="/wordexplorer" class="dropdown-item"><span>🔤</span>wordexplorer</a>
+                        <a href="/spell" class="dropdown-item"><span>🔤</span> spell checker</a>
                     </div>
                 </div>
                 <div class="dropdown" id="settingsDropdown">
                     <a href="#" class="nav-item" id="settingsToggle" aria-expanded="false">Settings</a>
                     <div class="dropdown-content">
                         <a href="#" class="dropdown-item" onclick="toggleDarkMode()"><span id="theme-icon">🌓</span> Theme</a>
-                        <a href="#" class="dropdown-item" onclick="toggleDyslexiaFont()"><span>👁</span> Dyslexia Font</a>
+                        <a href="#" class="dropdown-item" onclick="toggleDyslexiaFont()"><span>👁️</span> Dyslexia Font</a>
+                        <a href="#accessibility" class="dropdown-item"><span>♿</span> Accessibility</a>
+                        <a href="/teachers" class="dropdown-item"><span>🔤</span>Teacher</a>
                     </div>
                 </div>
             </div>
@@ -815,4 +829,3 @@
     </script>
 </body>
 </html>
-{%endblock%}

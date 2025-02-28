@@ -9,35 +9,35 @@
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Open+Dyslexic&display=swap" rel="stylesheet">
     <style>
         :root {
-            --carrot: hsl(230, 85%, 60%);
-            --carrot-dark: hsl(230, 85%, 50%);
-            --carrot-light: hsl(230, 85%, 75%);
-            --broccoli: hsl(280, 85%, 60%);
-            --cabbage: hsl(220, 20%, 97%);
-            --spinach: hsl(220, 20%, 10%);
-            --cauliflower: hsl(220, 20%, 100%);
-            --cauliflower-foreground: hsl(220, 20%, 10%);
-            --celery: hsl(220, 20%, 90%);
-            --radish: hsla(230, 85%, 60%, 0.5);
-            --parsley: hsl(142, 76%, 36%);
-            --pumpkin: hsl(48, 96%, 53%);
-            --tomato: hsl(0, 84%, 60%);
-            --potato: 0.75rem;
-            --squash: 0 1px 2px rgba(0,0,0,0.1);
-            --zucchini: 0 4px 6px rgba(0,0,0,0.1);
-            --eggplant: 0 10px 15px rgba(0,0,0,0.1);
-            --lettuce: normal;
-            --kale: normal;
-            --arugula: 1.6;
+            --primary: hsl(230, 85%, 60%);
+            --primary-dark: hsl(230, 85%, 50%);
+            --primary-light: hsl(230, 85%, 75%);
+            --accent: hsl(280, 85%, 60%);
+            --background: hsl(220, 20%, 97%);
+            --foreground: hsl(220, 20%, 10%);
+            --card: hsl(220, 20%, 100%);
+            --card-foreground: hsl(220, 20%, 10%);
+            --border: hsl(220, 20%, 90%);
+            --ring: hsla(230, 85%, 60%, 0.5);
+            --success: hsl(142, 76%, 36%);
+            --warning: hsl(48, 96%, 53%);
+            --error: hsl(0, 84%, 60%);
+            --radius: 0.75rem;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.1);
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --font-spacing: normal;
+            --word-spacing: normal;
+            --line-height: 1.6;
         }
 
-        .night {
-            --cabbage: hsl(220, 20%, 10%);
-            --spinach: hsl(220, 20%, 97%);
-            --cauliflower: hsl(220, 20%, 15%);
-            --cauliflower-foreground: hsl(220, 20%, 97%);
-            --celery: hsl(220, 20%, 20%);
-            --radish: hsla(230, 85%, 60%, 0.3);
+        .dark {
+            --background: hsl(220, 20%, 10%);
+            --foreground: hsl(220, 20%, 97%);
+            --card: hsl(220, 20%, 15%);
+            --card-foreground: hsl(220, 20%, 97%);
+            --border: hsl(220, 20%, 20%);
+            --ring: hsla(230, 85%, 60%, 0.3);
         }
 
         .dyslexia-font {
@@ -52,11 +52,11 @@
 
         body {
             font-family: 'Lexend', sans-serif;
-            background-color: var(--cabbage);
-            color: var(--spinach);
-            line-height: var(--arugula);
-            letter-spacing: var(--lettuce);
-            word-spacing: var(--kale);
+            background-color: var(--background);
+            color: var(--foreground);
+            line-height: var(--line-height);
+            letter-spacing: var(--font-spacing);
+            word-spacing: var(--word-spacing);
             transition: all 0.3s ease;
             overflow-x: hidden;
         }
@@ -76,9 +76,9 @@
             left: 0;
             right: 0;
             height: 4rem;
-            background: rgba(var(--cauliflower), 0.8);
+            background: rgba(var(--card), 0.8);
             backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--celery);
+            border-bottom: 1px solid var(--border);
             z-index: 50;
         }
 
@@ -98,7 +98,7 @@
             gap: 0.75rem;
             font-size: 1.5rem;
             font-weight: 700;
-            color: var(--spinach);
+            color: var(--foreground);
             text-decoration: none;
             transition: transform 0.2s ease;
         }
@@ -110,7 +110,7 @@
         .logo-icon {
             width: 2.5rem;
             height: 2.5rem;
-            background: linear-gradient(135deg, var(--carrot), var(--broccoli));
+            background: linear-gradient(135deg, var(--primary), var(--accent));
             border-radius: 0.5rem;
             display: grid;
             place-items: center;
@@ -126,20 +126,20 @@
 
         .nav-item {
             padding: 0.5rem 1rem;
-            color: var(--spinach);
+            color: var(--foreground);
             text-decoration: none;
-            border-radius: var(--potato);
+            border-radius: var(--radius);
             transition: all 0.2s ease;
             font-weight: 500;
         }
 
         .nav-item:hover {
-            background: var(--carrot-light);
-            color: var(--carrot-dark);
+            background: var(--primary-light);
+            color: var(--primary-dark);
         }
 
         .nav-item.active {
-            background: var(--carrot);
+            background: var(--primary);
             color: white;
         }
 
@@ -152,10 +152,10 @@
             top: 100%;
             right: 0;
             min-width: 260px;
-            background: var(--cauliflower);
-            border: 1px solid var(--celery);
-            border-radius: var(--potato);
-            box-shadow: var(--eggplant);
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
             opacity: 0;
             transform: translateY(10px);
             pointer-events: none;
@@ -175,14 +175,14 @@
             align-items: center;
             gap: 0.75rem;
             padding: 0.75rem 1rem;
-            color: var(--spinach);
+            color: var(--foreground);
             text-decoration: none;
             transition: all 0.2s ease;
         }
 
         .dropdown-item:hover {
-            background: var(--carrot-light);
-            color: var(--carrot-dark);
+            background: var(--primary-light);
+            color: var(--primary-dark);
         }
 
         .hero {
@@ -192,8 +192,8 @@
             align-items: center;
             justify-content: center;
             background:
-                radial-gradient(circle at top left, var(--carrot-light), transparent 70%),
-                radial-gradient(circle at bottom right, var(--broccoli), transparent 70%);
+                radial-gradient(circle at top left, var(--primary-light), transparent 70%),
+                radial-gradient(circle at bottom right, var(--accent), transparent 70%);
             position: relative;
             overflow: hidden;
         }
@@ -220,7 +220,7 @@
             font-weight: 800;
             line-height: 1.1;
             margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, var(--carrot), var(--broccoli));
+            background: linear-gradient(135deg, var(--primary), var(--accent));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
@@ -240,7 +240,7 @@
             align-items: center;
             gap: 0.5rem;
             padding: 0.75rem 1.5rem;
-            border-radius: var(--potato);
+            border-radius: var(--radius);
             font-weight: 500;
             text-decoration: none;
             transition: all 0.2s ease;
@@ -250,27 +250,27 @@
         }
 
         .button-primary {
-            background: var(--carrot);
+            background: var(--primary);
             color: white;
         }
 
         .button-primary:hover {
-            background: var(--carrot-dark);
+            background: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: var(--zucchini);
+            box-shadow: var(--shadow);
         }
 
         .button-outline {
             background: transparent;
-            border: 2px solid var(--carrot);
-            color: var(--carrot);
+            border: 2px solid var(--primary);
+            color: var(--primary);
         }
 
         .button-outline:hover {
-            background: var(--carrot-light);
-            color: var(--carrot-dark);
+            background: var(--primary-light);
+            color: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: var(--zucchini);
+            box-shadow: var(--shadow);
         }
 
         .button-group {
@@ -289,14 +289,14 @@
             font-size: 2.5rem;
             text-align: center;
             margin-bottom: 3rem;
-            background: linear-gradient(135deg, var(--carrot), var(--broccoli));
+            background: linear-gradient(135deg, var(--primary), var(--accent));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
 
         .features {
-            background: var(--cauliflower);
+            background: var(--card);
         }
 
         .features-grid {
@@ -308,12 +308,12 @@
         }
 
         .feature-card {
-            background: var(--cabbage);
-            border-radius: var(--potato);
+            background: var(--background);
+            border-radius: var(--radius);
             padding: 2rem;
             text-align: center;
             transition: all 0.3s ease;
-            border: 1px solid var(--celery);
+            border: 1px solid var(--border);
             height: 100%;
             display: flex;
             flex-direction: column;
@@ -322,14 +322,14 @@
 
         .feature-card:hover {
             transform: translateY(-5px);
-            box-shadow: var(--eggplant);
+            box-shadow: var(--shadow-lg);
         }
 
         .feature-icon {
             width: 4rem;
             height: 4rem;
             margin: 0 auto 1.5rem;
-            background: linear-gradient(135deg, var(--carrot), var(--broccoli));
+            background: linear-gradient(135deg, var(--primary), var(--accent));
             border-radius: 1rem;
             display: grid;
             place-items: center;
@@ -346,10 +346,10 @@
         }
 
         .tool-card {
-            background: var(--cauliflower);
-            border-radius: var(--potato);
+            background: var(--card);
+            border-radius: var(--radius);
             padding: 2rem;
-            border: 1px solid var(--celery);
+            border: 1px solid var(--border);
             transition: all 0.3s ease;
             height: 100%;
             display: flex;
@@ -358,7 +358,7 @@
 
         .tool-card:hover {
             transform: translateY(-5px);
-            box-shadow: var(--eggplant);
+            box-shadow: var(--shadow-lg);
         }
 
         .tool-card h3 {
@@ -367,17 +367,17 @@
         }
 
         .game-section {
-            background: var(--cauliflower);
+            background: var(--card);
             text-align: center;
         }
 
         .game-container {
             max-width: 800px;
             margin: 0 auto;
-            background: var(--cabbage);
-            border-radius: var(--potato);
+            background: var(--background);
+            border-radius: var(--radius);
             padding: 2rem;
-            box-shadow: var(--zucchini);
+            box-shadow: var(--shadow);
         }
 
         .word-builder {
@@ -400,9 +400,9 @@
         }
 
         .hint-container {
-            background: var(--carrot-light);
+            background: var(--primary-light);
             padding: 1rem;
-            border-radius: var(--potato);
+            border-radius: var(--radius);
             margin-bottom: 1.5rem;
         }
 
@@ -411,9 +411,9 @@
             height: 3rem;
             display: grid;
             place-items: center;
-            background: var(--cauliflower);
-            border: 2px solid var(--carrot);
-            border-radius: var(--potato);
+            background: var(--card);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius);
             font-size: 1.25rem;
             font-weight: 600;
             cursor: pointer;
@@ -422,8 +422,8 @@
 
         .letter:hover {
             transform: translateY(-3px);
-            box-shadow: var(--zucchini);
-            background: var(--carrot-light);
+            box-shadow: var(--shadow);
+            background: var(--primary-light);
         }
 
         #gameResult {
@@ -447,12 +447,12 @@
             right: 2rem;
             width: 3.5rem;
             height: 3.5rem;
-            background: var(--carrot);
+            background: var(--primary);
             border-radius: 50%;
             display: grid;
             place-items: center;
             color: white;
-            box-shadow: var(--eggplant);
+            box-shadow: var(--shadow-lg);
             cursor: pointer;
             transition: all 0.3s ease;
             z-index: 100;
@@ -461,13 +461,13 @@
 
         .fab:hover {
             transform: scale(1.1);
-            background: var(--carrot-dark);
+            background: var(--primary-dark);
         }
 
         .loading {
             position: fixed;
             inset: 0;
-            background: var(--cabbage);
+            background: var(--background);
             display: grid;
             place-items: center;
             z-index: 1000;
@@ -476,8 +476,8 @@
         .loader {
             width: 40px;
             height: 40px;
-            border: 3px solid var(--celery);
-            border-top-color: var(--carrot);
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -510,8 +510,8 @@
         }
 
         .text-customizer {
-            background: var(--cauliflower);
-            border-radius: var(--potato);
+            background: var(--card);
+            border-radius: var(--radius);
             padding: 1.5rem;
             margin-top: 1.5rem;
         }
@@ -534,14 +534,14 @@
 
         input[type="range"] {
             width: 100%;
-            accent-color: var(--carrot);
+            accent-color: var(--primary);
         }
 
         .footer {
-            background: var(--cauliflower);
+            background: var(--card);
             padding: 4rem 1.5rem;
             text-align: center;
-            border-top: 1px solid var(--celery);
+            border-top: 1px solid var(--border);
         }
 
         .footer-content {
@@ -558,13 +558,13 @@
         }
 
         .footer-link {
-            color: var(--spinach);
+            color: var(--foreground);
             text-decoration: none;
             transition: color 0.2s ease;
         }
 
         .footer-link:hover {
-            color: var(--carrot);
+            color: var(--primary);
         }
 
         .mobile-toggle {
@@ -572,15 +572,15 @@
             font-size: 1.5rem;
             background: none;
             border: none;
-            color: var(--spinach);
+            color: var(--foreground);
             cursor: pointer;
         }
 
         .lesson-card {
-            background: var(--cauliflower);
-            border-radius: var(--potato);
+            background: var(--card);
+            border-radius: var(--radius);
             padding: 2rem;
-            border: 1px solid var(--celery);
+            border: 1px solid var(--border);
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
@@ -589,7 +589,7 @@
 
         .lesson-card:hover {
             transform: translateY(-5px);
-            box-shadow: var(--eggplant);
+            box-shadow: var(--shadow-lg);
         }
 
         .progress-grid {
@@ -601,25 +601,25 @@
         }
 
         .progress-card {
-            background: var(--cauliflower);
-            border-radius: var(--potato);
+            background: var(--card);
+            border-radius: var(--radius);
             padding: 1.5rem;
-            border: 1px solid var(--celery);
+            border: 1px solid var(--border);
             text-align: center;
         }
 
         .progress-bar {
             width: 100%;
             height: 1rem;
-            background: var(--celery);
-            border-radius: var(--potato);
+            background: var(--border);
+            border-radius: var(--radius);
             overflow: hidden;
             margin: 1rem 0;
         }
 
         .progress-fill {
             height: 100%;
-            background: var(--carrot);
+            background: var(--primary);
             transition: width 0.5s ease;
         }
 
@@ -630,10 +630,10 @@
                 top: 4rem;
                 left: 0;
                 right: 0;
-                background: var(--cauliflower);
+                background: var(--card);
                 flex-direction: column;
                 padding: 1rem;
-                border-bottom: 1px solid var(--celery);
+                border-bottom: 1px solid var(--border);
             }
 
             .nav-links.active {
@@ -710,40 +710,23 @@
                 <div class="dropdown" id="learnDropdown">
                     <a href="#" class="nav-item" id="learnToggle" aria-expanded="false">Learn</a>
                     <div class="dropdown-content">
-                        <a href="/courses" class="dropdown-item"><span>📚</span> Lessons</a>
-                        <a href="/speechquizcard" class="dropdown-item"><span>🎮</span> Games</a>
-                        <a href="/index1" class="dropdown-item"><span>✏️</span> Practice</a>
-                        <a href="/about" class="dropdown-item"><span>✏️</span> About</a>
+                        <a href="#lessons" class="dropdown-item"><span>📚</span> Lessons</a>
+                        <a href="#games" class="dropdown-item"><span>🎮</span> Games</a>
+                        <a href="#practice" class="dropdown-item"><span>✏️</span> Practice</a>
                     </div>
                 </div>
 
                 <div class="dropdown" id="toolsDropdown">
                     <a href="#" class="nav-item" id="toolsToggle" aria-expanded="false">Tools</a>
                     <div class="dropdown-content">
-                        <a href="/texttospeech" class="dropdown-item" ><span>🔊</span> Text to Speech</a>
-                        <a href="/speechtotext" class="dropdown-item"><span>📏</span> speech to text</a>
-                        <a href="/image" class="dropdown-item" onclick="toggleColorOverlay()"><span>🎨</span> Image to text</a>
-                        <a href="/wordexplorer" class="dropdown-item"><span>🔤</span>wordexplorer</a>
-                        <a href="/spell" class="dropdown-item"><span>🔤</span> spell checker</a>
-                    </div>
-                </div>
-                <div class="dropdown" id="toolsDropdown">
-                    <a href="#" class="nav-item" id="toolsToggle" aria-expanded="false">my information</a>
-                    <div class="dropdown-content">
-                        <a href="/profiles" class="dropdown-item" ><span>🔊</span> Profile</a>
-                        {% if user.is_authenticated %}
-                        <a   class="dropdown-item" href="{% url 'mymistakes' postid=request.user.id %}">🔊mymistakes</a>
-                            <a   class="dropdown-item" href="/logout">🔊Logout</a>
-                        {% else %}
-                            <a class="text-light text-decoration-none" href="/register">Register</a>
-                            <a class="text-light text-decoration-none" href="/login">Login</a>
-                        {% endif %}
-                        <a href="/contact" class="dropdown-item"><span>🔤</span>contact</a>
-                        <a href="/spell" class="dropdown-item"><span>🔤</span> spell checker</a>
+                        <a href="#" class="dropdown-item" onclick="toggleTextToSpeech()"><span>🔊</span> Text to Speech</a>
+                        <a href="#" class="dropdown-item" onclick="toggleReadingRuler()"><span>📏</span> Reading Ruler</a>
+                        <a href="#" class="dropdown-item" onclick="toggleColorOverlay()"><span>🎨</span> Color Overlay</a>
+                        <a href="#text-customizer" class="dropdown-item"><span>🔤</span> Text Customizer</a>
                     </div>
                 </div>
 
-                
+                <a href="#progress" class="nav-item">Progress</a>
 
                 <div class="dropdown" id="settingsDropdown">
                     <a href="#" class="nav-item" id="settingsToggle" aria-expanded="false">Settings</a>
@@ -751,7 +734,6 @@
                         <a href="#" class="dropdown-item" onclick="toggleDarkMode()"><span id="theme-icon">🌓</span> Theme</a>
                         <a href="#" class="dropdown-item" onclick="toggleDyslexiaFont()"><span>👁️</span> Dyslexia Font</a>
                         <a href="#accessibility" class="dropdown-item"><span>♿</span> Accessibility</a>
-                        <a href="/teachers" class="dropdown-item"><span>🔤</span>Teacher</a>
                     </div>
                 </div>
             </div>
@@ -776,38 +758,33 @@
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">🎯</div>
-                <a href='/courses' style="text-decoration: none; color: #4a90e2;">         <h3>Personalized Learning</h3></a>
-                <a href='/courses' style="text-decoration: none; color: #4a90e2;">        <p>Adaptive lessons that match your pace and learning style with AI-powered recommendations.</p></a>
+                <h3>Personalized Learning</h3>
+                <p>Adaptive lessons that match your pace and learning style with AI-powered recommendations.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🛠️</div>
-                <a href='/dyslexiatools' style="text-decoration: none; color: #4a90e2;">           <h3>Accessibility Tools</h3></a>
-                <a href='/dyslexiatools' style="text-decoration: none; color: #4a90e2;"><p>Custom text formatting, reading rulers, color overlays, and text-to-speech to support your needs.</p></a>
+                <h3>Accessibility Tools</h3>
+                <p>Custom text formatting, reading rulers, color overlays, and text-to-speech to support your needs.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🏆</div>
-                <a href='/game' style="text-decoration: none; color: #4a90e2;">    <h3>its demo game</h3></a>
-                <a href='/game' style="text-decoration: none; color: #4a90e2;">       <p>Monitor your achievements and learning journey with detailed visual reports.</p></a>
+                <h3>Progress Tracking</h3>
+                <p>Monitor your achievements and learning journey with detailed visual reports.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🎮</div>
-                <a href='/index1' style="text-decoration: none; color: #4a90e2;">              <h3>Interactive Games</h3></a>
-                <a href='/index1' style="text-decoration: none; color: #4a90e2;">     <p>Learn through engaging educational games designed to strengthen key skills.</p></a>
+                <h3>Interactive Games</h3>
+                <p>Learn through engaging educational games designed to strengthen key skills.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🧠</div>
-                <a href='/dineshstory' style="text-decoration: none; color: #4a90e2;">stories</a>
-                    <a href='/dineshstory' style="text-decoration: none; color: #4a90e2;">         <h3 >Cognitive Training</h3>
-                </a>
-                <a href='/dineshstory' style="text-decoration: none; color: #4a90e2;">
-                    <p style="color: #4a90e2;">Build working memory, processing speed, and attention through specialized exercises.</p>
-                </a>
-                
+                <h3>Cognitive Training</h3>
+                <p>Build working memory, processing speed, and attention through specialized exercises.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">📝</div>
-                <a href='/speechquizcard' style="text-decoration: none; color: #4a90e2;">        <h3>Writing Support</h3></a>
-                <a href='/speechquizcard' style="text-decoration: none; color: #4a90e2;">         <p>Tools to help with spelling, grammar, and organization of written work.</p></a>
+                <h3>Writing Support</h3>
+                <p>Tools to help with spelling, grammar, and organization of written work.</p>
             </div>
         </div>
     </section>
@@ -841,7 +818,7 @@
             <div class="tool-card">
                 <h3>Text to Speech</h3>
                 <p>Listen to any text read aloud to improve comprehension.</p>
-                <textarea id="speechText" placeholder="Enter text to read aloud..." rows="4" style="width: 100%; margin: 1rem 0; padding: 0.5rem; border-radius: var(--potato);"></textarea>
+                <textarea id="speechText" placeholder="Enter text to read aloud..." rows="4" style="width: 100%; margin: 1rem 0; padding: 0.5rem; border-radius: var(--radius);"></textarea>
                 <select id="voiceSelect" style="width: 100%; margin: 0.5rem 0; padding: 0.5rem;"></select>
                 <div style="display: flex; gap: 0.5rem;">
                     <button class="button button-primary" onclick="speak()">Play</button>
@@ -874,7 +851,7 @@
             <div class="tool-card">
                 <h3>Color Overlay</h3>
                 <p>Adjust screen color for better readability.</p>
-                <select id="overlayColor" onchange="updateOverlay()" style="width: 100%; margin: 1rem 0; padding: 0.5rem; border-radius: var(--potato);">
+                <select id="overlayColor" onchange="updateOverlay()" style="width: 100%; margin: 1rem 0; padding: 0.5rem; border-radius: var(--radius);">
                     <option value="none">None</option>
                     <option value="rgba(255, 255, 0, 0.2)">Yellow</option>
                     <option value="rgba(0, 255, 255, 0.2)">Blue</option>
@@ -930,13 +907,29 @@
     </section>
 
     <!-- Progress Section -->
-   
+    <section class="section" id="progress">
+        <h2 class="section-title">Your Progress</h2>
+        <div class="progress-grid">
+            <div class="progress-card">
+                <h3>Phonics</h3>
+                <div class="progress-bar"><div class="progress-fill" style="width: 75%;"></div></div>
+                <p>75% Complete</p>
+            </div>
+            <div class="progress-card">
+                <h3>Reading</h3>
+                <div class="progress-bar"><div class="progress-fill" style="width: 50%;"></div></div>
+                <p>50% Complete</p>
+            </div>
+            <div class="progress-card">
+                <h3>Spelling</h3>
+                <div class="progress-bar"><div class="progress-fill" style="width: 30%;"></div></div>
+                <p>30% Complete</p>
+            </div>
+        </div>
+    </section>
 
     <!-- Floating Action Button -->
-   
-    <div class="fab"  aria-label="Open accessibility tools"> <a href="/home" class="image-link">
-        <img src="https://c.tenor.com/CigpzapemsoAAAAC/hi-robot.gif" alt="Dyslexia tools" class="image-effect" style="width: 70px; height: 70px;  z-index: 1000;">
-    </a></div>
+    <div class="fab" onclick="toggleTools()" aria-label="Open accessibility tools">🛠️</div>
 
     <!-- Footer -->
     <footer class="footer">
@@ -961,8 +954,8 @@
 
         // Theme Management
         function toggleDarkMode() {
-            document.body.classList.toggle('night');
-            document.getElementById('theme-icon').textContent = document.body.classList.contains('night') ? '🌞' : '🌓';
+            document.body.classList.toggle('dark');
+            document.getElementById('theme-icon').textContent = document.body.classList.contains('dark') ? '🌞' : '🌓';
         }
 
         function toggleDyslexiaFont() {
@@ -1118,9 +1111,9 @@
         }
 
         function updateLettersDisplay() {
-            document.getElementById('selectedLetters').innerHTML = selectedLetters.map(letter =>
+            document.getElementById('selectedLetters').innerHTML = selectedLetters.map(letter => 
                 `<div class="letter" onclick="deselectLetter('${letter}')">${letter}</div>`).join('');
-            document.getElementById('availableLetters').innerHTML = availableLetters.map(letter =>
+            document.getElementById('availableLetters').innerHTML = availableLetters.map(letter => 
                 `<div class="letter" onclick="selectLetter('${letter}')">${letter}</div>`).join('');
         }
 
@@ -1147,7 +1140,7 @@
             const result = document.getElementById('gameResult');
             if (attempt === words[currentWordIndex].word) {
                 result.textContent = '🎉 Correct! Well done!';
-                result.style.color = 'var(--parsley)';
+                result.style.color = 'var(--success)';
                 setTimeout(() => {
                     currentWordIndex = (currentWordIndex + 1) % words.length;
                     initializeGame();
@@ -1155,7 +1148,7 @@
                 }, 2000);
             } else {
                 result.textContent = 'Try again!';
-                result.style.color = 'var(--tomato)';
+                result.style.color = 'var(--error)';
                 setTimeout(() => {
                     selectedLetters = [];
                     availableLetters = words[currentWordIndex].word.split('').sort(() => Math.random() - 0.5);
