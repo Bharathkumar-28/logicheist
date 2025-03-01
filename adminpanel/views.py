@@ -588,8 +588,8 @@ def addquiz(request):
             quiz_object.data = quiz_data  # Save the word-image pairs as JSON
             quiz_object.save()  # This will auto-fill the 'createdate' field
 
-            # Redirect after saving
-            return render(request, "index1.html")  # Redirect to the quiz list page
+            
+            return redirect("index1")
 
     else:
         form = quizform()
