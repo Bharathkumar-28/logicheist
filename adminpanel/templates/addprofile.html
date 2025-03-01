@@ -10,6 +10,7 @@
 </head>
 <body>
     <h1>Create Your Profile</h1>
+    {% include 'includes/errors.html' %}
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         

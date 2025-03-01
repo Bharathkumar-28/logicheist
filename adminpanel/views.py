@@ -293,25 +293,46 @@ def profiles(request):
 from django.shortcuts import render, redirect
 
 from django.contrib.auth.models import User
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+ # Make sure you're importing your form correctly
+
 @login_required
 def addprofiles(request):
     if not request.user.is_authenticated:
         return redirect('login')  # Redirect to login if the user is not logged in
+    
+    print('manishkumar')  # Just for debugging, you can remove it later
 
-    print('manishkumar')
+    # Initialize the form, this can be either a blank form or a form with existing data
     form = profileform()
 
+    # Handling POST request
     if request.method == "POST":
         print("Form submitted")
+
+        # Ensure you are passing both POST data and FILES (for file uploads)
         form = profileform(request.POST, request.FILES)
 
         if form.is_valid():
+            # Create a profile instance but don't commit to the DB yet
             post = form.save(commit=False)
             post.user = request.user  # Associate the form with the logged-in user
-            post.save()
-            return redirect('profiles')  # Redirect to the profile list or profile page
+
+            try:
+                post.save()  # Save the profile to the database
+                print("Profile saved successfully.")
+                return redirect('profiles')  # Redirect to the profile list or profile page
+            except Exception as e:
+                print(f"Error saving profile: {e}")
+                form.add_error(None, "There was an issue saving your profile.")  # Show a generic error message
+
+        else:
+            print("Form is invalid!")
+            print(form.errors)  # Print the form errors to help debug
 
     return render(request, 'addprofile.html', {'form': form})
+
 
 
 
