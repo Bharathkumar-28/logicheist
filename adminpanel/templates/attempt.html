@@ -10,6 +10,7 @@
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         animation: fadeIn 1s ease-in-out;
+        position: relative;
     }
 
     .word-container {
@@ -20,6 +21,7 @@
         display: flex;
         justify-content: center;
         gap: 8px;
+        cursor: pointer;
     }
 
     .letter {
@@ -31,8 +33,9 @@
         border-radius: 8px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         transform-style: preserve-3d;
-        animation: float 3s infinite ease-in-out, sparkle 1.5s infinite alternate;
+        animation: float 3s infinite ease-in-out;
         transition: transform 0.6s ease-in-out, background 0.3s ease;
+        cursor: pointer;
     }
 
     .letter:hover {
@@ -46,12 +49,79 @@
         100% { transform: translateY(0px); }
     }
 
-    /* Sparkle Effect */
-    @keyframes sparkle {
-        0%, 100% { text-shadow: 0 0 5px #ff0000, 0 0 10px #ff8000; }
-        25% { text-shadow: 0 0 5px #ff8000, 0 0 15px #ffff00; }
-        50% { text-shadow: 0 0 10px #00ff00, 0 0 20px #00ffff; }
-        75% { text-shadow: 0 0 15px #0000ff, 0 0 25px #ff00ff; }
+    .star-container {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        margin-top: 20px;
+    }
+
+    .star {
+        font-size: 2em;
+        color: #ddd;
+    }
+
+    .star.filled {
+        color: #ffd700;
+    }
+
+    .result {
+        display: block;
+        margin-top: 30px;
+        padding: 12px 24px;
+        font-size: 1.2em;
+        text-decoration: none;
+        color: white;
+        background-color: #3e64e7;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        text-align: center;
+    }
+
+    .result:hover {
+        background-color: #ff9800;
+        transform: translateY(-3px);
+    }
+
+    .chocolate {
+        position: absolute;
+        font-size: 2em;
+        animation: fall 3s ease-in-out infinite;
+    }
+
+    @keyframes fall {
+        0% { transform: translateY(0) rotate(0deg); }
+        100% { transform: translateY(300px) rotate(360deg); }
+    }
+
+    .chocolate-shower {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        pointer-events: none;
+    }
+
+    /* Enlarge the input field */
+    #userInput {
+        width: 100%;
+        padding: 15px;
+        font-size: 1.5em;
+        margin-top: 20px;
+        border: 2px solid #3e64e7;
+        border-radius: 8px;
+        text-align: center;
+    }
+
+    .congratulations {
+        font-size: 2em;
+        color: #3e64e7;
+        text-align: center;
+        margin-top: 20px;
+        display: none;
     }
 </style>
 
@@ -60,6 +130,7 @@
     <h1 class='new'>Word Scramble Game</h1>
     <p class='new'>Unscramble the letters to form a word.</p>
     <div class="word-container" id="scrambledWord"></div>
+    <div id="wordImageContainer" style="text-align: center; margin-top: 20px;"></div>
 
     <div class="star-container" id="starProgress">
         <span class="star empty">&#9733;</span>
@@ -76,13 +147,15 @@
     <form method="POST" action="/graph/">
         {% csrf_token %}
     </form>
-    <div class="feedback" id="feedbackText"></div>
+    <div class="chocolate-shower" id="chocolateShower"></div>
+    <div class="congratulations" id="congratulationsMessage">Congratulations! 🎉</div>
 </div>
 
 <script>
     const wordsData = JSON.parse('{{ list_data|safe|escapejs }}');
     const words = [];
-    let correctAnswers = 0;
+    let completedQuestions = 0;
+    const totalQuestions = 5; // Set the total number of questions
 
     wordsData.forEach(post => {
         words.push({
@@ -106,54 +179,76 @@
         return currentWord;
     }
 
+    function isSorted(word) {
+        // Check if the word is in alphabetical order
+        for (let i = 0; i < word.length - 1; i++) {
+            if (word[i] > word[i + 1]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     function shuffleWord(word) {
-        return word.split('').sort(() => 0.3 - Math.random()).join('');
+        // Shuffle the word if it is sorted
+        return word.split('').sort(() => 0.5 - Math.random()).join('');
     }
 
     function loadNewWord() {
         const wordObj = getRandomWord();
         if (wordObj === null) return;
 
-        const scrambled = shuffleWord(wordObj.word);
-        document.getElementById('scrambledWord').innerHTML = scrambled.split('').map(letter =>
-            `<span class="letter">${letter}</span>`).join('');
+        // Ensure the word is jumbled
+        let scrambled = shuffleWord(wordObj.word);
+        while (scrambled === wordObj.word || isSorted(scrambled)) {
+            scrambled = shuffleWord(wordObj.word);
+        }
 
-        document.getElementById('feedbackText').innerHTML = '';
+        document.getElementById('scrambledWord').innerHTML = scrambled.split('').map(letter =>
+            `<span class="letter" draggable="true">${letter}</span>`).join('');
+
         if (wordObj.image) {
-            document.getElementById('feedbackText').innerHTML = `<img src="${wordObj.image}" alt="${wordObj.word}" style="width: 200px; height: 200px;">`;
+            document.getElementById('wordImageContainer').innerHTML = `<img src="${wordObj.image}" alt="${wordObj.word}" style="width: 200px; height: 200px;">`;
         } else {
-            document.getElementById('feedbackText').textContent = "No image available.";
+            document.getElementById('wordImageContainer').innerHTML = "No image available.";
         }
         document.getElementById('userInput').value = '';
+
+        addDragAndDrop();
+        addClickListeners();
     }
 
     function checkAnswer() {
         const userInput = document.getElementById('userInput').value.toLowerCase();
         const isCorrect = userInput === currentWord.word.toLowerCase();
 
-        if (isCorrect) {
-            document.getElementById('feedbackText').textContent = 'Correct!';
-            document.getElementById('feedbackText').className = 'feedback correct';
-            correctAnswers++;
-            updateStarProgress();
-        } else {
-            document.getElementById('feedbackText').textContent = 'Oops! Try again!';
-            document.getElementById('feedbackText').className = 'feedback incorrect';
-            saveWrongWordToNotes(currentWord.word);
-        }
+        completedQuestions++;
+        updateStarProgress();
 
         sendGameResult(currentWord.word, currentWord.word, userInput, isCorrect);
         sendGameResult2(currentWord.word, currentWord.word, userInput, isCorrect);
 
-        setTimeout(function() {
-            loadNewWord();
-        }, 1000);
+        if (!isCorrect) {
+            saveWrongWordToNotes(currentWord.word);
+        }
+
+        if (completedQuestions >= totalQuestions) {
+            showChocolateShower();
+            document.getElementById('congratulationsMessage').style.display = 'block';
+            setTimeout(function() {
+                document.getElementById('viewResultBtn').style.display = 'block';
+            }, 3000);
+        } else {
+            setTimeout(function() {
+                loadNewWord();
+            }, 1000);
+        }
     }
 
     function updateStarProgress() {
         const stars = document.querySelectorAll('.star');
         stars.forEach((star, index) => {
-            if (index < correctAnswers) {
+            if (index < completedQuestions) {
                 star.classList.remove('empty');
                 star.classList.add('filled');
             } else {
@@ -161,26 +256,6 @@
                 star.classList.add('empty');
             }
         });
-    }
-
-    function saveWrongWordToNotes(wrongWord) {
-        fetch('/takenotes/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCSRFToken()
-            },
-            body: JSON.stringify({ 'wrong_word': wrongWord })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                console.log('Wrong word saved successfully.');
-            } else {
-                console.log('Error saving wrong word:', data.message);
-            }
-        })
-        .catch(error => console.error('Error:', error));
     }
 
     function sendGameResult(word, correctAnswer, userAnswer, isCorrect) {
@@ -207,14 +282,118 @@
         .catch(error => console.error('Error:', error));
     }
 
+    function saveWrongWordToNotes(wrongWord) {
+        const csrfToken = getCSRFToken();
+        if (!csrfToken) {
+            console.error('CSRF token not found.');
+            return;
+        }
+
+        fetch('/takenotes/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({ 'wrong_word': wrongWord })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                console.log('Wrong word saved successfully.');
+            } else {
+                console.log('Error saving wrong word:', data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
     function getCSRFToken() {
-        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const token = document.querySelector('[name=csrfmiddlewaretoken]');
+        return token ? token.value : null;
     }
 
     function endGame() {
         document.getElementById('userInput').disabled = true;
         document.querySelector('button').disabled = true;
         document.getElementById('viewResultBtn').style.display = 'block';
+    }
+
+    function addDragAndDrop() {
+        const letters = document.querySelectorAll('.letter');
+        letters.forEach(letter => {
+            letter.addEventListener('dragstart', dragStart);
+            letter.addEventListener('dragover', dragOver);
+            letter.addEventListener('drop', drop);
+        });
+    }
+
+    function dragStart(event) {
+        event.dataTransfer.setData('text/plain', event.target.innerText);
+        setTimeout(() => {
+            event.target.style.display = 'none';
+        }, 0);
+    }
+
+    function dragOver(event) {
+        event.preventDefault();
+    }
+
+    function drop(event) {
+        event.preventDefault();
+        const data = event.dataTransfer.getData('text/plain');
+        event.target.innerText = data;
+        event.target.style.display = 'inline-block';
+    }
+
+    function addClickListeners() {
+        const letters = document.querySelectorAll('.letter');
+        letters.forEach(letter => {
+            letter.addEventListener('click', () => {
+                const userInput = document.getElementById('userInput');
+                userInput.value += letter.innerText;
+                letter.style.display = 'none';
+            });
+        });
+    }
+
+    function clearAnswerBar() {
+        const userInput = document.getElementById('userInput');
+        userInput.value = '';
+        const letters = document.querySelectorAll('.letter');
+        letters.forEach(letter => {
+            letter.style.display = 'inline-block';
+        });
+    }
+
+    document.getElementById('userInput').addEventListener('input', () => {
+        const userInput = document.getElementById('userInput').value;
+        const letters = document.querySelectorAll('.letter');
+        letters.forEach(letter => {
+            if (userInput.includes(letter.innerText)) {
+                letter.style.display = 'none';
+            } else {
+                letter.style.display = 'inline-block';
+            }
+        });
+    });
+
+    function showChocolateShower() {
+        const chocolateShower = document.getElementById('chocolateShower');
+        const emojis = ['❤️', '💕', '😍', '🥰'];
+        for (let i = 0; i < 50; i++) {
+            const chocolate = document.createElement('div');
+            chocolate.classList.add('chocolate');
+            chocolate.style.left = `${Math.random() * 100}%`;
+            chocolate.style.animationDelay = `${Math.random() * 3}s`;
+            chocolate.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            chocolateShower.appendChild(chocolate);
+        }
     }
 
     loadNewWord();

@@ -141,6 +141,46 @@
         0% { opacity: 0; }
         100% { opacity: 1; }
     }
+
+    /* New CSS for 3D floating and color-changing animations */
+    .letter {
+        display: inline-block;
+        font-size: 2.5em;
+        font-weight: bold;
+        color: #3e64e7;
+        animation: float 3s infinite ease-in-out, colorChange 5s infinite ease-in-out;
+        transform-style: preserve-3d;
+    }
+
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0) rotateX(0) rotateY(0);
+        }
+        25% {
+            transform: translateY(-20px) rotateX(15deg) rotateY(15deg);
+        }
+        50% {
+            transform: translateY(0) rotateX(0) rotateY(0);
+        }
+        75% {
+            transform: translateY(20px) rotateX(-15deg) rotateY(-15deg);
+        }
+    }
+
+    @keyframes colorChange {
+        0%, 100% {
+            color: #3e64e7;
+        }
+        25% {
+            color: #ff9800;
+        }
+        50% {
+            color: #e91e63;
+        }
+        75% {
+            color: #9c27b0;
+        }
+    }
 </style>
 
 <div class="game-container">
@@ -175,15 +215,13 @@
         <button id="nextPage" onclick="changePage(1)">Next</button>
     </div>
 
-   
-
     <div class="input-container">
         <button onclick="startSpeechRecognition()">Speak the Word</button>
     </div>
 </div>
 
 <script>
-    let currentWord = {}; 
+    let currentWord = {};
     let pitch = 1;
     let speed = 1;
     let currentPage = 0;
@@ -228,7 +266,15 @@
 
     function displayClusters(clusters) {
         const wordContainer = document.getElementById('scrambledWord');
-        wordContainer.innerHTML = clusters.join(' ');
+        wordContainer.innerHTML = '';
+        clusters.forEach(cluster => {
+            cluster.split('').forEach(letter => {
+                const letterSpan = document.createElement('span');
+                letterSpan.classList.add('letter');
+                letterSpan.textContent = letter;
+                wordContainer.appendChild(letterSpan);
+            });
+        });
     }
 
     function startSpeech() {
@@ -294,7 +340,7 @@
         recognition.onresult = function(event) {
             const recognizedText = event.results[0][0].transcript.trim().toLowerCase();
             document.getElementById('feedbackText').textContent = `You said: ${recognizedText}`;
-            
+
             if (recognizedText === currentWord.word.toLowerCase()) {
                 document.getElementById('feedbackText').textContent += " - Correct!";
                 speakWord("Correct!");

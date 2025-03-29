@@ -159,53 +159,52 @@
                 return;
             }
 
-            const image = fileInput.files[0];  // Get the selected image file
+            const image = fileInput.files[0]; 
 
-            // Display a message while processing
+   
             resultElement.innerHTML = "Processing... Please wait.";
 
-            // Run Tesseract.js OCR on the image
+          
             Tesseract.recognize(
-                image,           // The image file selected by the user
-                'eng',           // Language - 'eng' is English (you can change this)
+                image,         
+                'eng',         
                 {
-                    logger: (m) => console.log(m)  // Log the progress to the console
+                    logger: (m) => console.log(m)  
                 }
             ).then(({ data: { text } }) => {
-                // Once OCR is complete, display the extracted text
+             
                 resultElement.innerHTML = text ? text : "No text found in the image.";
 
-                // Store the extracted text globally for later use in speech
+                
                 window.extractedText = text ? text : "No text found.";
             }).catch((error) => {
-                // If there is any error, display it
+              
                 resultElement.innerHTML = "Error occurred: " + error.message;
             });
         }
 
-        // Function to start reading the text out loud
+     
         function readText() {
-            // Ensure that text is available for reading
+      
             if (!window.extractedText || window.extractedText === "No text found.") {
                 alert("No text to read. Please upload an image first.");
                 return;
             }
 
-            // Create a new SpeechSynthesisUtterance object
+        
             const utterance = new SpeechSynthesisUtterance(window.extractedText);
-            utterance.lang = 'en-US'; // Set language for speech (English)
+            utterance.lang = 'en-US'; 
 
-            // Assign the utterance to the global variable for potential stopping later
+      
             currentUtterance = utterance;
 
-            // Start reading the text
             speechSynthesis.speak(utterance);
         }
 
-        // Function to stop the speech if it's playing
+    
         function stopSpeech() {
             if (speechSynthesis.speaking) {
-                speechSynthesis.cancel();  // Stop the speech
+                speechSynthesis.cancel();  
                 alert("Speech stopped.");
             }
         }
