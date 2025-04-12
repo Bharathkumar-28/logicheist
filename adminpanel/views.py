@@ -20,10 +20,13 @@ from adminpanel.models import post,profile, words
 import pdb
 import logging
 from django.http import JsonResponse
-from .models import UploadedImage, badges, courses, gameresult, quiz,leaderboard, speechquiz2
+from .models import StudentPerformance, UploadedImage, badges, courses, gameresult, quiz,leaderboard, speechquiz2
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
+from django.db.models import Count,Avg
+
+
 @login_required
 def main(request):
     gameresult2.objects.all().delete() 
@@ -1117,5 +1120,119 @@ def addcourse(request):
         form = courseform()
 
     return render(request, 'addcourses.html', {'form': form})
+from django.db.models import Count, Avg, Q, F
 
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.db.models import Count, Avg, Q, F
+from .models import StudentPerformance
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.db.models import Count, Q
+from .models import User, profile, leaderboard  # adapt this if model names differ
+import operator
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.db.models import Q
+from .models import User, profile, leaderboard
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import Group
+
+@login_required
+def student_progress(request):
+    # Check if the user is in the allowed group
+    if not request.user.groups.filter(name='lowgroupwithoutaddquiz').exists():
+        return redirect('home')  # Replace 'home' with your home URL name
+
+    users = User.objects.all()
+    profiles = profile.objects.all()
+    leaderboard_entries = leaderboard.objects.all()
+
+    leaderboard_data = []
+
+    for user in users:
+        user_profile = profiles.filter(user=user).first()
+        user_name = user_profile.Name if user_profile else user.username
+        user_image = user_profile.image.url if user_profile and user_profile.image else None
+
+        entry = leaderboard_entries.filter(user=user).first()
+        if not entry:
+            continue  # Skip users with no attempts
+
+        attempted_data = [result for result in entry.data if result.get('is_attempted', True)]
+        total_correct = sum(result['is_correct'] for result in attempted_data)
+        total_attempted = len(attempted_data)
+        total_incorrect = total_attempted - total_correct
+
+        efficiency = (total_correct / total_attempted * 100) if total_attempted > 0 else 0
+
+        if efficiency >= 90:
+            label = "Excellent"
+        elif efficiency >= 75:
+            label = "Very Good"
+        elif efficiency >= 50:
+            label = "Average"
+        else:
+            label = "Needs Improvement"
+
+        leaderboard_data.append({
+            'user': user_name,
+            'image': user_image,
+            'correct': total_correct,
+            'incorrect': total_incorrect,
+            'efficiency': round(efficiency, 2),
+            'label': label
+        })
+
+    leaderboard_data.sort(key=lambda x: x['correct'], reverse=True)
+
+    current_user_name = profile.objects.get(user=request.user).Name
+    current_user_data = next((d for d in leaderboard_data if d['user'] == current_user_name), None)
+    current_user_rank = leaderboard_data.index(current_user_data) + 1 if current_user_data else None
+
+    chart_labels = [d['user'] for d in leaderboard_data]
+    correct_data = [d['correct'] for d in leaderboard_data]
+    incorrect_data = [d['incorrect'] for d in leaderboard_data]
+
+    return render(request, 'studentprogress.html', {
+        'leaderboard_data': leaderboard_data,
+        'current_user_data': current_user_data,
+        'current_user_rank': current_user_rank,
+        'chart_labels': chart_labels,
+        'correct_data': correct_data,
+        'incorrect_data': incorrect_data,
+    })
+
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from .models import profile, leaderboard
+
+@login_required
+def user_progress(request):
+    user = request.user
+    user_profile = profile.objects.filter(user=user).first()
+    leaderboard_entry = leaderboard.objects.filter(user=user).first()
+
+    if leaderboard_entry:
+        attempted_data = [res for res in leaderboard_entry.data if res.get('is_attempted', True)]
+        correct = sum(res['is_correct'] for res in attempted_data)
+        attempted = len(attempted_data)
+        incorrect = attempted - correct
+        efficiency = (correct / attempted * 100) if attempted > 0 else 0
+    else:
+        correct = attempted = incorrect = efficiency = 0
+
+    return render(request, 'userprogress.html', {
+        'user_name': user_profile.Name if user_profile else user.username,
+        'user_image': user_profile.image.url if user_profile and user_profile.image else None,
+        'correct': correct,
+        'incorrect': incorrect,
+        'efficiency': round(efficiency, 2),
+    })
 

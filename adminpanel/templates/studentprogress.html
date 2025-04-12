@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Progress Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h2>{{ current_user_data.user }}'s Progress</h2>
+    <p>Rank: {{ current_user_rank }}</p>
+    <p>Correct: {{ current_user_data.correct }}</p>
+    <p>Incorrect: {{ current_user_data.incorrect }}</p>
+    <p>Efficiency: {{ current_user_data.efficiency }}%</p>
+    <p>Performance: <strong>{{ current_user_data.label }}</strong></p>
+
+    <label for="threshold">Show students with total points above: </label>
+    <select id="threshold" onchange="filterChart()">
+        <option value="0">All</option>
+        <option value="20">20</option>
+        <option value="30">30</option>
+        <option value="40">40</option>
+        <option value="50">50</option>
+    </select>
+
+    <canvas id="comparisonChart" width="800" height="400"></canvas>
+
+    <script>
+        const rawLabels = {{ chart_labels|safe }};
+        const rawCorrect = {{ correct_data|safe }};
+        const rawIncorrect = {{ incorrect_data|safe }};
+
+        let chartInstance;
+
+        function createChart(filteredLabels, filteredCorrect, filteredIncorrect) {
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+
+            if (chartInstance) {
+                chartInstance.destroy(); // Destroy previous chart before re-render
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: filteredLabels,
+                    datasets: [
+                        {
+                            label: 'Correct Answers',
+                            data: filteredCorrect,
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Incorrect Answers',
+                            data: filteredIncorrect,
+                            backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: true }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Number of Answers' }
+                        },
+                        x: {
+                            title: { display: true, text: 'Users' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function filterChart() {
+            const threshold = parseInt(document.getElementById('threshold').value);
+            const filteredLabels = [];
+            const filteredCorrect = [];
+            const filteredIncorrect = [];
+
+            for (let i = 0; i < rawLabels.length; i++) {
+                const totalPoints = rawCorrect[i] + rawIncorrect[i];
+                if (totalPoints > threshold) {
+                    filteredLabels.push(rawLabels[i]);
+                    filteredCorrect.push(rawCorrect[i]);
+                    filteredIncorrect.push(rawIncorrect[i]);
+                }
+            }
+
+            createChart(filteredLabels, filteredCorrect, filteredIncorrect);
+        }
+
+        // Initial chart render
+        window.onload = () => {
+            filterChart();
+        };
+    </script>
+</body>
+</html>

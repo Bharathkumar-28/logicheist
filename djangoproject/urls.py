@@ -44,7 +44,8 @@ urlpatterns = [
            path('dyslexiatools/',views.dyslexiatools,name='dyslexiatools'),
            path('wordexplorer/',views.wordexplorer,name='wordexplorer'),
        
-             
+              path("progress/", views.student_progress, name="studentprogress"),
+               path("userprogress/", views.user_progress, name="userprogress"),
 
           path('contact/',views.contact,name='contact'),
           path('graph/',views.graph,name='graph'),

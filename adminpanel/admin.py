@@ -11,3 +11,8 @@ admin.site.register(speechquiz2)
 admin.site.register(badges)
 admin.site.register(UserActivity)
 admin.site.register(notes)
+from .models import Topic, Question, StudentPerformance
+
+admin.site.register(Topic)
+admin.site.register(Question)
+admin.site.register(StudentPerformance)

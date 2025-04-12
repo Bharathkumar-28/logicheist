@@ -151,6 +151,29 @@ class UploadedImage(models.Model):
     def __str__(self):
         return f"Image {self.id} - Extracted Text"  # For easy identification in the admin interface
 
+from django.db import models
+from django.contrib.auth.models import User
+
+class Topic(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+class Question(models.Model):
+    text = models.TextField()
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
+    difficulty = models.IntegerField()
+
+    def __str__(self):
+        return self.text
+
+class StudentPerformance(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    answered_correctly = models.BooleanField()
+    time_taken = models.FloatField(help_text="Time in seconds")
+    timestamp = models.DateTimeField(auto_now_add=True)
 
         
 

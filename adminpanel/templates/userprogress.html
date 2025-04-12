@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Progress</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f4f8;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            max-width: 500px;
+            text-align: center;
+        }
+        .profile-pic {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .stat {
+            margin: 0.5rem 0;
+            font-size: 1rem;
+        }
+        canvas {
+            margin-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        {% if user_image %}
+        <img src="{{ user_image }}" alt="Profile Image" class="profile-pic">
+        {% endif %}
+        <h2>{{ user_name }}</h2>
+
+        <p class="stat"><strong>Correct:</strong> {{ correct }}</p>
+        <p class="stat"><strong>Incorrect:</strong> {{ incorrect }}</p>
+        <p class="stat"><strong>Efficiency:</strong> {{ efficiency }}%</p>
+
+        <canvas id="progressPieChart" width="300" height="300"></canvas>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('progressPieChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Correct', 'Incorrect'],
+                datasets: [{
+                    label: 'Your Answers',
+                    data: [{{ correct }}, {{ incorrect }}],
+                    backgroundColor: ['#10b981', '#ef4444'], // green, red
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 20,
+                            padding: 15
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                return `${label}: ${value} (${Math.round((value / ({{ correct }} + {{ incorrect }}) * 100))}%)`;
+                            }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Your Quiz Answer Breakdown',
+                        font: {
+                            size: 16
+                        },
+                        padding: {
+                            bottom: 10
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
