@@ -25,6 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.main,name=''),
     path('index1/',views.index1,name='index1'),
+     path('index2/',views.index2,name='index2'),
            path('register/',views.register,name='register'),
            path('login/',views.login,name='login'),
            path('forgotpassword/',views.forgotpassword,name='forgotpassword'),
@@ -39,6 +40,8 @@ urlpatterns = [
            path('createprofile/<int:postid>/',views.createprofile,name='createprofile'),
            path('addprofiles/',views.addprofiles,name="addprofiles"),
             path('addquiz/',views.addquiz,name="addquiz"),
+            path('addquiz2/',views.addquiz2,name="addquiz2"),
+              path('deletequiz/',views.deletequiz,name="deletequiz"),
            path('addspeechquiz',views.addspeechquiz,name='addspeechquiz'),
               path('addcourse/', views.addcourse, name='addcourse'),
            path('dyslexiatools/',views.dyslexiatools,name='dyslexiatools'),
@@ -59,6 +62,7 @@ urlpatterns = [
 
            path('texttospeechtamil',views.texttospeechtamil,name='texttospeechtamil'),
            path('attempt/<int:postid>',views.attempt,name='attempt'),
+             path('attempt2/<int:postid>',views.attempt2,name='attempt2'),
            path('graph2/', views.graph2, name='graph2'),
           
            path('home/',views.home,name='home'),
@@ -74,6 +78,8 @@ urlpatterns = [
            path('teachers/',views.teacher,name='teachers'),
            path('dineshstory/',views.dineshstorys,name='dineshstory'),
              path('image/',views.images,name='image'),
+              path('notify-inactive-users/', views.notify_inactive_users, name='notify_inactive_users'),
+
        
 
 

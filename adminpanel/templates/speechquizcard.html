@@ -1,50 +1,419 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container-fluid ">
-    <div class="row my-2">
-        <div class="col">
-           <!--  <h2 >{{blogtitle | upper}}</h2> -->
-          <!--  <h2 >{{blogtitle | length}}</h2> -->
-          <!-- <h2 >{{blogtitle | truncatewords:1}}</h2> -->
-         
-         
-          <!-- This will print the posts directly in the template -->
-          
+<style>
+    :root {
+        --primary: hsl(210, 85%, 50%);
+        --primary-dark: hsl(210, 85%, 40%);
+        --primary-light: hsl(210, 85%, 85%);
+        --accent: hsl(260, 75%, 55%);
+        --background: hsl(220, 20%, 98%);
+        --foreground: hsl(220, 20%, 15%);
+        --card: hsl(220, 20%, 100%);
+        --card-foreground: hsl(220, 20%, 15%);
+        --border: hsl(220, 20%, 90%);
+        --ring: hsla(210, 85%, 50%, 0.4);
+        --success: hsl(142, 76%, 36%);
+        --error: hsl(0, 84%, 60%);
+        --radius: 0.5rem;
+        --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+        --shadow: 0 2px 4px rgba(0,0,0,0.08);
+        --shadow-lg: 0 8px 16px rgba(0,0,0,0.06);
+        --font-spacing: normal;
+        --word-spacing: normal;
+        --line-height: 1.6;
+    }
 
-        </div>
-       
+    .dark {
+        --background: hsl(220, 20%, 12%);
+        --foreground: hsl(220, 20%, 97%);
+        --card: hsl(220, 20%, 16%);
+        --card-foreground: hsl(220, 20%, 97%);
+        --border: hsl(220, 20%, 20%);
+        --ring: hsla(210, 85%, 50%, 0.3);
+    }
+
+    .dyslexia-font {
+        font-family: 'Open Dyslexic', sans-serif !important;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        background-color: var(--background);
+        color: var(--foreground);
+        line-height: var(--line-height);
+        letter-spacing: var(--font-spacing);
+        word-spacing: var(--word-spacing);
+        transition: all 0.2s ease;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-weight: 600;
+        line-height: 1.3;
+    }
+
+    .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4rem;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border);
+        z-index: 50;
+    }
+
+    .dark .navbar {
+        background: rgba(20, 22, 28, 0.95);
+    }
+
+    .navbar-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1.5rem;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--foreground);
+        text-decoration: none;
+        transition: opacity 0.2s ease;
+    }
+
+    .logo:hover {
+        opacity: 0.85;
+    }
+
+    .logo-icon {
+        width: 2rem;
+        height: 2rem;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        border-radius: 0.4rem;
+        display: grid;
+        place-items: center;
+        color: white;
+        font-size: 1rem;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .nav-item {
+        padding: 0.5rem 0.75rem;
+        color: var(--foreground);
+        text-decoration: none;
+        border-radius: var(--radius);
+        transition: all 0.2s ease;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+
+    .nav-item:hover {
+        background: var(--primary-light);
+        color: var(--primary-dark);
+    }
+
+    .dropdown {
+        position: relative;
+    }
+
+    .dropdown-content {
+        position: absolute;
+        top: calc(100% + 0.5rem);
+        right: 0;
+        min-width: 240px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-lg);
+        opacity: 0;
+        transform: translateY(8px);
+        pointer-events: none;
+        transition: all 0.2s ease;
+        z-index: 100;
+        overflow: hidden;
+    }
+
+    .dropdown:hover .dropdown-content,
+    .dropdown:focus-within .dropdown-content {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        color: var(--foreground);
+        text-decoration: none;
+        transition: all 0.2s ease;
+        font-size: 0.95rem;
+    }
+
+    .dropdown-item:hover {
+        background: var(--primary-light);
+        color: var(--primary-dark);
+    }
+
+    .page-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 6rem 1.5rem 4rem;
+    }
+
+    .page-header {
+        margin-bottom: 2.5rem;
+        text-align: center;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        color: var(--foreground);
+    }
+
+    .page-description {
+        font-size: 1.1rem;
+        color: hsl(220, 15%, 45%);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .courses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .course-card {
+        background: var(--card);
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid var(--border);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .course-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .course-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .course-content {
+        padding: 1.25rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .course-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--foreground);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .course-description {
+        color: hsl(220, 15%, 45%);
+        margin-bottom: 1.25rem;
+        font-size: 0.95rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+    }
+
+    .course-button {
+        margin-top: auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.6rem 1.25rem;
+        background: var(--primary);
+        color: white;
+        border-radius: var(--radius);
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        border: none;
+        cursor: pointer;
+        font-size: 0.95rem;
+        align-self: flex-start;
+    }
+
+    .course-button:hover {
+        background: var(--primary-dark);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--card);
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+    }
+
+    .empty-state-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: hsl(220, 15%, 65%);
+    }
+
+    .empty-state-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--foreground);
+    }
+
+    .empty-state-description {
+        color: hsl(220, 15%, 45%);
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .mobile-toggle {
+        display: none;
+        font-size: 1.5rem;
+        background: none;
+        border: none;
+        color: var(--foreground);
+        cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+        .nav-links {
+            display: none;
+            position: absolute;
+            top: 4rem;
+            left: 0;
+            right: 0;
+            background: var(--card);
+            flex-direction: column;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-links.active {
+            display: flex;
+        }
+
+        .dropdown-content {
+            position: static;
+            width: 100%;
+            opacity: 1;
+            pointer-events: auto;
+            transform: none;
+            box-shadow: none;
+            border: none;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .dropdown.active .dropdown-content {
+            max-height: 500px;
+        }
+
+        .mobile-toggle {
+            display: block;
+        }
+
+        .courses-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .page-container {
+            padding: 5rem 1rem 3rem;
+        }
+    }
+</style>
+
+<div class="page-container">
+    <div class="page-header">
+        <h1 class="page-title">Available Courses</h1>
+        <p class="page-description">Explore our selection of speech recognition and language courses designed to enhance your communication skills.</p>
     </div>
-    <div class="row m-3">
-        {% if posts %}
-            {% for post in posts %}
-                <div class="col-4 mb-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <!-- Check if the post has an image, if not, show a placeholder image -->
-                                    <img style="height :300,width:300" src="{{post.formattedimgurl}}" class="img-fluid" alt="...">
-                                </div>
-                                <div class="col-md-8">
-                                    <!-- Truncate title after 5 words and content after 100 characters -->
-                                    <h5 class="card-title">{{ post.name|truncatewords:5 }}</h5>
-                                    <p class="card-text">{{ post.title }}</p>
-                                    <p>speech quizzesas</p>
-                      {% comment %}       <p>oiii{{postid}}</p> {% endcomment %}
-                       <a type="button" class="btn btn-info" href="{% url 'avinash' postid=post.id %}">Go to couses:</a>  
 
-                                </div>
-                            </div>
-                        </div>
+    {% if posts %}
+        <div class="courses-grid">
+            {% for post in posts %}
+                <div class="course-card">
+                    <img class="course-image" src="{{ post.formattedimgurl }}" alt="{{ post.name }}">
+                    <div class="course-content">
+                        <h2 class="course-title">{{ post.name|truncatewords:5 }}</h2>
+                        <p class="course-description">{{ post.title }}</p>
+                        <a href="{% url 'avinash' postid=post.id %}" class="course-button">
+                            View Course
+                        </a>
                     </div>
                 </div>
             {% endfor %}
-        {% else %}
-        <p>no anything.</p>
-        {% endif %}
-    </div>
-    
-    
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📚</div>
+            <h2 class="empty-state-title">No Courses Available</h2>
+            <p class="empty-state-description">Check back later for new courses and learning materials.</p>
+        </div>
+    {% endif %}
 </div>
-{%endblock%}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileToggle = document.querySelector('.mobile-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', function() {
+                navLinks.classList.toggle('active');
+            });
+        }
+        
+        const dropdowns = document.querySelectorAll('.dropdown');
+        dropdowns.forEach(dropdown => {
+            dropdown.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    this.classList.toggle('active');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

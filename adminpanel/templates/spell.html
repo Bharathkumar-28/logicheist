@@ -1,198 +1,773 @@
-{% extends 'base.html' %}
 
-{% block content %}
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spell Checker with Suggestions</title>
-  <style>
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-      background-color:hsl(280, 85%, 60%);
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmpowerLearn - Spell Checker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Open+Dyslexic&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: hsl(230, 85%, 60%);
+            --primary-dark: hsl(230, 85%, 50%);
+            --primary-light: hsl(230, 85%, 75%);
+            --accent: hsl(280, 85%, 60%);
+            --background: hsl(220, 20%, 97%);
+            --foreground: hsl(220, 20%, 10%);
+            --card: hsl(220, 20%, 100%);
+            --card-foreground: hsl(220, 20%, 10%);
+            --border: hsl(220, 20%, 90%);
+            --radius: 0.75rem;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --line-height: 1.6;
+        }
 
-    h1 {
-      text-align: center;
-      color: aqua;
-    }
+        .dark {
+            --background: hsl(220, 20%, 10%);
+            --foreground: hsl(220, 20%, 97%);
+            --card: hsl(220, 20%, 15%);
+            --card-foreground: hsl(220, 20%, 97%);
+            --border: hsl(220, 20%, 20%);
+        }
 
-    textarea {
-      width: 100%;
-      height: 150px;
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      outline: none;
-      margin-bottom: 15px;
-    }
+        .dyslexia-font {
+            font-family: 'Open Dyslexic', sans-serif !important;
+        }
 
-    .button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      cursor: pointer;
-      border-radius: 5px;
-      margin-right: 10px;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    .button:hover {
-      background-color: #0056b3;
-    }
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--background);
+            color: var(--foreground);
+            line-height: var(--line-height);
+            transition: all 0.3s ease;
+            overflow-x: hidden;
+        }
 
-    .result {
-      margin-top: 20px;
-      font-size: 16px;
-    }
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
 
-    .incorrect {
-      color: red;
-    }
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 50;
+        }
 
-    .suggestion {
-      color: aqua;
-    }
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+        }
 
-    .control-container {
-      margin-top: 20px;
-      text-align: center;
-    }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--foreground);
+            text-decoration: none;
+            transition: transform 0.2s ease;
+        }
 
-    .control-container input {
-      margin-top: 10px;
-    }
-  </style>
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 0.5rem;
+            display: grid;
+            place-items: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .nav-item {
+            padding: 0.5rem 1rem;
+            color: var(--foreground);
+            text-decoration: none;
+            border-radius: var(--radius);
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-content {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            min-width: 260px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+            transition: all 0.2s ease;
+            z-index: 100;
+        }
+
+        .dropdown:hover .dropdown-content,
+        .dropdown:focus-within .dropdown-content {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--foreground);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .hero {
+            min-height: 100vh;
+            padding: 7rem 1.5rem 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                radial-gradient(circle at top left, var(--primary-light), transparent 70%),
+                radial-gradient(circle at bottom right, var(--accent), transparent 70%),
+                var(--background);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm-63-31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='currentColor' fill-opacity='0.05'/%3E%3C/svg%3E");
+            mask-image: radial-gradient(circle at center, transparent 30%, black);
+            pointer-events: none;
+        }
+
+        .container {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            z-index: 1;
+            text-align: center;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--background);
+            color: var(--foreground);
+            resize: vertical;
+            margin-bottom: 1.5rem;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.2);
+        }
+
+        textarea::placeholder {
+            color: hsl(220, 20%, 50%);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: var(--primary);
+            color: white;
+        }
+
+        .button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        #erase-button, #stop-button {
+            background: var(--accent);
+        }
+
+        #erase-button:hover, #stop-button:hover {
+            background: hsl(280, 85%, 50%);
+        }
+
+        .control-container {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+
+        .control-container label {
+            font-weight: 600;
+            color: var(--card-foreground);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .control-container input[type="range"] {
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+            -webkit-appearance: none;
+            height: 8px;
+            background: var(--border);
+            border-radius: var(--radius);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .control-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-container input[type="range"]::-webkit-slider-thumb:hover {
+            background: var(--primary-dark);
+            transform: scale(1.2);
+        }
+
+        .result {
+            margin-top: 1.5rem;
+            font-size: 1rem;
+            color: var(--card-foreground);
+            line-height: var(--line-height);
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--card);
+            text-align: left;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .result::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .result::-webkit-scrollbar-track {
+            background: var(--card);
+            border-radius: var(--radius);
+        }
+
+        .result::-webkit-scrollbar-thumb {
+            background: var(--foreground);
+            border-radius: var(--radius);
+        }
+
+        .incorrect {
+            color: hsl(0, 84%, 60%);
+            font-weight: 600;
+        }
+
+        .suggestion {
+            color: var(--primary);
+        }
+
+        .mobile-toggle {
+            display: none;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            color: var(--foreground);
+            cursor: pointer;
+        }
+
+        .reading-ruler {
+            display: none;
+            position: fixed;
+            width: 100%;
+            height: 30px;
+            background: rgba(255, 255, 0, 0.3);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .color-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 4rem;
+                left: 0;
+                right: 0;
+                background: var(--card);
+                flex-direction: column;
+                padding: 1rem;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .dropdown-content {
+                position: static;
+                width: 100%;
+                opacity: 1;
+                pointer-events: auto;
+                transform: none;
+                box-shadow: none;
+                border: none;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+            }
+
+            .dropdown.active .dropdown-content {
+                max-height: 500px;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+
+            .hero {
+                padding: 7rem 1rem 3rem;
+            }
+
+            .container {
+                padding: 1rem;
+                max-width: 100%;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            textarea {
+                font-size: 0.9rem;
+                padding: 0.75rem;
+            }
+
+            .button {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+                width: 100%;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .result {
+                font-size: 0.9rem;
+                padding: 0.75rem;
+            }
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+    </style>
 </head>
 <body>
+    <!-- Accessibility Tools -->
+    <div id="readingRuler" class="reading-ruler"></div>
+    <div id="colorOverlay" class="color-overlay"></div>
 
-  <div class="container">
-    <h1>Spell Checker with Suggestions</h1>
-    <textarea id="textInput" placeholder="Enter text here..."></textarea>
-    <br>
-    <button class="button" onclick="checkSpelling()">Check Spelling</button>
-    <button class="button" onclick="eraseText()">Erase</button>
-    <button class="button" onclick="stopSpeech()">Stop Speech</button>
-    <div id="result" class="result"></div>
+    <!-- Canvas for Cursor Effect -->
+    <canvas id="canvas"></canvas>
 
-    <div class="control-container">
-      <label for="pitchControl" style="color: white;">Pitch Control:</label>
-      <input type="range" id="pitchControl" min="0" max="2" step="0.1" value="1" />
-    </div>
-  </div>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/" class="logo">
+                <div class="logo-icon">EL</div>
+                <span>EmpowerLearn</span>
+            </a>
+            <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">☰</button>
+            <div class="nav-links" id="navLinks">
+                <a href="/" class="nav-item">Home</a>
+                <div class="dropdown" id="toolsDropdown">
+                    <a href="#" class="nav-item" id="toolsToggle" aria-expanded="false">Tools</a>
+                    <div class="dropdown-content">
+                        <a href="/texttospeech" class="dropdown-item"><span>🔊</span> Text to Speech</a>
+                        <a href="/speechtotext" class="dropdown-item"><span>🎙️</span> Speech to Text</a>
+                        <a href="/image" class="dropdown-item"><span>🎨</span> Image to Text</a>
+                        <a href="/wordexplorer" class="dropdown-item"><span>🔤</span> Word Explorer</a>
+                        <a href="{% url 'spell' %}" class="dropdown-item"><span>🔤</span> Spell Checker</a>
+                    </div>
+                </div>
+                <div class="dropdown" id="settingsDropdown">
+                    <a href="#" class="nav-item" id="settingsToggle" aria-expanded="false">Settings</a>
+                    <div class="dropdown-content">
+                        <a href="#" class="dropdown-item" onclick="toggleDarkMode()"><span id="theme-icon">🌓</span> Theme</a>
+                        <a href="#" class="dropdown-item" onclick="toggleDyslexiaFont()"><span>👁️</span> Dyslexia Font</a>
+                        <a href="#" class="dropdown-item" onclick="toggleReadingRuler()"><span>📏</span> Reading Ruler</a>
+                        <a href="#" class="dropdown-item" onclick="toggleColorOverlay()"><span>🎨</span> Color Overlay</a>
+                        <a href="/teachers" class="dropdown-item"><span>👩‍🏫</span> Teacher</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-  <!-- CSRF Token passed to JavaScript -->
-  <script>
-    const csrfToken = '{{ csrf_token }}';  // Django will inject the CSRF token here
-  </script>
+    <!-- Spell Checker Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Spell Checker with Suggestions</h1>
+            <textarea id="textInput" placeholder="Enter text here..." aria-label="Enter text to check spelling"></textarea>
+            <div class="button-group">
+                <button class="button" onclick="checkSpelling()" aria-label="Check spelling">Check Spelling</button>
+                <button id="erase-button" class="button" onclick="eraseText()" aria-label="Erase text">Erase</button>
+                <button id="stop-button" class="button" onclick="stopSpeech()" aria-label="Stop speech">Stop Speech</button>
+            </div>
+            <div id="result" class="result" tabindex="0"></div>
+            <div class="control-container">
+                <label for="pitchControl">Pitch Control:</label>
+                <input type="range" id="pitchControl" min="0" max="2" step="0.1" value="1" aria-label="Adjust speech pitch" />
+            </div>
+        </div>
+    </section>
 
-  <script>
-    let speechSynthesisInstance = null; // To keep track of the speech instance
-    let speechPitch = 1;  // Default pitch value
+    <!-- CSRF Token passed to JavaScript -->
+    <script>
+        const csrfToken = '{{ csrf_token }}';  // Django will inject the CSRF token here
+    </script>
 
-    // Function to check spelling and get suggestions
-    async function checkSpelling() {
-      const text = document.getElementById("textInput").value.trim();
-      const resultElement = document.getElementById("result");
-      resultElement.innerHTML = ""; // Clear previous results
+    <script>
+        // Original Spell Checker Functionality (Unchanged)
+        let speechSynthesisInstance = null;
+        let speechPitch = 1;
 
-      if (!text) {
-        resultElement.textContent = "Please enter text to check.";
-        return;
-      }
+        async function checkSpelling() {
+            const text = document.getElementById("textInput").value.trim();
+            const resultElement = document.getElementById("result");
+            resultElement.innerHTML = "";
 
-      const words = text.split(/\s+/);  // Split the text into words
-      let resultContent = '';
+            if (!text) {
+                resultElement.textContent = "Please enter text to check.";
+                return;
+            }
 
-      // Send words individually for spell-checking
-      for (const word of words) {
-        const response = await fetch("{% url 'spell' %}", {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'X-CSRFToken': csrfToken  // Include CSRF token here
-          },
-          body: `word=${encodeURIComponent(word)}`
+            const words = text.split(/\s+/);
+            let resultContent = '';
+
+            for (const word of words) {
+                const response = await fetch("{% url 'spell' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: `word=${encodeURIComponent(word)}`
+                });
+
+                const data = await response.json();
+                if (data.suggestions && data.suggestions.length > 0) {
+                    resultContent += ` 
+                        <div>
+                            <span class="incorrect">Incorrect: "${word}"</span>
+                            <br>
+                            Corrected: <span class="suggestion">${data.suggestions.join(', ') || 'No suggestions available'}</span>
+                        </div><br>`;
+                    speakWord(`Incorrect. Your word is "${word}". Suggestions: ${data.suggestions.join(', ')}`);
+                } else {
+                    resultContent += ` 
+                        <div>
+                            <strong>${word}</strong>: <span class="suggestion">Correct</span>
+                        </div><br>`;
+                    speakWord(`Your word is correct: "${word}"`);
+                }
+            }
+
+            resultElement.innerHTML = resultContent;
+        }
+
+        function speakWord(text) {
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+            }
+
+            const speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'en-US';
+            speech.pitch = speechPitch;
+            speechSynthesisInstance = speech;
+            window.speechSynthesis.speak(speech);
+        }
+
+        function stopSpeech() {
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+            }
+        }
+
+        document.getElementById("pitchControl").addEventListener("input", function() {
+            speechPitch = this.value;
         });
 
-        const data = await response.json();
-        if (data.suggestions && data.suggestions.length > 0) {
-          resultContent += ` 
-            <div>
-              <span class="incorrect">Incorrect: "${word}"</span>
-              <br>
-              Corrected: <span class="suggestion">${data.suggestions.join(', ') || 'No suggestions available'}</span>
-            </div><br>`;
-
-          // Speak the result: word is incorrect
-          speakWord(`Incorrect. Your word is "${word}". Suggestions: ${data.suggestions.join(', ')}`);
-        } else {
-          resultContent += ` 
-            <div>
-              <strong>${word}</strong>: <span class="suggestion">Correct</span>
-            </div><br>`;
-
-          // Speak the result: word is correct
-          speakWord(`Your word is correct: "${word}"`);
+        function eraseText() {
+            document.getElementById("textInput").value = "";
+            document.getElementById("result").innerHTML = "";
         }
-      }
 
-      resultElement.innerHTML = resultContent;
-    }
+        window.onbeforeunload = function() {
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+            }
+        };
 
-    // Function to speak the word
-    function speakWord(text) {
-      if (speechSynthesis.speaking) {
-        // Stop any ongoing speech synthesis before starting a new one
-        speechSynthesis.cancel();
-      }
+        window.addEventListener('unload', function () {
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+            }
+        });
 
-      const speech = new SpeechSynthesisUtterance(text);
-      speech.lang = 'en-US';  // Set language for speech
-      speech.pitch = speechPitch;  // Set the pitch for speech
-      speechSynthesisInstance = speech;
-      window.speechSynthesis.speak(speech);
-    }
+        // UI-Specific JavaScript
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark');
+            document.getElementById('theme-icon').textContent = document.body.classList.contains('dark') ? '🌞' : '🌓';
+            updateNavbarBackground();
+        }
 
-    // Stop the ongoing speech synthesis
-    function stopSpeech() {
-      if (speechSynthesis.speaking) {
-        speechSynthesis.cancel();
-      }
-    }
+        function updateNavbarBackground() {
+            const navbar = document.querySelector('.navbar');
+            navbar.style.background = document.body.classList.contains('dark') 
+                ? 'rgba(30, 30, 30, 0.8)' 
+                : 'rgba(255, 255, 255, 0.8)';
+        }
 
-    // Adjust pitch control
-    document.getElementById("pitchControl").addEventListener("input", function() {
-      speechPitch = this.value;
-    });
+        function toggleDyslexiaFont() {
+            document.body.classList.toggle('dyslexia-font');
+        }
 
-    // Erase the input text and result
-    function eraseText() {
-      document.getElementById("textInput").value = "";
-      document.getElementById("result").innerHTML = "";
-    }
+        let rulerActive = false;
+        const ruler = document.getElementById('readingRuler');
 
-    // Listen for the page unload and stop any ongoing speech synthesis
-    window.onbeforeunload = function() {
-      if (speechSynthesis.speaking) {
-        speechSynthesis.cancel();  // Stop any speech before unloading
-      }
-    };
+        function toggleReadingRuler() {
+            rulerActive = !rulerActive;
+            ruler.style.display = rulerActive ? 'block' : 'none';
+        }
 
-    // Stop speech synthesis if the user navigates away from the page
-    window.addEventListener('unload', function () {
-      if (speechSynthesis.speaking) {
-        speechSynthesis.cancel();
-      }
-    });
+        document.addEventListener('mousemove', (e) => {
+            if (rulerActive) {
+                ruler.style.left = '0';
+                ruler.style.top = `${e.clientY - 15}px`;
+            }
+        });
 
-  </script>
+        function toggleColorOverlay() {
+            const overlay = document.getElementById('colorOverlay');
+            overlay.style.display = overlay.style.display === 'block' ? 'none' : 'block';
+            overlay.style.backgroundColor = 'rgba(255, 255, 0, 0.2)';
+        }
+
+        const mobileToggle = document.getElementById('mobileToggle');
+        const navLinks = document.getElementById('navLinks');
+        mobileToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        document.querySelectorAll('.dropdown').forEach(dropdown => {
+            const toggle = dropdown.querySelector('.nav-item');
+            dropdown.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle('active');
+                toggle.setAttribute('aria-expanded', dropdown.classList.contains('active'));
+            });
+        });
+
+        const ctx = document.getElementById('canvas').getContext('2d');
+        let pos = { x: 0, y: 0 };
+        let lines = [];
+        const E = { trails: 20, size: 50, friction: 0.5, dampening: 0.25, tension: 0.98 };
+
+        function resizeCanvas() {
+            ctx.canvas.width = window.innerWidth;
+            ctx.canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function Noise(e) {
+            this.phase = e.phase || 0;
+            this.offset = e.offset || 0;
+            this.frequency = e.frequency || 0.001;
+            this.amplitude = e.amplitude || 1;
+            this.update = () => {
+                this.phase += this.frequency;
+                return this.offset + Math.sin(this.phase) * this.amplitude;
+            };
+        }
+
+        function Node() {
+            this.x = pos.x;
+            this.y = pos.y;
+            this.vx = 0;
+            this.vy = 0;
+        }
+
+        function Line(e) {
+            this.spring = e.spring + 0.1 * Math.random() - 0.02;
+            this.friction = E.friction + 0.01 * Math.random() - 0.002;
+            this.nodes = Array.from({ length: E.size }, () => new Node());
+            this.update = () => {
+                let spring = this.spring;
+                let node = this.nodes[0];
+                node.vx += (pos.x - node.x) * spring;
+                node.vy += (pos.y - node.y) * spring;
+                for (let i = 0; i < this.nodes.length; i++) {
+                    node = this.nodes[i];
+                    if (i > 0) {
+                        const prev = this.nodes[i - 1];
+                        node.vx += (prev.x - node.x) * spring;
+                        node.vy += (prev.y - node.y) * spring;
+                        node.vx += prev.vx * E.dampening;
+                        node.vy += prev.vy * E.dampening;
+                    }
+                    node.vx *= this.friction;
+                    node.vy *= this.friction;
+                    node.x += node.vx;
+                    node.y += node.vy;
+                    spring *= E.tension;
+                }
+            };
+            this.draw = () => {
+                ctx.beginPath();
+                ctx.moveTo(this.nodes[0].x, this.nodes[0].y);
+                for (let i = 1; i < this.nodes.length - 2; i++) {
+                    const a = this.nodes[i];
+                    const b = this.nodes[i + 1];
+                    const midX = 0.5 * (a.x + b.x);
+                    const midY = 0.5 * (a.y + b.y);
+                    ctx.quadraticCurveTo(a.x, a.y, midX, midY);
+                }
+                const last = this.nodes[this.nodes.length - 1];
+                ctx.quadraticCurveTo(this.nodes[this.nodes.length - 2].x, this.nodes[this.nodes.length - 2].y, last.x, last.y);
+                ctx.stroke();
+                ctx.closePath();
+            };
+        }
+
+        const noise = new Noise({ phase: Math.random() * 2 * Math.PI, amplitude: 85, frequency: 0.0015, offset: 285 });
+
+        function onMousemove(e) {
+            pos.x = e.clientX || e.touches?.[0].pageX;
+            pos.y = e.clientY || e.touches?.[0].pageY;
+            if (!lines.length) {
+                for (let i = 0; i < E.trails; i++) {
+                    lines.push(new Line({ spring: 0.4 + (i / E.trails) * 0.025 }));
+                }
+            }
+        }
+
+        function render() {
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.strokeStyle = `hsla(${Math.round(noise.update())}, 50%, 50%, 0.2)`;
+            ctx.lineWidth = 1;
+            lines.forEach(line => {
+                line.update();
+                line.draw();
+            });
+            requestAnimationFrame(render);
+        }
+
+        document.addEventListener('mousemove', onMousemove);
+        document.addEventListener('touchstart', onMousemove);
+        document.addEventListener('touchmove', onMousemove);
+        window.addEventListener('load', () => {
+            render();
+            updateNavbarBackground();
+        });
+    </script>
 </body>
 </html>
-{% endblock %}
+  

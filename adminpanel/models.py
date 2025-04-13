@@ -87,6 +87,31 @@ class quiz(models.Model):
     def formattedimgurl(self):
         url=self.image if self.image.__str__().startswith(('http','https://')) else self.image.url
         return url
+class quiz2(models.Model):
+    name=models.CharField(max_length=100,null=True)
+    title = models.CharField(max_length=100,null=True)
+    content = models.TextField(null=True)
+    image = models.ImageField( null=True,upload_to='posts/images',blank=True)
+    createdate = models.DateTimeField(auto_now_add=True,null=True)
+    week=models.CharField(null=True,max_length=100)
+    data = models.JSONField(null=True, blank=True) 
+    @property        
+    def formattedimgurl(self):
+        url=self.image if self.image.__str__().startswith(('http','https://')) else self.image.url
+        return url    
+class addspecificquiz(models.Model):
+    name=models.CharField(max_length=100,null=True)
+    title = models.CharField(max_length=100,null=True)
+    content = models.TextField(null=True)
+    image = models.ImageField( null=True,upload_to='posts/images',blank=True)
+    createdate = models.DateTimeField(auto_now_add=True,null=True)
+    week=models.CharField(null=True,max_length=100)
+    data = models.JSONField(null=True, blank=True) 
+    user=models.ForeignKey(User,on_delete=models.CASCADE,null=True)
+    @property        
+    def formattedimgurl(self):
+        url=self.image if self.image.__str__().startswith(('http','https://')) else self.image.url
+        return url    
 from django.db import models
 import json
 
@@ -108,10 +133,19 @@ class courses(models.Model):
 class  leaderboard(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE,null=True)
     data=models.JSONField(null=True,blank=True)
+    
 class notes(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE,null=True)
     data=models.JSONField(null=True,blank=True)
-
+    @property
+    def efficiency(self):
+        if not self.data:
+            return 0
+        correct = self.data.get("correct", 0)
+        attempted = self.data.get("attempted", 0)
+        if attempted == 0:
+            return 0
+        return round((correct / attempted) * 100, 2)
 class speechquiz2(models.Model):
    
    
@@ -133,6 +167,12 @@ class UserActivity(models.Model):
 
     def __str__(self):
         return self.user.username
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
 class badges(models.Model):
     name=models.CharField(max_length=100,null=True)
     image=models.ImageField(null=True)

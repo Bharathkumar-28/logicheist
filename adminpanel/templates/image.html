@@ -1,214 +1,729 @@
-{% extends 'base.html' %}
-
-{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OCR Image-to-Text (Frontend)</title>
-
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1/dist/tesseract.min.js"></script>
-
-   
+    <title>EmpowerLearn - Image to Text</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Open+Dyslexic&display=swap" rel="stylesheet">
     <style>
-        /* Basic Reset */
-      
-
-
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            color: #444;
+        :root {
+            --primary: hsl(230, 85%, 60%);
+            --primary-dark: hsl(230, 85%, 50%);
+            --primary-light: hsl(230, 85%, 75%);
+            --accent: hsl(280, 85%, 60%);
+            --background: hsl(220, 20%, 97%);
+            --foreground: hsl(220, 20%, 10%);
+            --card: hsl(220, 20%, 100%);
+            --card-foreground: hsl(220, 20%, 10%);
+            --border: hsl(220, 20%, 90%);
+            --radius: 0.75rem;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --line-height: 1.6;
         }
 
-        /* Card Style for the Main Container */
+        .dark {
+            --background: hsl(220, 20%, 10%);
+            --foreground: hsl(220, 20%, 97%);
+            --card: hsl(220, 20%, 15%);
+            --card-foreground: hsl(220, 20%, 97%);
+            --border: hsl(220, 20%, 20%);
+        }
+
+        .dyslexia-font {
+            font-family: 'Open Dyslexic', sans-serif !important;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--background);
+            color: var(--foreground);
+            line-height: var(--line-height);
+            transition: all 0.3s ease;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin: 1rem 0;
+            color: var(--card-foreground);
+            font-weight: 500;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 50;
+        }
+
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--foreground);
+            text-decoration: none;
+            transition: transform 0.2s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 0.5rem;
+            display: grid;
+            place-items: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .nav-item {
+            padding: 0.5rem 1rem;
+            color: var(--foreground);
+            text-decoration: none;
+            border-radius: var(--radius);
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-content {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            min-width: 260px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+            transition: all 0.2s ease;
+            z-index: 100;
+        }
+
+        .dropdown:hover .dropdown-content,
+        .dropdown:focus-within .dropdown-content {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--foreground);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .hero {
+            min-height: 100vh;
+            padding: 7rem 1.5rem 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                radial-gradient(circle at top left, var(--primary-light), transparent 70%),
+                radial-gradient(circle at bottom right, var(--accent), transparent 70%),
+                var(--background);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm-63-31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='currentColor' fill-opacity='0.05'/%3E%3C/svg%3E");
+            mask-image: radial-gradient(circle at center, transparent 30%, black);
+            pointer-events: none;
+        }
+
         .container {
-            background: #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            padding: 30px;
-            max-width: 500px;
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 2rem;
+            max-width: 600px;
             width: 100%;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            z-index: 1;
             text-align: center;
         }
 
-        /* File Upload Button */
         input[type="file"] {
             display: block;
-            margin: 20px auto;
-            padding: 10px;
-            border: 2px solid #007bff;
-            border-radius: 8px;
-            font-size: 16px;
-            background-color: #f0f8ff;
+            margin: 1.5rem auto;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            background-color: var(--card);
             cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Lexend', sans-serif;
+            color: var(--foreground);
         }
 
         input[type="file"]:hover {
-            border-color: #0056b3;
+            border-color: var(--primary);
+            background-color: var(--primary-light);
         }
 
-        /* Main Action Button */
         button {
-            padding: 12px 25px;
-            background-color: #007bff;
-            color: white;
+            padding: 0.75rem 1.5rem;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            font-family: 'Lexend', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: var(--primary);
+            color: white;
         }
 
-        button:hover {
-            background-color: #0056b3;
-            transform: translateY(-2px);
+        button:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
         }
 
-        /* Text Display for Results */
-        #result {
-            margin-top: 20px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-            word-wrap: break-word;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        /* Control Buttons */
-        .control-buttons {
-            margin-top: 20px;
+        button:disabled {
+            background: hsl(220, 20%, 70%);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .control-buttons button {
-            padding: 10px 20px;
-            background-color: #28a745;
-            color: white;
+            background: var(--accent);
+            margin: 0.5rem;
+        }
+
+        .control-buttons button:hover:not(:disabled) {
+            background: hsl(280, 85%, 50%);
+        }
+
+        .result {
+            margin-top: 1.5rem;
+            font-size: 1rem;
+            color: var(--card-foreground);
+            opacity: 0.8;
+            line-height: var(--line-height);
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--card);
+            text-align: left;
+            min-height: 50px;
+        }
+
+        .result::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .result::-webkit-scrollbar-track {
+            background: var(--card);
+            border-radius: var(--radius);
+        }
+
+        .result::-webkit-scrollbar-thumb {
+            background: var(--foreground);
+            border-radius: var(--radius);
+        }
+
+        .mobile-toggle {
+            display: none;
+            font-size: 1.5rem;
+            background: none;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            color: var(--foreground);
             cursor: pointer;
-            margin: 10px 5px;
-            transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
-        .control-buttons button:hover {
-            background-color: #218838;
-            transform: translateY(-2px);
+        .reading-ruler {
+            display: none;
+            position: fixed;
+            width: 100%;
+            height: 30px;
+            background: rgba(255, 255, 0, 0.3);
+            pointer-events: none;
+            z-index: 10;
         }
 
-        /* Media Queries for Mobile Responsiveness */
+        .color-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 5;
+        }
+
         @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 4rem;
+                left: 0;
+                right: 0;
+                background: var(--card);
+                flex-direction: column;
+                padding: 1rem;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .dropdown-content {
+                position: static;
+                width: 100%;
+                opacity: 1;
+                pointer-events: auto;
+                transform: none;
+                box-shadow: none;
+                border: none;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+            }
+
+            .dropdown.active .dropdown-content {
+                max-height: 500px;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+
+            .hero {
+                padding: 7rem 1rem 3rem;
+            }
+
             .container {
-                padding: 20px;
-                margin: 10px;
+                padding: 1rem;
+                max-width: 100%;
             }
 
             h1 {
-                font-size: 1.5rem;
+                font-size: 2rem;
             }
 
-            button {
-                padding: 10px 20px;
-                font-size: 14px;
+            h2 {
+                font-size: 1.25rem;
             }
 
             input[type="file"] {
-                padding: 8px;
-                font-size: 14px;
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            button {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+                width: 100%;
+                margin: 0.5rem 0;
+            }
+
+            .control-buttons {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .result {
+                font-size: 0.9rem;
+                padding: 0.75rem;
             }
         }
 
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
     </style>
 </head>
 <body>
+    <!-- Accessibility Tools -->
+    <div id="readingRuler" class="reading-ruler"></div>
+    <div id="colorOverlay" class="color-overlay"></div>
 
-    <div class="container">
-        <h1>Upload an Image to Extract Text</h1>
+    <!-- Canvas for Cursor Effect -->
+    <canvas id="canvas"></canvas>
 
-        <!-- Image Upload Form -->
-        <input type="file" id="imageInput" accept="image/*" />
-        <button onclick="processImage()">Extract Text</button>
-
-        <h2>Extracted Text:</h2>
-        <p id="result">No text extracted yet.</p>
-
-        <!-- Control Buttons for Speech -->
-        <div class="control-buttons">
-            <button id="readButton" onclick="readText()">Read Text</button>
-            <button id="stopButton" onclick="stopSpeech()">Stop Reading</button>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/" class="logo">
+                <div class="logo-icon">EL</div>
+                <span>EmpowerLearn</span>
+            </a>
+            <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">☰</button>
+            <div class="nav-links" id="navLinks">
+                <a href="/" class="nav-item">Home</a>
+                <div class="dropdown" id="toolsDropdown">
+                    <a href="#" class="nav-item" id="toolsToggle" aria-expanded="false">Tools</a>
+                    <div class="dropdown-content">
+                        <a href="/texttospeech" class="dropdown-item"><span>🔊</span> Text to Speech</a>
+                        <a href="/speechtotext" class="dropdown-item"><span>🎙️</span> Speech to Text</a>
+                        <a href="/image" class="dropdown-item"><span>🎨</span> Image to Text</a>
+                        <a href="/wordexplorer" class="dropdown-item"><span>🔤</span> Word Explorer</a>
+                        <a href="/spell" class="dropdown-item"><span>🔤</span> Spell Checker</a>
+                    </div>
+                </div>
+                <div class="dropdown" id="settingsDropdown">
+                    <a href="#" class="nav-item" id="settingsToggle" aria-expanded="false">Settings</a>
+                    <div class="dropdown-content">
+                        <a href="#" class="dropdown-item" onclick="toggleDarkMode()"><span id="theme-icon">🌓</span> Theme</a>
+                        <a href="#" class="dropdown-item" onclick="toggleDyslexiaFont()"><span>👁️</span> Dyslexia Font</a>
+                        <a href="#" class="dropdown-item" onclick="toggleReadingRuler()"><span>📏</span> Reading Ruler</a>
+                        <a href="#" class="dropdown-item" onclick="toggleColorOverlay()"><span>🎨</span> Color Overlay</a>
+                        <a href="/teachers" class="dropdown-item"><span>👩‍🏫</span> Teacher</a>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+    </nav>
+
+    <!-- Image to Text Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Image to Text Converter</h1>
+            <input type="file" id="imageInput" accept="image/*" aria-label="Upload an image to extract text" />
+            <button onclick="processImage()" aria-label="Extract text from image">Extract Text</button>
+            <h2>Extracted Text:</h2>
+            <div id="result" class="result" tabindex="0">No text extracted yet.</div>
+            <div class="control-buttons">
+                <button id="readButton" onclick="readText()" aria-label="Read extracted text aloud" disabled>Read Text</button>
+                <button id="stopButton" onclick="stopSpeech()" aria-label="Stop reading text" disabled>Stop Reading</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tesseract.js -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1/dist/tesseract.min.js"></script>
 
     <script>
-        // Declare the SpeechSynthesis object globally
+        // Image to Text Functionality
         let speechSynthesis = window.speechSynthesis;
         let currentUtterance = null;
+        window.extractedText = null;
 
-        // Function to process the image and extract text
         function processImage() {
             const fileInput = document.getElementById('imageInput');
             const resultElement = document.getElementById('result');
 
-            // Check if the user has selected an image
             if (fileInput.files.length === 0) {
-                resultElement.innerHTML = "Please select an image first!";
+                resultElement.textContent = "Please select an image first!";
                 return;
             }
 
-            const image = fileInput.files[0]; 
+            const image = fileInput.files[0];
+            if (image.size > 5 * 1024 * 1024) { // 5MB limit
+                resultElement.textContent = "Image is too large. Please upload a smaller file.";
+                return;
+            }
 
-   
-            resultElement.innerHTML = "Processing... Please wait.";
+            resultElement.textContent = "Processing... Please wait.";
 
-          
             Tesseract.recognize(
-                image,         
-                'eng',         
+                image,
+                'eng',
                 {
-                    logger: (m) => console.log(m)  
+                    logger: (m) => console.log(m)
                 }
             ).then(({ data: { text } }) => {
-             
-                resultElement.innerHTML = text ? text : "No text found in the image.";
-
-                
+                resultElement.textContent = text ? text : "No text found in the image.";
                 window.extractedText = text ? text : "No text found.";
+                updateButtonStates();
             }).catch((error) => {
-              
-                resultElement.innerHTML = "Error occurred: " + error.message;
+                resultElement.textContent = "Error occurred: " + error.message;
+                updateButtonStates();
             });
         }
 
-     
         function readText() {
-      
             if (!window.extractedText || window.extractedText === "No text found.") {
                 alert("No text to read. Please upload an image first.");
                 return;
             }
 
-        
-            const utterance = new SpeechSynthesisUtterance(window.extractedText);
-            utterance.lang = 'en-US'; 
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+            }
 
-      
+            const utterance = new SpeechSynthesisUtterance(window.extractedText);
+            utterance.lang = 'en-US';
             currentUtterance = utterance;
 
+            utterance.onend = () => {
+                updateButtonStates();
+            };
+
+            utterance.onerror = (event) => {
+                alert("Speech synthesis error: " + event.error);
+                updateButtonStates();
+            };
+
             speechSynthesis.speak(utterance);
+            updateButtonStates();
         }
 
-    
         function stopSpeech() {
             if (speechSynthesis.speaking) {
-                speechSynthesis.cancel();  
+                speechSynthesis.cancel();
                 alert("Speech stopped.");
             }
+            updateButtonStates();
         }
-    </script>
 
+        function updateButtonStates() {
+            const hasText = window.extractedText && window.extractedText !== "No text found.";
+            document.getElementById('readButton').disabled = !hasText;
+            document.getElementById('stopButton').disabled = !speechSynthesis.speaking;
+        }
+
+        // Theme Management
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark');
+            document.getElementById('theme-icon').textContent = document.body.classList.contains('dark') ? '🌞' : '🌓';
+            updateNavbarBackground();
+        }
+
+        function updateNavbarBackground() {
+            const navbar = document.querySelector('.navbar');
+            navbar.style.background = document.body.classList.contains('dark') 
+                ? 'rgba(30, 30, 30, 0.8)' 
+                : 'rgba(255, 255, 255, 0.8)';
+        }
+
+        function toggleDyslexiaFont() {
+            document.body.classList.toggle('dyslexia-font');
+        }
+
+        // Reading Ruler
+        let rulerActive = false;
+        const ruler = document.getElementById('readingRuler');
+
+        function toggleReadingRuler() {
+            rulerActive = !rulerActive;
+            ruler.style.display = rulerActive ? 'block' : 'none';
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            if (rulerActive) {
+                ruler.style.left = '0';
+                ruler.style.top = `${e.clientY - 15}px`;
+            }
+        });
+
+        // Color Overlay
+        function toggleColorOverlay() {
+            const overlay = document.getElementById('colorOverlay');
+            overlay.style.display = overlay.style.display === 'block' ? 'none' : 'block';
+            overlay.style.backgroundColor = 'rgba(255, 255, 0, 0.2)';
+        }
+
+        // Mobile Menu Toggle
+        const mobileToggle = document.getElementById('mobileToggle');
+        const navLinks = document.getElementById('navLinks');
+        mobileToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Dropdown Toggle
+        document.querySelectorAll('.dropdown').forEach(dropdown => {
+            const toggle = dropdown.querySelector('.nav-item');
+            dropdown.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle('active');
+                toggle.setAttribute('aria-expanded', dropdown.classList.contains('active'));
+            });
+        });
+
+        // Cursor Effect
+        const ctx = document.getElementById('canvas').getContext('2d');
+        let pos = { x: 0, y: 0 };
+        let lines = [];
+        const E = { trails: 20, size: 50, friction: 0.5, dampening: 0.25, tension: 0.98 };
+
+        function resizeCanvas() {
+            ctx.canvas.width = window.innerWidth;
+            ctx.canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function Noise(e) {
+            this.phase = e.phase || 0;
+            this.offset = e.offset || 0;
+            this.frequency = e.frequency || 0.001;
+            this.amplitude = e.amplitude || 1;
+            this.update = () => {
+                this.phase += this.frequency;
+                return this.offset + Math.sin(this.phase) * this.amplitude;
+            };
+        }
+
+        function Node() {
+            this.x = pos.x;
+            this.y = pos.y;
+            this.vx = 0;
+            this.vy = 0;
+        }
+
+        function Line(e) {
+            this.spring = e.spring + 0.1 * Math.random() - 0.02;
+            this.friction = E.friction + 0.01 * Math.random() - 0.002;
+            this.nodes = Array.from({ length: E.size }, () => new Node());
+            this.update = () => {
+                let spring = this.spring;
+                let node = this.nodes[0];
+                node.vx += (pos.x - node.x) * spring;
+                node.vy += (pos.y - node.y) * spring;
+                for (let i = 0; i < this.nodes.length; i++) {
+                    node = this.nodes[i];
+                    if (i > 0) {
+                        const prev = this.nodes[i - 1];
+                        node.vx += (prev.x - node.x) * spring;
+                        node.vy += (prev.y - node.y) * spring;
+                        node.vx += prev.vx * E.dampening;
+                        node.vy += prev.vy * E.dampening;
+                    }
+                    node.vx *= this.friction;
+                    node.vy *= this.friction;
+                    node.x += node.vx;
+                    node.y += node.vy;
+                    spring *= E.tension;
+                }
+            };
+            this.draw = () => {
+                ctx.beginPath();
+                ctx.moveTo(this.nodes[0].x, this.nodes[0].y);
+                for (let i = 1; i < this.nodes.length - 2; i++) {
+                    const a = this.nodes[i];
+                    const b = this.nodes[i + 1];
+                    const midX = 0.5 * (a.x + b.x);
+                    const midY = 0.5 * (a.y + b.y);
+                    ctx.quadraticCurveTo(a.x, a.y, midX, midY);
+                }
+                const last = this.nodes[this.nodes.length - 1];
+                ctx.quadraticCurveTo(this.nodes[this.nodes.length - 2].x, this.nodes[this.nodes.length - 2].y, last.x, last.y);
+                ctx.stroke();
+                ctx.closePath();
+            };
+        }
+
+        const noise = new Noise({ phase: Math.random() * 2 * Math.PI, amplitude: 85, frequency: 0.0015, offset: 285 });
+
+        function onMousemove(e) {
+            pos.x = e.clientX || e.touches?.[0].pageX;
+            pos.y = e.clientY || e.touches?.[0].pageY;
+            if (!lines.length) {
+                for (let i = 0; i < E.trails; i++) {
+                    lines.push(new Line({ spring: 0.4 + (i / E.trails) * 0.025 }));
+                }
+            }
+        }
+
+        function render() {
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.strokeStyle = `hsla(${Math.round(noise.update())}, 50%, 50%, 0.2)`;
+            ctx.lineWidth = 1;
+            lines.forEach(line => {
+                line.update();
+                line.draw();
+            });
+            requestAnimationFrame(render);
+        }
+
+        document.addEventListener('mousemove', onMousemove);
+        document.addEventListener('touchstart', onMousemove);
+        document.addEventListener('touchmove', onMousemove);
+        window.addEventListener('load', () => {
+            render();
+            updateNavbarBackground();
+        });
+
+        // Initialize button states
+        updateButtonStates();
+    </script>
 </body>
 </html>
-{%endblock%}

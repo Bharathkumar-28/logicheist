@@ -121,6 +121,24 @@ class quizform(forms.ModelForm):
     class Meta:
         model = quiz
         fields = ['name', 'title', 'content', 'image', 'week', 'word_0', 'image_0', 'word_1', 'image_1']
+
+from django import forms
+from .models import quiz2, speechquiz2
+
+from django import forms
+from .models import quiz2
+
+class quizform2(forms.ModelForm):
+    word_0 = forms.CharField(max_length=100, required=True, label="Word 1")
+    image_0 = forms.ImageField(required=True, label="Image 1")
+    word_1 = forms.CharField(max_length=100, required=False, label="Word 2")
+    image_1 = forms.ImageField(required=False, label="Image 2")
+
+    class Meta:
+        model = quiz2
+        fields = ['name', 'title', 'content', 'image', 'week']
+
+
 class speechquizform(forms.ModelForm):
     title=forms.CharField(max_length=100,required=True)
     name=forms.CharField(max_length=100,required=True)

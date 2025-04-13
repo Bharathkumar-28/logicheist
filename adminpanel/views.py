@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404, render,redirect
 from django.http import HttpResponse
 from django.urls import  reverse
 from django.contrib import messages
-from .forms import ImageUploadForm, contactform, registerform,resetpasswordform,loginform,forgotpasswordform,profileform
+from .forms import ImageUploadForm, contactform, quizform2, registerform,resetpasswordform,loginform,forgotpasswordform,profileform
 from django.contrib.auth import authenticate,login as auth_login,logout as auth_logout
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
@@ -93,7 +93,24 @@ def attempt(request,postid):
     serialized_data = json.dumps(list_data)
 
     return render(request, "attempt.html", {"list_data": serialized_data})
+@login_required
+def attempt2(request,postid):
+    quiz_instance = quiz2.objects.get(id=postid)
+    gameresult2.objects.all().delete() 
 
+ 
+    data = quiz_instance.data
+    print("Data:", data)
+
+    # Convert the dictionary into a list of words and images
+    list_data = [{"word": key, "image": value} for key, value in data.items()]
+
+    print("Serialized list_data:", list_data)  # Check the structure here
+
+    # Pass the serialized data as JSON to the template
+    serialized_data = json.dumps(list_data)
+
+    return render(request, "attempt2.html", {"list_data": serialized_data})
 
 
 
@@ -620,6 +637,48 @@ def addquiz(request):
 
 
     return render(request, 'addquiz.html', {'form': form})
+from django.contrib.auth.decorators import permission_required
+from django.shortcuts import render, redirect
+from .forms import quizform2
+from .models import quiz2
+
+@permission_required('adminpanel.add_quiz2', raise_exception=True)
+def addquiz2(request):
+    print("User groups: ", request.user.groups.all())
+    print(request.user.get_all_permissions())
+
+    if not request.user.groups.filter(name='lowgroupwithoutaddquiz').exists():
+        return redirect('index1')  # Redirect somewhere appropriate
+
+    if request.method == 'POST':
+        form = quizform2(request.POST, request.FILES)
+        if form.is_valid():
+            quiz_data = {}
+            word_keys = [key for key in request.POST if key.startswith('word_')]
+
+            for word_key in word_keys:
+                index = word_key.split('_')[1]
+                word = request.POST.get(f'word_{index}')
+                image = request.FILES.get(f'image_{index}')
+                if word and image:
+                    temp = quiz2(image=image)
+                    temp.save()
+                    quiz_data[word] = temp.image.url
+                    temp.delete()
+
+            quiz_obj = form.save(commit=False)
+            quiz_obj.data = quiz_data
+            quiz_obj.save()
+            return redirect("")
+    else:
+        form = quizform2()
+
+    return render(request, 'addquiz2.html', {'form': form})
+
+def deletequiz(request):
+    quiz2.objects.all().delete() 
+
+    return redirect("studentprogress")
 
 
 
@@ -701,7 +760,7 @@ history = [
 ]
 @login_required
 def home(request):
-    """Renders the homepage with the chatbot interface."""
+    
     return render(request, 'chatbot.html')
 @login_required
 def chat(request):
@@ -1147,7 +1206,7 @@ from django.contrib.auth.models import Group
 def student_progress(request):
     # Check if the user is in the allowed group
     if not request.user.groups.filter(name='lowgroupwithoutaddquiz').exists():
-        return redirect('home')  # Replace 'home' with your home URL name
+        return redirect('')  # Replace 'home' with your home URL name
 
     users = User.objects.all()
     profiles = profile.objects.all()
@@ -1235,4 +1294,66 @@ def user_progress(request):
         'incorrect': incorrect,
         'efficiency': round(efficiency, 2),
     })
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from .models import leaderboard, quiz
+
+from django.shortcuts import render
+from .models import leaderboard, quiz2
+
+def index2(request):
+    user = request.user
+    blogtitle = "Welcome to the Quiz App"
+  
+    try:
+        lb = leaderboard.objects.filter(user=user).latest('id')
+    except leaderboard.DoesNotExist:
+        lb = None
+
+    efficiency = 0
+    if lb and lb.data:
+        total_attempts = len(lb.data)
+        correct = sum(1 for item in lb.data if item.get("is_correct") == 1)
+
+        if total_attempts > 0:
+            efficiency = int((correct / total_attempts) * 100)
+
+   
+    if efficiency < 50:
+        quizzes = quiz2.objects.filter(name="easy")
+    else:
+        quizzes = quiz2.objects.filter(name="hard")
+
+    return render(request, "markquiz.html", {
+        'blogtitle': blogtitle,
+
+
+        'posts': quizzes,
+        'efficiency': efficiency
+    })
+from django.utils.timezone import now, timedelta
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+
+from .models import UserActivity, Notification
+
+@csrf_exempt
+def notify_inactive_users(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        message = data.get('message', '📢 You have a new notification!')
+
+        inactive_time = now() - timedelta(seconds=10)
+        inactive_users = UserActivity.objects.filter(last_active__lt=inactive_time)
+
+        notifications = []
+        for activity in inactive_users:
+            notifications.append(Notification(user=activity.user, message=message))
+
+        Notification.objects.bulk_create(notifications)
+
+        return JsonResponse({'status': 'ok', 'notified_users': len(notifications)})
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 

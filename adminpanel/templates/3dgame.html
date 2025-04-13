@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quick Pick Homophones</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 2rem;
+      background-color: #f0f9ff;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    button {
+      padding: 1rem 2rem;
+      margin: 1rem;
+      font-size: 1.2rem;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      background-color: #60a5fa;
+      color: white;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #2563eb;
+    }
+
+    .choices {
+      margin-top: 2rem;
+    }
+
+    .result {
+      margin-top: 1.5rem;
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+
+    .sentence {
+      font-style: italic;
+      margin-top: 1rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎧 Quick Pick Homophones</h1>
+  <button onclick="playAudio()">🔊 Play Word</button>
+  
+  <div class="choices">
+    <button id="option1" onclick="checkAnswer(0)">Option 1</button>
+    <button id="option2" onclick="checkAnswer(1)">Option 2</button>
+  </div>
+
+  <div class="sentence" id="sentence"></div>
+  <div class="result" id="result"></div>
+
+  <script>
+    const data = [
+      {
+        word: "flower",
+        audio: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/flower--_gb_1.mp3",
+        options: ["flower 🌸", "flour 🧂"],
+        correctIndex: 0,
+        sentence: "She picked a bright yellow flower from the garden."
+      },
+      {
+        word: "knight",
+        audio: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/knight--_gb_1.mp3",
+        options: ["night 🌙", "knight 🛡️"],
+        correctIndex: 1,
+        sentence: "The knight rode his horse into the castle."
+      },
+      {
+        word: "sea",
+        audio: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/sea--_gb_1.mp3",
+        options: ["sea 🌊", "see 👀"],
+        correctIndex: 0,
+        sentence: "We went sailing across the sea last summer."
+      }
+    ];
+    {% comment %} logicheist {% endcomment %}
+    let currentRound = 0;
+
+    function loadRound() {
+      const round = data[currentRound];
+      document.getElementById("option1").innerText = round.options[0];
+      document.getElementById("option2").innerText = round.options[1];
+      document.getElementById("sentence").innerText = round.sentence;
+      document.getElementById("result").innerText = "";
+    }
+
+    function playAudio() {
+      const audio = new Audio(data[currentRound].audio);
+      audio.play();
+    }
+
+    function checkAnswer(choiceIndex) {
+      const isCorrect = choiceIndex === data[currentRound].correctIndex;
+      document.getElementById("result").innerText = isCorrect ? "✅ Correct!" : "❌ Try again!";
+      setTimeout(() => {
+        currentRound = (currentRound + 1) % data.length;
+        loadRound();
+      }, 1500);
+    }
+
+    // Initialize
+    loadRound();
+  </script>
+</body>
+</html>

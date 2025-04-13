@@ -2,106 +2,128 @@
 
 {% block content %}
 <style>
-    /* Define the same root variables as the previous code */
+    /* Modern color palette with refined variables */
     :root {
-        --primary: hsl(230, 85%, 60%);         /* Base blue color */
-        --primary-dark: hsl(230, 85%, 50%);    /* Darker blue */
-        --primary-light: hsl(230, 85%, 75%);   /* Lighter blue */
-        --accent: hsl(280, 85%, 60%);          /* Purple accent */
-        --background: hsl(220, 20%, 97%);      /* Light gray background */
-        --foreground: hsl(220, 20%, 10%);      /* Dark text color */
-        --card: hsl(220, 20%, 100%);           /* White card background */
-        --card-foreground: hsl(220, 20%, 10%); /* Dark text on cards */
-        --border: hsl(220, 20%, 90%);          /* Light gray border */
-        --ring: hsla(230, 85%, 60%, 0.5);      /* Semi-transparent blue ring */
-        --success: hsl(142, 76%, 36%);         /* Green for success */
-        --error: hsl(0, 84%, 60%);             /* Red for errors */
-        --radius: 0.75rem;                     /* Rounded corners */
-        --shadow-sm: 0 1px 2px rgba(0,0,0,0.1);
-        --shadow: 0 4px 6px rgba(0,0,0,0.1);
-        --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
-        --font-spacing: normal;
-        --word-spacing: normal;
-        --line-height: 1.6;
+        --primary: hsl(230, 85%, 60%);          /* Base blue color */
+        --primary-dark: hsl(230, 85%, 45%);     /* Darker blue - slightly adjusted */
+        --primary-light: hsl(230, 85%, 90%);    /* Lighter blue - brightened */
+        --accent: hsl(280, 85%, 60%);           /* Purple accent */
+        --background: hsl(220, 25%, 97%);       /* Light gray background - slightly warmer */
+        --foreground: hsl(220, 25%, 15%);       /* Dark text color - better contrast */
+        --card: hsl(0, 0%, 100%);               /* Pure white card background */
+        --card-foreground: hsl(220, 25%, 15%);  /* Dark text on cards */
+        --border: hsl(220, 20%, 92%);           /* Light gray border - slightly lighter */
+        --ring: hsla(230, 85%, 60%, 0.4);       /* Semi-transparent blue ring */
+        --success: hsl(142, 72%, 42%);          /* Green for success - more vibrant */
+        --error: hsl(0, 84%, 60%);              /* Red for errors */
+        --badge-text: hsl(190, 100%, 50%);      /* Cyan text for badges */
+        --radius: 0.75rem;                      /* Rounded corners */
+        --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+        --shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+        --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.08);
+        --font-spacing: 0.02em;
+        --word-spacing: 0.05em;
+        --line-height: 1.7;
     }
 
     /* Container Styles */
     .places-leaderboard-container {
-        background-color: var(--card); /* Changed from #333 to match previous */
-        padding: 30px;
-        border-radius: var(--radius); /* Updated to use variable */
-        box-shadow: var(--shadow-lg); /* Updated to use variable */
+        background-color: var(--card);
+        padding: 2.5rem;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-lg);
         width: 90%;
         max-width: 900px;
-        margin: 30px auto;
+        margin: 2.5rem auto;
         text-align: center;
         transition: all 0.3s ease;
-        border: 1px solid var(--border); /* Added from previous */
+        border: 1px solid var(--border);
     }
 
     /* Title */
     .places-leaderboard-title {
-        font-family: 'Lexend', sans-serif; /* Same font as previous */
+        font-family: 'Lexend', sans-serif;
         font-size: 2.5rem;
-        color: transparent; /* Gradient text effect */
-        background: linear-gradient(135deg, var(--primary), var(--accent)); /* From previous */
+        color: transparent;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
         -webkit-background-clip: text;
         background-clip: text;
-        margin-bottom: 25px;
+        margin-bottom: 1.5rem;
         text-transform: uppercase;
-        letter-spacing: 1px;
-        font-weight: 800; /* Updated to match previous h1 weight */
-        line-height: 1.1; /* From previous */
+        letter-spacing: 0.05em;
+        font-weight: 800;
+        line-height: 1.1;
     }
 
     /* Table Styles */
     .places-leaderboard-table {
         width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-        font-family: 'Lexend', sans-serif; /* Same font as previous */
-        font-size: 1.1rem;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-top: 1.5rem;
+        font-family: 'Lexend', sans-serif;
+        box-shadow: var(--shadow-sm);
+        border-radius: var(--radius);
+        overflow: hidden;
     }
 
     .places-leaderboard-table th, .places-leaderboard-table td {
-        padding: 15px 20px;
+        padding: 1rem 1.25rem;
         text-align: center;
         font-size: 1.1rem;
-        border: 1px solid var(--border); /* Updated from #ddd */
-        transition: background-color 0.3s ease;
+        border: none;
+        border-bottom: 1px solid var(--border);
+        transition: background-color 0.2s ease;
     }
 
     .places-leaderboard-table th {
-        background-color: var(--primary-light); /* Updated from #4CAF50 */
-        color: var(--primary-dark); /* Updated from white */
-        font-weight: 600; /* Updated to match previous */
+        background: linear-gradient(to right, var(--primary-light), var(--primary-light));
+        color: var(--primary-dark);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-size: 0.95rem;
+        padding: 1.25rem;
+    }
+
+    .places-leaderboard-table tr:last-child td {
+        border-bottom: none;
     }
 
     .places-leaderboard-table tr:nth-child(even) {
-        background-color: var(--card); /* Updated from #333 */
+        background-color: var(--background);
     }
 
     .places-leaderboard-table tr:hover {
-        background-color: var(--primary-light); /* Updated from #333 for hover effect */
+        background-color: var(--primary-light);
     }
 
     .places-leaderboard-table td {
-        font-weight: bold;
-        color: var(--card-foreground); /* Updated from #333 */
+        font-weight: 500;
+        color: var(--card-foreground);
     }
 
+    /* Rank column */
     .places-leaderboard-table td:nth-child(1) {
         font-size: 1.3rem;
-        color: var(--accent); /* Updated from #ff9800 to use accent */
+        color: var(--accent);
+        font-weight: 700;
     }
 
+    /* Name column */
     .places-leaderboard-table td:nth-child(2) {
-        color: var(--primary); /* Updated from #2196F3 */
+        color: var(--primary);
         font-size: 1.1rem;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
+    /* Score column */
     .places-leaderboard-table td:nth-child(3) {
-        color: var(--success); /* Updated from #8BC34A */
+        color: var(--success);
+        font-weight: 700;
     }
 
     /* Image Styles */
@@ -110,25 +132,28 @@
         height: 40px;
         border-radius: 50%;
         object-fit: cover;
-        margin-right: 10px;
-        border: 2px solid var(--primary); /* Updated from #4CAF50 */
-        transition: transform 0.3s ease;
+        margin-right: 12px;
+        border: 2px solid var(--primary);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: var(--shadow-sm);
     }
 
     .places-user-image:hover {
-        transform: scale(1.1); /* Image zoom on hover */
+        transform: scale(1.1);
+        box-shadow: var(--shadow);
     }
 
     .places-badge-image {
-        width: 30px;
-        height: 30px;
+        width: 36px;
+        height: 36px;
         border-radius: 50%;
         object-fit: cover;
         transition: transform 0.3s ease;
+        box-shadow: var(--shadow-sm);
     }
 
     .places-badge-image:hover {
-        transform: scale(1.1); /* Badge image zoom on hover */
+        transform: scale(1.15);
     }
 
     /* Default Image for No Profile Image */
@@ -139,40 +164,61 @@
         background-image: url('https://tse2.mm.bing.net/th?id=OIP.DwCrm6CqdEFxMyAz_-94jQAAAA&pid=Api&P=0&h=180');
         background-size: cover;
         background-position: center;
-        border: 2px solid var(--border); /* Updated from #ddd */
+        border: 2px solid var(--border);
+        margin-right: 12px;
+    }
+
+    /* Badge text styling */
+    .places-badge-name {
+        color: var(--badge-text);
+        font-weight: 500;
+        margin-top: 0.25rem;
+        font-size: 0.9rem;
     }
 
     /* Your Badge Section */
     .places-your-badge-container {
-        background-color: var(--card); /* Updated from #333 */
-        border-radius: var(--radius); /* Updated from 8px */
-        padding: 20px;
-        margin-top: 30px;
+        background-color: var(--card);
+        border-radius: var(--radius);
+        padding: 2rem;
+        margin: 2rem auto 0;
         text-align: center;
-        box-shadow: var(--shadow); /* Updated from 0 4px 8px */
+        box-shadow: var(--shadow);
+        width: 90%;
+        max-width: 900px;
+        border: 1px solid var(--border);
     }
 
     .places-your-badge-container h2 {
-        font-family: 'Lexend', sans-serif; /* Same font as previous */
-        color: var(--error); /* Updated from red */
-        margin-bottom: 15px;
+        font-family: 'Lexend', sans-serif;
+        color: var(--primary);
+        margin-bottom: 1.25rem;
         font-size: 1.8rem;
-        font-weight: bold;
+        font-weight: 700;
     }
 
     .places-your-badge-container p {
-        font-family: 'Lexend', sans-serif; /* Same font as previous */
+        font-family: 'Lexend', sans-serif;
         font-size: 1.1rem;
-        color: var(--foreground); /* Updated from #555 */
-        margin-top: 15px;
+        color: var(--foreground);
+        margin-top: 1rem;
     }
 
     /* Styling for "No Badge" message */
     .places-no-badge-message {
-        font-family: 'Lexend', sans-serif; /* Same font as previous */
+        font-family: 'Lexend', sans-serif;
         font-size: 1.2rem;
-        color: var(--error); /* Updated from #FF5722 */
-        font-weight: bold;
+        color: var(--error);
+        font-weight: 600;
+        padding: 1rem;
+    }
+
+    /* Empty state styling */
+    .places-empty-state {
+        color: var(--foreground);
+        opacity: 0.7;
+        font-style: italic;
+        padding: 2rem;
     }
 </style>
 
@@ -196,7 +242,7 @@
                         {% if entry.image %}
                             <img src="{{ entry.image }}" class="places-user-image" alt="{{ entry.user }}'s profile image">
                         {% else %}
-                            <div class="places-default-image"></div>  <!-- Default image for missing profile image -->
+                            <div class="places-default-image"></div>
                         {% endif %}
                         {{ entry.user }}
                     </td>
@@ -204,15 +250,15 @@
                     <td>
                         {% if entry.badge_image %}
                             <img src="{{ entry.badge_image }}" class="places-badge-image" alt="Badge for {{ entry.user }}">
-                            <p style='color:aqua'>{{ entry.badge_name }}</p>
+                            <p class="places-badge-name">{{ entry.badge_name }}</p>
                         {% else %}
-                            <p style='color:aqua'>No badge</p>
+                            <p class="places-badge-name">No badge</p>
                         {% endif %}
                     </td>
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="5">No leaderboard entries yet!</td>
+                    <td colspan="5" class="places-empty-state">No leaderboard entries yet!</td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -223,7 +269,7 @@
     <div class="places-your-badge-container">
         <h2>Your Badge:</h2>
         <img src="{{ b }}" class="places-badge-image" alt="Your Badge">
-        <p style='color:aqua'>Badge: {{ a }}</p>
+        <p class="places-badge-name">Badge: {{ a }}</p>
     </div>
 {% else %}
     <div class="places-your-badge-container">

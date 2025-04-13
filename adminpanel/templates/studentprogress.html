@@ -1,40 +1,350 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Progress Tracker</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: hsl(230, 85%, 60%);
+            --primary-dark: hsl(230, 85%, 50%);
+            --primary-light: hsl(230, 85%, 75%);
+            --accent: hsl(280, 85%, 60%);
+            --background: hsl(220, 20%, 97%);
+            --foreground: hsl(220, 20%, 10%);
+            --card: hsl(220, 20%, 100%);
+            --card-foreground: hsl(220, 20%, 10%);
+            --border: hsl(220, 20%, 90%);
+            --ring: hsla(230, 85%, 60%, 0.5);
+            --success: hsl(142, 76%, 36%);
+            --error: hsl(0, 84%, 60%);
+            --radius: 0.75rem;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.1);
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --font-spacing: normal;
+            --word-spacing: normal;
+            --line-height: 1.6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            background: var(--background);
+            color: var(--foreground);
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm-63-31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='currentColor' fill-opacity='0.05'/%3E%3C/svg%3E");
+            mask-image: radial-gradient(circle at center, transparent 30%, black);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .gear-container {
+            max-width: 1200px;
+            width: 100%;
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            padding: 2rem;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .circuit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .engine-h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--foreground);
+        }
+
+        .module-box {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .widget-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: white;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .widget-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+            background: linear-gradient(45deg, var(--primary-dark), var(--accent));
+        }
+
+        .search-container {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .search-container input {
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            width: 250px;
+            font-size: 0.9rem;
+            background: var(--card);
+            color: var(--card-foreground);
+            transition: border-color 0.3s ease;
+        }
+
+        .search-container input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--ring);
+        }
+
+        .search-container button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: white;
+            background: var(--primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-container button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .router-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            display: none;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .router-feedback.show {
+            display: block;
+        }
+
+        .router-feedback.success {
+            background: hsl(142, 76%, 95%);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .router-feedback.error {
+            background: hsl(0, 84%, 95%);
+            color: var(--error);
+            border: 1px solid var(--error);
+        }
+
+        .frame-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .panel-card {
+            background: var(--card);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .panel-card h3 {
+            color: hsl(220, 20%, 50%);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .panel-card p {
+            color: var(--card-foreground);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .filter-container {
+            margin: 2rem 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .filter-container label {
+            color: var(--foreground);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .filter-container select {
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            background: var(--card);
+            color: var(--card-foreground);
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .filter-container select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--ring);
+        }
+
+        .chart-container {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .gear-container {
+                padding: 1rem;
+            }
+
+            .circuit-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .frame-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .search-container input {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .frame-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .module-box {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .widget-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h2>{{ current_user_data.user }}'s Progress</h2>
-    <p>Rank: {{ current_user_rank }}</p>
-    <p>Correct: {{ current_user_data.correct }}</p>
-    <p>Incorrect: {{ current_user_data.incorrect }}</p>
-    <p>Efficiency: {{ current_user_data.efficiency }}%</p>
-    <p>Performance: <strong>{{ current_user_data.label }}</strong></p>
+    <div class="gear-container">
+        <div class="circuit-header">
+            <h1 class="engine-h1">{{ current_user_data.user }}'s Progress Dashboard</h1>
+            <div class="module-box">
+                <a href="/addquiz2" class="widget-btn"><span>✏️</span> Add Quiz</a>
+                <a href="/deletequiz" class="widget-btn"><span>✏️</span> Delete Quiz</a>
+            </div>
+        </div>
 
-    <label for="threshold">Show students with total points above: </label>
-    <select id="threshold" onchange="filterChart()">
-        <option value="0">All</option>
-        <option value="20">20</option>
-        <option value="30">30</option>
-        <option value="40">40</option>
-        <option value="50">50</option>
-    </select>
+        <div class="search-container">
+            <input type="text" id="searchUser" placeholder="Search for a student...">
+            <button onclick="searchUser()">Search</button>
+        </div>
 
-    <canvas id="comparisonChart" width="800" height="400"></canvas>
+        <div id="searchResult" class="router-feedback"></div>
+
+        <div class="frame-grid">
+            <div class="panel-card">
+                <h3>Rank</h3>
+                <p>{{ current_user_rank }}</p>
+            </div>
+            <div class="panel-card">
+                <h3>Correct Answers</h3>
+                <p>{{ current_user_data.correct }}</p>
+            </div>
+            <div class="panel-card">
+                <h3>Incorrect Answers</h3>
+                <p>{{ current_user_data.incorrect }}</p>
+            </div>
+            <div class="panel-card">
+                <h3>Efficiency</h3>
+                <p>{{ current_user_data.efficiency }}%</p>
+            </div>
+        </div>
+
+        <div class="filter-container">
+            <label for="threshold">Show students with total points below:</label>
+            <select id="threshold" onchange="filterChart()">
+                <option value="9999">All</option>
+                <option value="20">20</option>
+                <option value="10">10</option>
+                <option value="5">5</option>
+                <option value="0">0</option>
+            </select>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="comparisonChart"></canvas>
+        </div>
+    </div>
 
     <script>
         const rawLabels = {{ chart_labels|safe }};
         const rawCorrect = {{ correct_data|safe }};
         const rawIncorrect = {{ incorrect_data|safe }};
-
         let chartInstance;
 
         function createChart(filteredLabels, filteredCorrect, filteredIncorrect) {
             const ctx = document.getElementById('comparisonChart').getContext('2d');
-
             if (chartInstance) {
-                chartInstance.destroy(); // Destroy previous chart before re-render
+                chartInstance.destroy();
             }
 
             chartInstance = new Chart(ctx, {
@@ -45,15 +355,15 @@
                         {
                             label: 'Correct Answers',
                             data: filteredCorrect,
-                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'hsl(230, 85%, 60%)',
+                            borderColor: 'hsl(230, 85%, 50%)',
                             borderWidth: 1
                         },
                         {
                             label: 'Incorrect Answers',
                             data: filteredIncorrect,
-                            backgroundColor: 'rgba(255, 99, 132, 0.6)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'hsl(0, 84%, 60%)',
+                            borderColor: 'hsl(0, 84%, 50%)',
                             borderWidth: 1
                         }
                     ]
@@ -61,15 +371,31 @@
                 options: {
                     responsive: true,
                     plugins: {
-                        legend: { display: true }
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: { size: 14 },
+                                padding: 20
+                            }
+                        }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
-                            title: { display: true, text: 'Number of Answers' }
+                            title: {
+                                display: true,
+                                text: 'Number of Answers',
+                                font: { size: 14 }
+                            },
+                            grid: { color: 'hsl(220, 20%, 90%)' }
                         },
                         x: {
-                            title: { display: true, text: 'Users' }
+                            title: {
+                                display: true,
+                                text: 'Students',
+                                font: { size: 14 }
+                            },
+                            grid: { display: false }
                         }
                     }
                 }
@@ -84,7 +410,7 @@
 
             for (let i = 0; i < rawLabels.length; i++) {
                 const totalPoints = rawCorrect[i] + rawIncorrect[i];
-                if (totalPoints > threshold) {
+                if (threshold === 9999 || totalPoints <= threshold) {
                     filteredLabels.push(rawLabels[i]);
                     filteredCorrect.push(rawCorrect[i]);
                     filteredIncorrect.push(rawIncorrect[i]);
@@ -94,7 +420,33 @@
             createChart(filteredLabels, filteredCorrect, filteredIncorrect);
         }
 
-        // Initial chart render
+        function searchUser() {
+            const searchTerm = document.getElementById('searchUser').value.trim().toLowerCase();
+            const resultDiv = document.getElementById('searchResult');
+
+            if (!searchTerm) {
+                resultDiv.className = 'router-feedback error show';
+                resultDiv.textContent = 'Please enter a username to search';
+                return;
+            }
+
+            const userIndex = rawLabels.findIndex(label => label.toLowerCase() === searchTerm);
+            
+            resultDiv.className = 'router-feedback show';
+            if (userIndex === -1) {
+                resultDiv.className = 'router-feedback error show';
+                resultDiv.textContent = `No user found with username "${searchTerm}"`;
+            } else {
+                resultDiv.className = 'router-feedback success show';
+                resultDiv.innerHTML = `
+                    User: ${rawLabels[userIndex]}<br>
+                    Correct Answers: ${rawCorrect[userIndex]}<br>
+                    Incorrect Answers: ${rawIncorrect[userIndex]}<br>
+                    Total Points: ${rawCorrect[userIndex] + rawIncorrect[userIndex]}
+                `;
+            }
+        }
+
         window.onload = () => {
             filterChart();
         };

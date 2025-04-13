@@ -1,51 +1,215 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile Form</title>
-</head>
-<body>
-    <h1>Create Your Profile</h1>
+<style>
+    /* Modern Form Variables */
+    :root {
+        --primary: #3a86ff;
+        --primary-dark: #2667cc;
+        --primary-light: #e0ecff;
+        --accent: #4361ee;
+        --text-dark: #1f2937;
+        --text-muted: #6b7280;
+        --text-light: #f9fafb;
+        --background: #ffffff;
+        --background-alt: #f9fafb;
+        --border: #e5e7eb;
+        --border-focus: #3a86ff;
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+        --radius: 0.5rem;
+        --transition: all 0.3s ease;
+    }
+
+    /* Container styles */
+    .profile-form-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 2.5rem;
+        background-color: var(--background);
+        border-radius: 1rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--border);
+    }
+
+    /* Form title */
+    .profile-form-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1.5rem;
+        text-align: center;
+        position: relative;
+        padding-bottom: 1rem;
+    }
+
+    .profile-form-title::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 3px;
+        background: linear-gradient(to right, var(--primary), var(--accent));
+        border-radius: 3px;
+    }
+
+    /* Form styles */
+    .profile-form {
+        display: grid;
+        gap: 1.5rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-label {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        font-size: 1rem;
+        color: var(--text-dark);
+        background-color: var(--background-alt);
+        transition: var(--transition);
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--border-focus);
+        box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.15);
+    }
+
+    /* File input specific styling */
+    .file-input-container {
+        position: relative;
+    }
+
+    .file-input-label {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border: 1px dashed var(--border);
+        border-radius: var(--radius);
+        background-color: var(--background-alt);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .file-input-label:hover {
+        border-color: var(--primary);
+        background-color: rgba(58, 134, 255, 0.05);
+    }
+
+    .file-input {
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+
+    .file-input-text {
+        margin-left: 0.5rem;
+        color: var(--text-muted);
+    }
+
+    /* Submit button */
+    .submit-btn {
+        padding: 0.875rem 1.5rem;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: var(--radius);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        margin-top: 1rem;
+    }
+
+    .submit-btn:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+    }
+
+    /* Responsive design */
+    @media (min-width: 640px) {
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+    }
+</style>
+
+<div class="profile-form-container">
+    <h1 class="profile-form-title">Create Your Profile</h1>
+    
     {% include 'includes/errors.html' %}
-    <form method="POST" enctype="multipart/form-data">
+    
+    <form method="POST" enctype="multipart/form-data" class="profile-form">
         {% csrf_token %}
         
-        <div>
-            <label for="id_Name">Name:</label>
-            <input type="text" name="Name" id="id_Name" maxlength="100" required>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="id_Name" class="form-label">Name</label>
+                <input type="text" name="Name" id="id_Name" maxlength="100" required class="form-control" placeholder="Enter your full name">
+            </div>
+            
+            <div class="form-group">
+                <label for="id_email" class="form-label">Email</label>
+                <input type="email" name="email" id="id_email" required class="form-control" placeholder="Enter your email address">
+            </div>
         </div>
         
-        <div>
-            <label for="id_email">Email:</label>
-            <input type="email" name="email" id="id_email" required>
+        <div class="form-group">
+            <label for="id_image" class="form-label">Profile Image</label>
+            <div class="file-input-container">
+                <label for="id_image" class="file-input-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-image" style="color: var(--primary);">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    <span class="file-input-text">Choose a profile image...</span>
+                </label>
+                <input type="file" name="image" id="id_image" accept="image/*" class="file-input">
+            </div>
         </div>
         
-        <div>
-            <label for="id_image">Profile Image:</label>
-            <input type="file" name="image" id="id_image" accept="image/*">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="id_age" class="form-label">Age</label>
+                <input type="text" name="age" id="id_age" maxlength="100" required class="form-control" placeholder="Enter your age">
+            </div>
+            
+            <div class="form-group">
+                <label for="id_address" class="form-label">Address</label>
+                <input type="text" name="address" id="id_address" maxlength="100" required class="form-control" placeholder="Enter your address">
+            </div>
+        </div>
+            {% comment %} logicheist {% endcomment %}
+
+        
+        <div class="form-group">
+            <label for="id_content" class="form-label">About Me</label>
+            <textarea name="content" id="id_content" rows="4" required class="form-control" placeholder="Tell us about yourself..."></textarea>
         </div>
         
-        <div>
-            <label for="id_age">Age:</label>
-            <input type="text" name="age" id="id_age" maxlength="100" required>
-        </div>
-        
-        <div>
-            <label for="id_content">Content:</label>
-            <input type="text" name="content" id="id_content" maxlength="100" required>
-        </div>
-        
-        <div>
-            <label for="id_address">Address:</label>
-            <input type="text" name="address" id="id_address" maxlength="100" required>
-        </div>
-        
-        <button type="submit">Submit</button>
+        <button type="submit" class="submit-btn">Create Profile</button>
     </form>
-</body>
-</html>
+</div>
 {% endblock %}

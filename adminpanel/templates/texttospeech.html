@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% comment %} logicheist {% endcomment %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -27,7 +28,7 @@
             --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
             --font-spacing: normal;
             --word-spacing: normal;
-            --line-height: 1.6;
+            --line-height: 1.6; 
         }
 
         .dark {
@@ -428,14 +429,14 @@
     </style>
 </head>
 <body>
-    <!-- Accessibility Tools -->
+    
     <div id="readingRuler" class="reading-ruler"></div>
     <div id="colorOverlay" class="color-overlay"></div>
 
-    <!-- Canvas for Cursor Effect -->
+    
     <canvas id="canvas"></canvas>
 
-    <!-- Navigation from Home Page -->
+    
     <nav class="navbar">
         <div class="navbar-content">
             <a href="/" class="logo">
@@ -448,7 +449,7 @@
                 <div class="dropdown" id="toolsDropdown">
                     <a href="#" class="nav-item" id="toolsToggle" aria-expanded="false">Tools</a>
                     <div class="dropdown-content">
-                        <a href="/texttospeech" class="dropdown-item" ><span>🔊</span> Text to Speech</a>
+                        <a href="/texttospeech" class="dropdown-item"><span>🔊</span> Text to Speech</a>
                         <a href="/speechtotext" class="dropdown-item"><span>📏</span> speech to text</a>
                         <a href="/image" class="dropdown-item" onclick="toggleColorOverlay()"><span>🎨</span> Image to text</a>
                         <a href="/wordexplorer" class="dropdown-item"><span>🔤</span>wordexplorer</a>
@@ -468,7 +469,7 @@
         </div>
     </nav>
 
-    <!-- Text to Speech Section with Background -->
+    
     <section class="hero">
         <div class="container">
             <h1>Text to Speech Converter</h1>
@@ -523,7 +524,7 @@
         let currentUtterance = null;
         let isPaused = false;
 
-        // Populate available voices
+       
         function populateVoiceList() {
             voices = speechSynthesis.getVoices();
             const voiceSelect = document.getElementById('voice-select');
@@ -551,16 +552,16 @@
             document.getElementById('pitch-value').textContent = e.target.value;
         });
 
-        // Highlight current word during speech
+        
         function highlightText(charIndex, text) {
             const textInput = document.getElementById('text-input');
             const words = text.split(' ');
             let currentOffset = 0;
             let wordIndex = 0;
 
-            // Find the word at charIndex
+            
             for (let i = 0; i < words.length; i++) {
-                currentOffset += words[i].length + 1; // +1 for space
+                currentOffset += words[i].length + 1; 
                 if (currentOffset > charIndex) {
                     wordIndex = i;
                     break;
@@ -575,17 +576,30 @@
                     return word;
                 })
                 .join(' ');
-            textInput.innerHTML = highlightedText;
+            textInput.innerHTML = highlightedText || text; 
+            
+            const range = document.createRange();
+            const sel = window.getSelection();
+            range.selectNodeContents(textInput);
+            range.collapse(false);
+            sel.removeAllRanges();
+            sel.addRange(range);
         }
 
-        // Reset text to plain content
+        
         function resetText() {
             const textInput = document.getElementById('text-input');
-            const plainText = textInput.textContent;
-            textInput.innerHTML = plainText || '';
+            const plainText = textInput.textContent; 
+            textInput.innerHTML = plainText || ''; 
+            const range = document.createRange();
+            const sel = window.getSelection();
+            range.selectNodeContents(textInput);
+            range.collapse(false); 
+            sel.removeAllRanges();
+            sel.addRange(range);
         }
 
-        // Speak button
+        
         document.getElementById('speak-button').addEventListener('click', () => {
             const textInput = document.getElementById('text-input');
             const text = textInput.textContent.trim();
@@ -623,7 +637,7 @@
             speechSynthesis.speak(currentUtterance);
         });
 
-        // Pause/Resume button
+        
         document.getElementById('pause-button').addEventListener('click', () => {
             if (!currentUtterance) return;
 
@@ -636,7 +650,7 @@
             }
         });
 
-        // Stop button
+        
         document.getElementById('stop-button').addEventListener('click', () => {
             speechSynthesis.cancel();
             document.getElementById('status').classList.remove('speaking');
@@ -644,14 +658,14 @@
             resetText();
         });
 
-        // Erase button
+        
         document.getElementById('erase-button').addEventListener('click', () => {
             const textInput = document.getElementById('text-input');
             textInput.textContent = '';
             resetText();
         });
 
-        // File upload
+        
         document.getElementById('file-input').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file && file.type === 'text/plain') {
@@ -667,12 +681,12 @@
             }
         });
 
-        // Reset text on input to avoid conflicts
+       
         document.getElementById('text-input').addEventListener('input', () => {
             resetText();
         });
 
-        // Theme Management
+        
         function toggleDarkMode() {
             document.body.classList.toggle('dark');
             document.getElementById('theme-icon').textContent = document.body.classList.contains('dark') ? '🌞' : '🌓';
@@ -682,14 +696,14 @@
             document.body.classList.toggle('dyslexia-font');
         }
 
-        // Mobile Menu Toggle
+        
         const mobileToggle = document.getElementById('mobileToggle');
         const navLinks = document.getElementById('navLinks');
         mobileToggle.addEventListener('click', () => {
             navLinks.classList.toggle('active');
         });
 
-        // Dropdown Toggle
+        
         document.querySelectorAll('.dropdown').forEach(dropdown => {
             const toggle = dropdown.querySelector('.nav-item');
             dropdown.addEventListener('click', () => {
@@ -698,7 +712,7 @@
             });
         });
 
-        // Accessibility Tools
+        
         function toggleTextToSpeech() {
             alert('Text-to-Speech tool is already active!');
         }
@@ -724,7 +738,7 @@
             overlay.style.backgroundColor = 'rgba(255, 255, 0, 0.2)';
         }
 
-        // Cursor Effect
+        
         const ctx = document.getElementById('canvas').getContext('2d');
         let pos = { x: 0, y: 0 };
         let lines = [];

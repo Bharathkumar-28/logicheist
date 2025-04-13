@@ -711,9 +711,11 @@
                     <a href="#" class="nav-item" id="learnToggle" aria-expanded="false">Learn</a>
                     <div class="dropdown-content">
                         <a href="/courses" class="dropdown-item"><span>📚</span> Lessons</a>
-                        <a href="/speechquizcard" class="dropdown-item"><span>🎮</span> Games</a>
-                        <a href="/index1" class="dropdown-item"><span>✏️</span> Practice</a>
-                        <a href="/about" class="dropdown-item"><span>✏️</span> About</a>
+<a href="/speechquizcard" class="dropdown-item"><span>🎮</span> Games</a>
+<a href="/index1" class="dropdown-item"><span>📝</span> Practice</a>
+<a href="/about" class="dropdown-item"><span>ℹ️</span> About</a>
+<a href="/userprogress" class="dropdown-item"><span>📈</span> User Progress</a>
+
                     </div>
                 </div>
 
@@ -730,16 +732,17 @@
                 <div class="dropdown" id="toolsDropdown">
                     <a href="#" class="nav-item" id="toolsToggle" aria-expanded="false">my information</a>
                     <div class="dropdown-content">
-                        <a href="/profiles" class="dropdown-item" ><span>🔊</span> Profile</a>
-                        {% if user.is_authenticated %}
-                        <a   class="dropdown-item" href="{% url 'mymistakes' postid=request.user.id %}">🔊mymistakes</a>
-                            <a   class="dropdown-item" href="/logout">🔊Logout</a>
-                        {% else %}
-                            <a class="text-light text-decoration-none" href="/register">Register</a>
-                            <a class="text-light text-decoration-none" href="/login">Login</a>
-                        {% endif %}
-                        <a href="/contact" class="dropdown-item"><span>🔤</span>contact</a>
-                        <a href="/spell" class="dropdown-item"><span>🔤</span> spell checker</a>
+                        <a href="/profiles" class="dropdown-item"><span>👤</span> Profile</a>
+{% if user.is_authenticated %}
+<a class="dropdown-item" href="{% url 'mymistakes' postid=request.user.id %}">❌ mymistakes</a>
+<a class="dropdown-item" href="{% url 'index2' %}">📋 mytasks</a>
+<a class="dropdown-item" href="/logout">🚪 Logout</a>
+{% else %}
+<a class="text-light text-decoration-none" href="/register">📝 Register</a>
+<a class="text-light text-decoration-none" href="/login">🔑 Login</a>
+{% endif %}
+<a href="/contact" class="dropdown-item"><span>✉️</span> contact</a>
+                        
                     </div>
                 </div>
 
@@ -752,6 +755,7 @@
                         <a href="#" class="dropdown-item" onclick="toggleDyslexiaFont()"><span>👁️</span> Dyslexia Font</a>
                         <a href="#accessibility" class="dropdown-item"><span>♿</span> Accessibility</a>
                         <a href="/teachers" class="dropdown-item"><span>🔤</span>Teacher</a>
+                        <a href="/progress" class="dropdown-item"><span>🔤</span>Progress</a>
                     </div>
                 </div>
             </div>

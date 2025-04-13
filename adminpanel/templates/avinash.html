@@ -2,221 +2,469 @@
 
 {% block content %}
 <style>
-    /* Main Game Container */
+    :root {
+        --primary: hsl(210, 85%, 50%);
+        --primary-dark: hsl(210, 85%, 40%);
+        --primary-light: hsl(210, 85%, 85%);
+        --accent: hsl(260, 75%, 55%);
+        --accent-light: hsl(260, 75%, 90%);
+        --background: hsl(220, 20%, 98%);
+        --foreground: hsl(220, 20%, 15%);
+        --card: hsl(220, 20%, 100%);
+        --card-foreground: hsl(220, 20%, 15%);
+        --border: hsl(220, 20%, 90%);
+        --ring: hsla(210, 85%, 50%, 0.4);
+        --success: hsl(142, 76%, 36%);
+        --success-light: hsl(142, 76%, 95%);
+        --error: hsl(0, 84%, 60%);
+        --error-light: hsl(0, 84%, 95%);
+        --radius: 0.75rem;
+        --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+        --shadow: 0 4px 8px rgba(0,0,0,0.08);
+        --shadow-lg: 0 12px 24px rgba(0,0,0,0.1);
+        --font-spacing: normal;
+        --word-spacing: normal;
+        --line-height: 1.6;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        background-color: var(--background);
+        color: var(--foreground);
+        line-height: var(--line-height);
+        letter-spacing: var(--font-spacing);
+        word-spacing: var(--word-spacing);
+        transition: all 0.2s ease;
+    }
+
+    .game-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        background: linear-gradient(135deg, 
+            hsla(210, 85%, 95%, 0.8), 
+            hsla(260, 75%, 95%, 0.8)),
+            url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3z' fill='%23a6b0d8' fill-opacity='0.2'/%3E%3C/svg%3E");
+    }
+
     .game-container {
-        background: #ffffff;
-        padding: 3rem;
-        border-radius: 15px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-lg);
         width: 100%;
-        max-width: 480px;
-        text-align: center;
-        transform: scale(1);
-        transition: transform 0.3s ease-in-out;
-        margin: auto;
+        max-width: 550px;
+        padding: 2.5rem;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .game-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
     }
 
     .game-container:hover {
-        transform: scale(1.05);
+        transform: translateY(-5px);
+        box-shadow: 0 20px 30px rgba(0, 0, 0, 0.12);
     }
 
-    /* Heading */
-    h1 {
-        color: #4a5568;
-        margin-bottom: 1.5rem;
-        font-size: 2.5rem;
-        font-weight: bold;
-        letter-spacing: 1px;
-        transition: color 0.3s ease;
+    .game-header {
+        text-align: center;
+        margin-bottom: 2rem;
     }
 
-    h1:hover {
-        color: #3182ce;
+    .game-title {
+        font-size: 2.25rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 0.75rem;
     }
 
-    /* Button Styles */
-    .button {
-        background-color: #4299e1;
+    .game-subtitle {
+        color: hsl(220, 15%, 50%);
+        font-size: 1.1rem;
+    }
+
+    .play-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 1rem;
+        background: var(--primary);
         color: white;
         border: none;
-        padding: 15px 30px;
-        border-radius: 8px;
-        cursor: pointer;
+        border-radius: var(--radius);
         font-size: 1.1rem;
         font-weight: 600;
-        transition: all 0.3s ease;
-        width: 100%;
-        margin: 10px 0;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 1.25rem;
+        gap: 0.5rem;
     }
 
-    .button:hover {
-        background-color: #3182ce;
+    .play-button:hover {
+        background: var(--primary-dark);
         transform: translateY(-2px);
+        box-shadow: var(--shadow);
     }
 
-    .button.secondary {
-        background-color: #edf2f7;
-        color: #2d3748;
-        border: 1px solid #e2e8f0;
+    .play-button:active {
+        transform: translateY(0);
     }
 
-    .button.secondary:hover {
-        background-color: #e2e8f0;
-        transform: translateY(-2px);
+    .play-button svg {
+        width: 1.5rem;
+        height: 1.5rem;
     }
 
-    /* Input Field Styles */
     .input-field {
         width: 100%;
-        padding: 15px;
-        margin: 12px 0;
-        border: 2px solid #e2e8f0;
-        border-radius: 8px;
-        font-size: 1rem;
-        color: #4a5568;
-        transition: border-color 0.3s ease;
+        padding: 0.875rem 1.25rem;
+        border: 2px solid var(--border);
+        border-radius: var(--radius);
+        font-size: 1.1rem;
+        transition: all 0.2s ease;
+        margin-bottom: 1rem;
+        background: var(--background);
+        color: var(--foreground);
     }
 
     .input-field:focus {
         outline: none;
-        border-color: #4299e1;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--ring);
     }
 
-    /* Feedback Messages */
-    .feedback {
-        margin: 1.5rem 0;
-        padding: 15px;
-        border-radius: 8px;
-        text-align: center;
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .button {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius);
+        font-size: 1rem;
         font-weight: 600;
-        transition: background-color 0.3s ease;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        gap: 0.5rem;
+    }
+
+    .button.secondary {
+        background: var(--background);
+        color: var(--foreground);
+        border: 1px solid var(--border);
+    }
+
+    .button.secondary:hover {
+        background: var(--border);
+        transform: translateY(-2px);
+    }
+
+    .button.secondary:active {
+        transform: translateY(0);
+    }
+
+    .button svg {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+
+    .feedback {
+        margin: 1rem 0;
+        padding: 1rem;
+        border-radius: var(--radius);
+        text-align: center;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        opacity: 0;
+        max-height: 0;
+        overflow: hidden;
+    }
+
+    .feedback.show {
+        opacity: 1;
+        max-height: 100px;
     }
 
     .feedback.success {
-        background-color: #c6f6d5;
-        color: #276749;
+        background: var(--success-light);
+        color: var(--success);
+        border: 1px solid hsla(142, 76%, 36%, 0.2);
     }
 
     .feedback.error {
-        background-color: #fed7d7;
-        color: #9b2c2c;
+        background: var(--error-light);
+        color: var(--error);
+        border: 1px solid hsla(0, 84%, 60%, 0.2);
     }
 
-    /* Stats Section */
-    .stats {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 1rem;
-        color: #4a5568;
-        font-size: 1rem;
-        font-weight: 500;
-    }
-
-    /* Star Progress Tracker */
     .star-progress {
         display: flex;
         justify-content: center;
-        gap: 5px;
-        margin-top: 20px;
+        gap: 0.5rem;
+        margin: 1.5rem 0;
     }
 
     .star {
-        font-size: 2em;
-        color: #ddd;
+        font-size: 2rem;
+        transition: all 0.3s ease;
+    }
+
+    .star.empty {
+        color: hsla(220, 15%, 85%, 0.8);
     }
 
     .star.filled {
-        color: #ffd700;
+        color: hsl(45, 100%, 50%);
+        transform: scale(1.2);
     }
 
-    /* Button Group */
-    .button-group {
+    .settings-section {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+    }
+
+    .settings-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--accent);
         display: flex;
-        gap: 12px;
+        align-items: center;
+        gap: 0.5rem;
     }
 
-    .button-group .button {
-        flex: 1;
+    .settings-title svg {
+        width: 1.25rem;
+        height: 1.25rem;
     }
 
-    /* Game Summary */
+    .settings-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .settings-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .settings-label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: hsl(220, 15%, 40%);
+    }
+
+    .settings-input {
+        width: 100%;
+        cursor: pointer;
+    }
+
+    .voice-select {
+        grid-column: span 2;
+    }
+
+    .voice-select select {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--background);
+        font-size: 0.9rem;
+    }
+
+    .settings-button {
+        width: 100%;
+        padding: 0.75rem;
+        background: var(--accent);
+        color: white;
+        border: none;
+        border-radius: var(--radius);
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-top: 0.5rem;
+    }
+
+    .settings-button:hover {
+        background: hsl(260, 75%, 45%);
+    }
+
     .game-summary {
-        margin-top: 1.5rem;
+        text-align: center;
+        margin-top: 2rem;
+        padding: 1rem;
+        background: var(--accent-light);
+        border-radius: var(--radius);
         font-weight: 700;
-        font-size: 1.1rem;
-        color: #4a5568;
+        font-size: 1.25rem;
+        color: var(--accent);
+        opacity: 0;
+        transform: translateY(10px);
+        transition: all 0.3s ease;
     }
 
-    /* Result Link */
-    .result {
+    .game-summary.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .result-button {
         display: block;
+        width: 100%;
+        padding: 1rem;
         margin-top: 1.5rem;
-        font-size: 1.1rem;
-        color: #3182ce;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        color: white;
+        text-align: center;
+        border-radius: var(--radius);
         text-decoration: none;
         font-weight: 600;
-        transition: color 0.3s ease;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        opacity: 0;
+        transform: translateY(10px);
     }
 
-    .result:hover {
-        color: #2b6cb0;
+    .result-button.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .result-button:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transform: translateY(-3px);
     }
 
     /* Responsive Design */
     @media (max-width: 600px) {
+        .game-page {
+            padding: 1rem;
+        }
+        
         .game-container {
-            padding: 2rem;
+            padding: 1.5rem;
         }
 
-        h1 {
-            font-size: 2rem;
+        .game-title {
+            font-size: 1.75rem;
         }
 
-        .button {
-            padding: 12px 20px;
-            font-size: 1rem;
+        .button-group {
+            flex-direction: column;
         }
 
-        .input-field {
-            font-size: 0.9rem;
-            padding: 12px;
+        .settings-grid {
+            grid-template-columns: 1fr;
         }
 
-        .stats {
-            font-size: 0.875rem;
+        .voice-select {
+            grid-column: span 1;
         }
     }
 </style>
 
-<div class="game-container">
-    <h1>Listen and Type Game</h1>
+<div class="game-page">
+    <div class="game-container">
+        <div class="game-header">
+            <h1 class="game-title">Listen & Type</h1>
+            <p class="game-subtitle">Listen carefully and type what you hear</p>
+        </div>
 
-    <button id="playButton" class="button">Play Word</button>
-    <input type="text" id="userInput" class="input-field" placeholder="Type what you hear..." autocomplete="off">
-    <div class="button-group">
-        <button id="repeatButton" class="button secondary">Repeat Word</button>
-        <button id="submitButton" class="button secondary">Submit Answer</button>
-    </div>
-    <div id="feedback" class="feedback"></div>
-    <div class="stats">
+        <button id="playButton" class="play-button">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            Play Word
+        </button>
+
+        <input type="text" id="userInput" class="input-field" placeholder="Type what you hear..." autocomplete="off">
+        
+        <div class="button-group">
+            <button id="repeatButton" class="button secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 2v6h6"></path>
+                    <path d="M3 8C3 12.9706 7.02944 17 12 17C16.9706 17 21 12.9706 21 8C21 3.02944 16.9706 -1 12 -1"></path>
+                </svg>
+                Repeat
+            </button>
+            <button id="submitButton" class="button secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                Submit
+            </button>
+        </div>
+        
+        <div id="feedback" class="feedback"></div>
+        
         <div class="star-progress" id="starProgress"></div>
+        
+        <div class="settings-section">
+            <h3 class="settings-title">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                Adjust Speech Settings
+            </h3>
+            
+            <div class="settings-grid">
+                <div class="settings-item">
+                    <label class="settings-label" for="pitch">Pitch</label>
+                    <input type="range" id="pitch" class="settings-input" min="0" max="2" step="0.1" value="1">
+                </div>
+                
+                <div class="settings-item">
+                    <label class="settings-label" for="speed">Speed</label>
+                    <input type="range" id="speed" class="settings-input" min="0.5" max="2" step="0.1" value="1">
+                </div>
+                
+                <div class="voice-select">
+                    <label class="settings-label" for="voiceSelect">Voice</label>
+                    <select id="voiceSelect"></select>
+                </div>
+            </div>
+            
+            <button class="settings-button" onclick="adjustSpeechSettings()">Apply Settings</button>
+        </div>
+        
+        <div id="gameSummary" class="game-summary"></div>
+        <a class="result-button" href='/finalresult' id="viewResultBtn" style="display:none;">View Your Results</a>
     </div>
-
-    <div class="input-container">
-        <label for="pitch" style='color:hsl(280, 85%, 60%)'>Pitch:</label>
-        <input type="range" id="pitch" min="0" max="2" step="0.1" value="1">
-        <label for="speed" style='color:hsl(280, 85%, 60%)'>Speed:</label>
-        <input type="range" id="speed" min="0.5" max="2" step="0.1" value="1">
-        <label for="voice" style='color:hsl(280, 85%, 60%)'></label>
-        <select id="voiceSelect"></select>
-        <button onclick="adjustSpeechSettings()">Set Speech Settings</button>
-    </div>
-
-    <input type="hidden" id="csrfToken" value="{{ csrf_token }}">
-
-    <div class="game-summary" id="gameSummary"></div>
-    <a class="result" href='/finalresult' id="viewResultBtn" style="display:none;">VIEW THE RESULT</a>
 </div>
+
+<input type="hidden" id="csrfToken" value="{{ csrf_token }}">
 
 <script>
     var serializedData = '{{ serialized_data|safe|escapejs }}';
@@ -261,6 +509,7 @@
             this.pitchInput = document.getElementById('pitch');
             this.speedInput = document.getElementById('speed');
             this.voiceSelect = document.getElementById('voiceSelect');
+            this.resultButton = document.getElementById('viewResultBtn');
         }
 
         initializeStarProgress() {
@@ -286,7 +535,7 @@
         }
 
         getRandomWord() {
-            if (listData.length > 0) {
+            if (listData && listData.length > 0) {
                 const unusedWords = listData.filter(word => !this.usedWords.includes(word));
                 if (unusedWords.length > 0) {
                     const randomWord = unusedWords[Math.floor(Math.random() * unusedWords.length)];
@@ -340,6 +589,8 @@
         repeatWord() {
             if (this.currentWord) {
                 this.speakWord(this.currentWord);
+            } else {
+                this.showFeedback('Please start the game first', 'error');
             }
         }
 
@@ -350,7 +601,13 @@
             }
 
             const userInput = this.userInput.value.toLowerCase().trim();
-            const isCorrect = userInput === this.currentWord;
+            const isCorrect = userInput === this.currentWord.toLowerCase();
+
+            if (isCorrect) {
+                this.showFeedback('Correct! Well done.', 'success');
+            } else {
+                this.showFeedback(`Incorrect. The correct word was "${this.currentWord}".`, 'error');
+            }
 
             this.completedQuestions++;
             this.updateStarProgress();
@@ -360,31 +617,68 @@
             this.sendGameResult2(this.currentWord, this.currentWord, userInput, isCorrect);
 
             if (this.completedQuestions >= this.totalQuestions) {
-                this.showGameSummary();
-                document.getElementById('viewResultBtn').style.display = 'block';
+                this.gameFinished = true;
+                setTimeout(() => this.showGameSummary(), 1500);
             } else {
-                setTimeout(() => this.playWord(), 1000);
+                setTimeout(() => this.playWord(), 2000);
             }
         }
 
         showFeedback(message, type) {
             this.feedbackElement.textContent = message;
-            this.feedbackElement.className = `feedback ${type}`;
+            this.feedbackElement.className = `feedback ${type} show`;
         }
 
         showGameSummary() {
-            this.gameSummary.textContent = `Game Over!`;
+            this.gameSummary.textContent = `Game Complete! You got ${this.usedWords.filter((word, index) => 
+                this.userInput.value.toLowerCase().trim() === word.toLowerCase()
+            ).length} out of ${this.totalQuestions} correct.`;
+            
+            this.gameSummary.classList.add('show');
+            this.resultButton.style.display = 'block';
+            this.resultButton.classList.add('show');
         }
 
         adjustSpeechSettings() {
             this.speechPitch = parseFloat(this.pitchInput.value);
             this.speechRate = parseFloat(this.speedInput.value);
+            this.showFeedback('Speech settings updated!', 'success');
+            setTimeout(() => {
+                this.feedbackElement.classList.remove('show');
+            }, 2000);
         }
 
         loadVoices() {
-            const voices = window.speechSynthesis.getVoices();
+            // First try to get voices
+            let voices = window.speechSynthesis.getVoices();
+            
+            // If no voices are available yet, wait for the voiceschanged event
+            if (!voices || voices.length === 0) {
+                window.speechSynthesis.addEventListener('voiceschanged', () => {
+                    voices = window.speechSynthesis.getVoices();
+                    this.populateVoiceSelect(voices);
+                });
+            } else {
+                this.populateVoiceSelect(voices);
+            }
+        }
+
+        populateVoiceSelect(voices) {
             this.voiceSelect.innerHTML = '';
-            voices.forEach(voice => {
+            
+            // Add a default option
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Default Voice';
+            this.voiceSelect.appendChild(defaultOption);
+            
+            // Filter to only include English voices for better UX
+            const englishVoices = voices.filter(voice => voice.lang.includes('en'));
+            
+            // Use English voices if available, otherwise use all voices
+            const voicesToUse = englishVoices.length > 0 ? englishVoices : voices;
+            
+            voicesToUse.forEach(voice => {
                 const option = document.createElement('option');
                 option.value = voice.name;
                 option.textContent = `${voice.name} (${voice.lang})`;
@@ -400,6 +694,10 @@
                 if (event.key === 'Enter') {
                     this.checkAnswer();
                 }
+            });
+            
+            document.querySelector('.settings-button').addEventListener('click', () => {
+                this.adjustSpeechSettings();
             });
         }
 
@@ -444,8 +742,14 @@
         }
     }
 
+    // Initialize the game when DOM is loaded.
     document.addEventListener('DOMContentLoaded', () => {
-        new ListenTypeGame();
+        const game = new ListenTypeGame();
+        
+        // Initialize speech settings adjustment function in global scope
+        window.adjustSpeechSettings = function() {
+            game.adjustSpeechSettings();
+        };
     });
 </script>
 {% endblock %}

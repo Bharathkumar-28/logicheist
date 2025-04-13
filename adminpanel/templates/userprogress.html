@@ -1,3 +1,6 @@
+{% extends 'base.html' %}
+
+{% block content %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,32 +8,48 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #f0f4f8;
-            padding: 2rem;
-            display: flex;
-            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
         }
+
         .card {
-            background: white;
-            padding: 2rem;
-            border-radius: 1rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-            max-width: 500px;
+            background: linear-gradient(145deg, #ffffff, #f9fafb);
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            max-width: 520px;
             text-align: center;
+            margin: 3rem auto;
         }
+
         .profile-pic {
-            width: 100px;
-            height: 100px;
+            width: 110px;
+            height: 110px;
             object-fit: cover;
             border-radius: 50%;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            border: 3px solid #10b981;
+        }
+
+        h2 {
             margin-bottom: 1rem;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: #111827;
         }
+
         .stat {
-            margin: 0.5rem 0;
+            margin: 0.4rem 0;
             font-size: 1rem;
+            color: #374151;
         }
+
+        .efficiency-message {
+            margin-top: 1.5rem;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #2563eb;
+        }
+
         canvas {
             margin-top: 1.5rem;
         }
@@ -48,6 +67,16 @@
         <p class="stat"><strong>Efficiency:</strong> {{ efficiency }}%</p>
 
         <canvas id="progressPieChart" width="300" height="300"></canvas>
+
+        <div class="efficiency-message">
+            {% if efficiency < 40 %}
+                You can do it! Keep practicing and you'll improve! 💪
+            {% elif efficiency < 75 %}
+                Nice effort! You're getting there, keep it up! 🚀
+            {% else %}
+                Excellent work! You're doing very well! 🌟
+            {% endif %}
+        </div>
     </div>
 
     <script>
@@ -80,7 +109,9 @@
                             label: function(context) {
                                 const label = context.label || '';
                                 const value = context.raw || 0;
-                                return `${label}: ${value} (${Math.round((value / ({{ correct }} + {{ incorrect }}) * 100))}%)`;
+                                const total = {{ correct }} + {{ incorrect }};
+                                const percentage = total ? Math.round((value / total) * 100) : 0;
+                                return `${label}: ${value} (${percentage}%)`;
                             }
                         }
                     },
@@ -100,3 +131,4 @@
     </script>
 </body>
 </html>
+{% endblock %}

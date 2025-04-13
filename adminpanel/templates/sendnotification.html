@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notify Inactive Users</title>
+</head>
+<body>
+    <h2>🔔 Admin Panel</h2>
+
+    <button onclick="notifyInactive()">Notify Inactive Users</button>
+
+    <script>
+    function notifyInactive() {
+        fetch('/notify-inactive-users/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                message: "⏰ You've been inactive for a while. Check this!"
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(`✅ Notification sent to ${data.notified_users} inactive users`);
+        })
+        .catch(error => {
+            alert("❌ Failed to send notification");
+            console.error(error);
+        });
+    }
+    </script>
+</body>
+</html>
