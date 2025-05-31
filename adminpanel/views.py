@@ -734,7 +734,8 @@ from django.http import JsonResponse
 import google.generativeai as genai
 
 # Configure Gemini
-api_key = "AIzaSyBNBgchXs6MmOx-lBQSnovzCoyOuC18MY0"  # Replace with your actual API key
+api_key = "AIzaSyA9elTu_rqYYtU5kBeOxfJfTR2xUC56gaA"
+  # Replace with your actual API key
 genai.configure(api_key=api_key)
 
 # Set the generation configuration
